@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import leets.leenk.global.auth.application.dto.request.RefreshTokenRequest;
+import leets.leenk.global.auth.application.dto.request.UsernamePasswordLoginRequest;
 import leets.leenk.global.auth.application.dto.response.LoginResponse;
 import leets.leenk.global.auth.application.usecase.AuthUsecase;
 import leets.leenk.global.common.response.CommonResponse;
@@ -37,5 +38,13 @@ public class AuthController {
         LoginResponse response = authUsecase.reissueToken(request);
 
         return CommonResponse.success(ResponseCode.REFRESH_TOKEN_SUCCESS, response);
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "로그인 API")
+    public CommonResponse<LoginResponse> login(@Valid @RequestBody UsernamePasswordLoginRequest request) {
+        LoginResponse response = authUsecase.login(request);
+
+        return CommonResponse.success(ResponseCode.LOGIN_SUCCESS, response);
     }
 }
