@@ -1,6 +1,11 @@
 package leets.leenk.domain.user.application.usecase;
 
-import leets.leenk.domain.user.application.dto.request.*;
+import leets.leenk.domain.user.application.dto.request.AgreementRequest;
+import leets.leenk.domain.user.application.dto.request.IntroductionRequest;
+import leets.leenk.domain.user.application.dto.request.KakaoTalkIdRequest;
+import leets.leenk.domain.user.application.dto.request.MbtiRequest;
+import leets.leenk.domain.user.application.dto.request.ProfileImageRequest;
+import leets.leenk.domain.user.application.dto.request.RegisterRequest;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
 import leets.leenk.domain.user.application.exception.SelfBlockNotAllowedException;
 import leets.leenk.domain.user.application.exception.UserAlreadyBlockedException;
@@ -36,6 +41,13 @@ public class UserUsecase {
 
     private final UserBlockMapper userBlockMapper;
     private final UserBlockService userBlockService;
+
+    @Transactional
+    public void initialAgreement(long userId, AgreementRequest request) {
+        User user = userGetService.findById(userId);
+
+        userUpdateService.updateAgreement(user, request);
+    }
 
     @Transactional
     public void completeProfile(long userId, RegisterRequest request) {

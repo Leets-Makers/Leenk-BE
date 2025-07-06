@@ -18,6 +18,7 @@ public enum ResponseCode implements ResponseCodeInterface {
     COMPLETE_PROFILE(1106, HttpStatus.OK, "기본 정보 입력에 성공했습니다."),
     DELETE_USER(1107, HttpStatus.OK, "회원 탈퇴에 성공했습니다."),
     BLOCK_USER(1108, HttpStatus.OK, "사용자 차단에 성공했습니다."),
+    UPDATE_AGREEMENT(1109, HttpStatus.OK, "약관 동의 입력에 성공했습니다."),
 
     GET_NOTIFICATION_SETTING(1110, HttpStatus.OK, "알림 설정 조회에 성공했습니다."),
     UPDATE_NOTIFICATION_SETTING(1111, HttpStatus.OK, "알림 설정 수정에 성공했습니다."),

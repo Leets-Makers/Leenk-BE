@@ -5,19 +5,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import leets.leenk.global.auth.application.dto.response.OauthUserInfoResponse;
 import leets.leenk.global.common.entity.BaseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDateTime;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @Entity
 @SuperBuilder
-@Table(name="users")
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
@@ -53,6 +54,16 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private long totalReactionCount;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean termsAgreement = false;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    @Builder.Default
+    private Boolean privacyAgreement = false;
+
     private LocalDateTime leaveDate;
 
     private LocalDateTime deleteDate;
@@ -73,14 +84,23 @@ public class User extends BaseEntity {
         this.mbti = mbti;
     }
 
+    public void updateAgreement(boolean termsService, boolean privacyPolicy) {
+        this.termsAgreement = termsService;
+        this.privacyAgreement = privacyPolicy;
+    }
+
     public void increaseTotalReactionCount(long reactionCount) {
         this.totalReactionCount += reactionCount;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof User user)) {
+            return false;
+        }
         return id != null && id.equals(user.id);
     }
 
