@@ -26,4 +26,15 @@ public class SlackWebhookService {
                 .retrieve()
                 .toBodilessEntity();
     }
+
+    public void sendFeedReport(String report) {
+        String formatted = "*[피드 신고]*\n```" + report + "```";
+
+        slackRestClient.post()
+                .uri(webhookUrl)
+                .header("Content-Type", "application/json")
+                .body(Map.of("text", formatted))
+                .retrieve()
+                .toBodilessEntity();
+    }
 }

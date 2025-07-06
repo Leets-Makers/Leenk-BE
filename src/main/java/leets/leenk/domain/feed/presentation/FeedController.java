@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import leets.leenk.domain.feed.application.dto.request.FeedReportRequest;
 import leets.leenk.domain.feed.application.dto.request.FeedUpdateRequest;
 import leets.leenk.domain.feed.application.dto.request.FeedUploadRequest;
 import leets.leenk.domain.feed.application.dto.request.ReactionRequest;
@@ -27,9 +28,10 @@ public class FeedController {
 
     @GetMapping
     @Operation(summary = "피드 조회 API - 무한 스크롤")
-    public CommonResponse<FeedListResponse> getFeeds(@RequestParam int pageNumber,
+    public CommonResponse<FeedListResponse> getFeeds(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                                     @RequestParam int pageNumber,
                                                      @RequestParam int pageSize) {
-        FeedListResponse response = feedUsecase.getFeeds(pageNumber, pageSize);
+        FeedListResponse response = feedUsecase.getFeeds(userId, pageNumber, pageSize);
 
         return CommonResponse.success(ResponseCode.GET_ALL_FEED, response);
     }
@@ -125,6 +127,7 @@ public class FeedController {
 
         return CommonResponse.success(ResponseCode.GET_OTHER_LINKED_FEEDS, response);
     }
+
     @GetMapping("/users/all")
     @Operation(summary = "함께한 사람 추가를 위한 사용자 조회")
     public CommonResponse<List<FeedUserResponse>> getLinkedUsers() {
@@ -140,6 +143,16 @@ public class FeedController {
         FeedUserListResponse response = feedUsecase.getUsers(pageNumber, pageSize);
 
         return CommonResponse.success(ResponseCode.GET_ALL_USERS, response);
+    }
+
+    @PostMapping("/{feedId}/reports")
+    @Operation(summary = "피드 신고 API", description = "의견 남기기와 동일하게 노션 db에 신고 내용이 저장되고, 슬랙으로 알림이 전송됩니다.")
+    public CommonResponse<Void> reportFeed(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                           @PathVariable @Positive long feedId,
+                                           @RequestBody @Valid FeedReportRequest request) {
+        feedUsecase.reportFeed(userId, feedId, request);
+
+        return CommonResponse.success(ResponseCode.REPORT_FEED);
     }
 
     @DeleteMapping("/{feedId}")

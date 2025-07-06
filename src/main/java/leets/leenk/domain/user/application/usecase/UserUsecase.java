@@ -7,11 +7,16 @@ import leets.leenk.domain.user.application.dto.request.MbtiRequest;
 import leets.leenk.domain.user.application.dto.request.ProfileImageRequest;
 import leets.leenk.domain.user.application.dto.request.RegisterRequest;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
+import leets.leenk.domain.user.application.exception.SelfBlockNotAllowedException;
+import leets.leenk.domain.user.application.exception.UserAlreadyBlockedException;
 import leets.leenk.domain.user.application.exception.UserAlreadyLeaveException;
 import leets.leenk.domain.user.application.mapper.UserBackupInfoMapper;
+import leets.leenk.domain.user.application.mapper.UserBlockMapper;
 import leets.leenk.domain.user.application.mapper.UserMapper;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserBackupInfo;
+import leets.leenk.domain.user.domain.entity.UserBlock;
+import leets.leenk.domain.user.domain.service.blockuser.UserBlockService;
 import leets.leenk.domain.user.domain.service.user.UserDeleteService;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import leets.leenk.domain.user.domain.service.user.UserUpdateService;
@@ -33,6 +38,9 @@ public class UserUsecase {
     private final UserBackupInfoMapper userBackupInfoMapper;
     private final UserBackupInfoSaveService userBackupInfoSaveService;
     private final UserBackupInfoGetService userBackupInfoGetService;
+
+    private final UserBlockMapper userBlockMapper;
+    private final UserBlockService userBlockService;
 
     @Transactional
     public void initialAgreement(long userId, AgreementRequest request) {
@@ -95,5 +103,22 @@ public class UserUsecase {
 
         userBackupInfoSaveService.save(userBackupInfo);
         userDeleteService.leave(user);
+    }
+
+    @Transactional
+    public void blockUser(long userId, long blockedUserId) {
+        if (userId == blockedUserId) {
+            throw new SelfBlockNotAllowedException();
+        }
+
+        User user = userGetService.findById(userId);
+        User blockedUser = userGetService.findById(blockedUserId);
+
+        if (userBlockService.isAlreadyBlocked(user, blockedUser)) {
+            throw new UserAlreadyBlockedException();
+        }
+
+        UserBlock blockUser = userBlockMapper.toUserBlock(user, blockedUser);
+        userBlockService.blockUser(blockUser);
     }
 }
