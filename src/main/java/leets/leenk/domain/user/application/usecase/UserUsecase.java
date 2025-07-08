@@ -1,11 +1,6 @@
 package leets.leenk.domain.user.application.usecase;
 
-import leets.leenk.domain.user.application.dto.request.AgreementRequest;
-import leets.leenk.domain.user.application.dto.request.IntroductionRequest;
-import leets.leenk.domain.user.application.dto.request.KakaoTalkIdRequest;
-import leets.leenk.domain.user.application.dto.request.MbtiRequest;
-import leets.leenk.domain.user.application.dto.request.ProfileImageRequest;
-import leets.leenk.domain.user.application.dto.request.RegisterRequest;
+import leets.leenk.domain.user.application.dto.request.*;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
 import leets.leenk.domain.user.application.exception.SelfBlockNotAllowedException;
 import leets.leenk.domain.user.application.exception.UserAlreadyBlockedException;
@@ -95,7 +90,7 @@ public class UserUsecase {
     public void updateFcmToken(long userId, FcmTokenRequest request){
         User user = userGetService.findById(userId);
 
-        userUpdateService.updateFCMToken(user, request.fcmToken());
+        userUpdateService.updateFcmToken(user, request.fcmToken());
     }
 
     @Transactional

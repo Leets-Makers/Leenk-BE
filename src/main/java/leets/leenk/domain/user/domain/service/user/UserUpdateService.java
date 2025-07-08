@@ -44,7 +44,7 @@ public class UserUpdateService {
         user.updateMbti(mbti);
     }
 
-    public void updateFCMToken(User user, String fcmToken){
+    public void updateFcmToken(User user, String fcmToken){
         user.updateFcmToken(fcmToken);
     }
 }
