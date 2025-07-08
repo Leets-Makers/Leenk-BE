@@ -72,6 +72,13 @@ public class UserUsecase {
     }
 
     @Transactional
+    public void updateFcmToken(long userId, FcmTokenRequest request){
+        User user = userGetService.findById(userId);
+
+        userUpdateService.updateFCMToken(user, request.fcmToken());
+    }
+
+    @Transactional
     public void leave(long userId) {
         User user = userGetService.findById(userId);
 

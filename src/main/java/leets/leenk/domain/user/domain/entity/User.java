@@ -73,6 +73,10 @@ public class User extends BaseEntity {
         this.mbti = mbti;
     }
 
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
     public void increaseTotalReactionCount(long reactionCount) {
         this.totalReactionCount += reactionCount;
     }

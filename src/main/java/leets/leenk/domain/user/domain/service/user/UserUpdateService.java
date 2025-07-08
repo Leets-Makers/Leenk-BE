@@ -38,4 +38,8 @@ public class UserUpdateService {
     public void updateMbti(User user, String mbti) {
         user.updateMbti(mbti);
     }
+
+    public void updateFCMToken(User user, String fcmToken){
+        user.updateFcmToken(fcmToken);
+    }
 }

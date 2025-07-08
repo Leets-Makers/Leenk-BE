@@ -83,6 +83,15 @@ public class UserController {
         return CommonResponse.success(UPDATE_MBTI);
     }
 
+    @PatchMapping("/me/fcm-token")
+    @Operation(summary = "내 정보 수정 - FCM 토큰")
+    public CommonResponse<Void> updateFcmToken(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                           @Valid @RequestBody FcmTokenRequest request) {
+        userUsecase.updateFcmToken(userId, request);
+
+        return CommonResponse.success(UPDATE_FCM_TOKEN);
+    }
+
     @DeleteMapping("/me")
     @Operation(summary = "회원 탈퇴 API")
     public CommonResponse<Void> deleteAccount(@Parameter(hidden = true) @CurrentUserId Long userId) {
