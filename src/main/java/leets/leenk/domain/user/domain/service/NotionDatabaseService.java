@@ -20,8 +20,11 @@ public class NotionDatabaseService {
     @Value("${notion.token}")
     private String NOTION_TOKEN;
 
-    @Value("${notion.database_id}")
-    private String DATABASE_ID;
+    @Value("${notion.feedback_database_id}")
+    private String FEEDBACK_DATABASE_ID;
+
+    @Value("${notion.report_database_id}")
+    private String REPORT_DATABASE_ID;
 
     @Value("${notion.version}")
     private String NOTION_VERSION;
@@ -35,7 +38,7 @@ public class NotionDatabaseService {
         Map<String, Object> requestBody = Map.of(
                 "parent", Map.of(
                         "type", "database_id",
-                        "database_id", DATABASE_ID
+                        "database_id", FEEDBACK_DATABASE_ID
                 ),
                 "properties", Map.of(
                         "피드백", Map.of(
@@ -45,6 +48,47 @@ public class NotionDatabaseService {
                         ),
                         "날짜", Map.of(
                                 "date", Map.of("start", today)
+                        )
+                )
+        );
+
+        notionRestClient.post()
+                .uri(NOTION_INSERT_URI)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + NOTION_TOKEN)
+                .header("Notion-Version", NOTION_VERSION)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .body(requestBody)
+                .retrieve()
+                .toBodilessEntity();
+    }
+
+    @Async
+    public void sendFeedReport(String report, long userId, long feedId) {
+        String today = LocalDate.now().toString();
+
+        Map<String, Object> requestBody = Map.of(
+                "parent", Map.of(
+                        "type", "database_id",
+                        "database_id", REPORT_DATABASE_ID
+                ),
+                "properties", Map.of(
+                        "사유", Map.of(
+                                "title", List.of(
+                                        Map.of("text", Map.of("content", report))
+                                )
+                        ),
+                        "신고 날짜", Map.of(
+                                "date", Map.of("start", today)
+                        ),
+                        "피드 id", Map.of(
+                                "rich_text", List.of(
+                                        Map.of("text", Map.of("content", String.valueOf(feedId)))
+                                )
+                        ),
+                        "사용자 id", Map.of(
+                                "rich_text", List.of(
+                                        Map.of("text", Map.of("content", String.valueOf(userId)))
+                                )
                         )
                 )
         );

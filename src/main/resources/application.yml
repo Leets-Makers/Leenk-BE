@@ -12,7 +12,8 @@ springdoc:
 
 notion:
   token: ${NOTION_API_TOKEN}
-  database_id: ${NOTION_DATABASE_ID}
+  feedback_database_id: ${NOTION_FEEDBACK_DATABASE_ID}
+  report_database_id: ${NOTION_REPORT_DATABASE_ID}
   version: ${NOTION_VERSION}
 
 slack:

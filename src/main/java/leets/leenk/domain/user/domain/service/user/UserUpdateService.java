@@ -1,11 +1,16 @@
 package leets.leenk.domain.user.domain.service.user;
 
+import leets.leenk.domain.user.application.dto.request.AgreementRequest;
 import leets.leenk.domain.user.application.dto.request.RegisterRequest;
 import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserUpdateService {
+
+    public void updateAgreement(User user, AgreementRequest request) {
+        user.updateAgreement(request.termsService(), request.privacyPolicy());
+    }
 
     public void completeProfile(User user, RegisterRequest request) {
         user.updateKakaoTalkId(request.kakaoTalkId());

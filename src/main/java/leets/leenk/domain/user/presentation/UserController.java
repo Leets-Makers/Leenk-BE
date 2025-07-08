@@ -22,10 +22,19 @@ public class UserController {
 
     private final UserUsecase userUsecase;
 
+    @PatchMapping("/agreement")
+    @Operation(summary = "약관 동의 입력")
+    public CommonResponse<Void> initialAgreement(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                                 @RequestBody @Valid AgreementRequest request) {
+        userUsecase.initialAgreement(userId, request);
+
+        return CommonResponse.success(UPDATE_AGREEMENT);
+    }
+
     @PatchMapping("/me/profile")
     @Operation(summary = "기본 정보 입력")
     public CommonResponse<Void> completeProfile(@Parameter(hidden = true) @CurrentUserId Long userId,
-                                            @RequestBody @Valid RegisterRequest request) {
+                                                @RequestBody @Valid RegisterRequest request) {
         userUsecase.completeProfile(userId, request);
 
         return CommonResponse.success(COMPLETE_PROFILE);
@@ -50,7 +59,7 @@ public class UserController {
     @PatchMapping("/me/kakao-talk-id")
     @Operation(summary = "내 정보 수정 - 카카오톡 id")
     public CommonResponse<Void> updateKakaoTalkId(@Parameter(hidden = true) @CurrentUserId Long userId,
-                                                   @Valid @RequestBody KakaoTalkIdRequest request) {
+                                                  @Valid @RequestBody KakaoTalkIdRequest request) {
         userUsecase.updateKakaoTalkId(userId, request);
 
         return CommonResponse.success(UPDATE_KAKAO_TALK_ID);
@@ -90,6 +99,15 @@ public class UserController {
         userUsecase.updateFcmToken(userId, request);
 
         return CommonResponse.success(UPDATE_FCM_TOKEN);
+    }
+
+    @PostMapping("/{userId}/block")
+    @Operation(summary = "유저 차단하기 API")
+    public CommonResponse<Void> blockUser(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                          @PathVariable("userId") long blockedUserId) {
+        userUsecase.blockUser(userId, blockedUserId);
+
+        return CommonResponse.success(BLOCK_USER);
     }
 
     @DeleteMapping("/me")
