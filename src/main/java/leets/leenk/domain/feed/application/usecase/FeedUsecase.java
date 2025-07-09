@@ -134,9 +134,14 @@ public class FeedUsecase {
                         )
                 );
 
+        long previousReactionCount = reaction.getReactionCount();
+
         feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
 
         notificationUsecase.saveFirstReactionNotification(reaction);
+
+        long updatedReactionCount = previousReactionCount + request.reactionCount();
+        notifyIfReachedReactionMilestone(previousReactionCount, updatedReactionCount, feed);
     }
 
     private void validateReaction(Feed feed, User user) {
@@ -231,5 +236,15 @@ public class FeedUsecase {
 
         notionDatabaseService.sendFeedReport(request.report(), user.getId(), feed.getId());
         slackWebhookService.sendFeedReport(request.report());
+    }
+
+    private void notifyIfReachedReactionMilestone(long previous, long current, Feed feed) {
+        List<Long> milestones = List.of(5L, 10L, 25L, 50L, 100L, 250L, 500L, 1000L, 2000L, 5000L);
+
+        for (Long milestone : milestones) {
+            if (previous < milestone && current >= milestone) {
+                notificationUsecase.saveReactionCountNotification(feed, milestone);
+            }
+        }
     }
 }
