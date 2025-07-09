@@ -18,6 +18,7 @@ import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
+import leets.leenk.domain.notification.application.usecase.NotificationUsecase;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserBlock;
 import leets.leenk.domain.user.domain.service.NotionDatabaseService;
@@ -59,6 +60,8 @@ public class FeedUsecase {
 
     private final ReactionGetService reactionGetService;
     private final ReactionSaveService reactionSaveService;
+
+    private final NotificationUsecase notificationUsecase;
 
     private final FeedMapper feedMapper;
     private final MediaMapper mediaMapper;
@@ -104,6 +107,9 @@ public class FeedUsecase {
 
         List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userId(), feed);
         linkedUserSaveService.saveAll(linkedUsers);
+
+        notificationUsecase.saveNewFeedNotification(feed);
+        notificationUsecase.saveTagNotification(feed, linkedUsers);
     }
 
     private List<LinkedUser> getLinkedUsers(User author, List<Long> userIds, Feed feed) {
@@ -129,6 +135,8 @@ public class FeedUsecase {
                 );
 
         feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
+
+        notificationUsecase.saveFirstReactionNotification(reaction);
     }
 
     private void validateReaction(Feed feed, User user) {
