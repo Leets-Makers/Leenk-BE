@@ -89,6 +89,7 @@ public class NotificationUsecase {
         }
 
         content.getFeedFirstReactions().add(feedFirstReaction);
+        notification.markUnread();
 
         notificationSaveService.save(notification);
 
