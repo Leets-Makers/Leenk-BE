@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
-    @Query("SELECT f FROM Feed f JOIN FETCH f.user u WHERE f.deletedAt IS NULL AND u.id NOT IN :blockedUserIds")
+    @Query("SELECT f FROM Feed f JOIN FETCH f.user u WHERE f.deletedAt IS NULL AND u.id NOT IN :blockedUserIds ORDER BY f.createDate DESC")
     Slice<Feed> findAllByDeletedAtIsNullWithUser(Pageable pageable, List<Long> blockedUserIds);
 
     @Query("SELECT f FROM Feed f JOIN FETCH f.user WHERE f.deletedAt IS NULL AND f.user = :user")
