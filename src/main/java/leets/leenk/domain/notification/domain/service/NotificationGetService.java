@@ -1,4 +1,4 @@
-package leets.leenk.domain.notification.application.service;
+package leets.leenk.domain.notification.domain.service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

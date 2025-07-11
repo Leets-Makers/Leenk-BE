@@ -29,7 +29,7 @@ public class AwsSqsManager {
 			.messageBody(event.getContent())
 			.messageAttributes(Map.of(
 				"title", convertToAttributeValue(event.getTitle()),
-				"deviceToken", convertToAttributeValue(event.getDeviceToken())
+				"fcmToken", convertToAttributeValue(event.getFcmToken())
 			))
 			.build();
 	}

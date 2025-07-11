@@ -8,12 +8,12 @@ import leets.leenk.domain.user.domain.entity.UserSetting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
-
 public interface UserSettingRepository extends JpaRepository<UserSetting, Long> {
 
-	@Query("SELECT us FROM UserSetting us JOIN FETCH us.user WHERE us.isNewFeedNotify = true")
-	List<UserSetting> findAllByIsNewFeedNotifyTrue();
+	@Query("SELECT us.user FROM UserSetting us WHERE us.isNewFeedNotify = true " +
+			"AND us.user.leaveDate IS NULL " +
+			"AND us.user.id <> :userId")
+	List<User> findAllActiveUsersWithNewFeedNotifyTrueExcludingUserId(Long userId);
 
     Optional<UserSetting> findByUser(User user);
 }

@@ -15,11 +15,8 @@ import lombok.RequiredArgsConstructor;
 public class UserSettingGetService {
 	private final UserSettingRepository userSettingRepository;
 
-	public List<User> getUsersToNotifyNewFeed() {
-		return userSettingRepository.findAllByIsNewFeedNotifyTrue()
-			.stream()
-			.map(UserSetting::getUser)
-			.toList();
+	public List<User> getUsersToNotifyNewFeed(Long userId) {
+		return userSettingRepository.findAllActiveUsersWithNewFeedNotifyTrueExcludingUserId(userId);
 	}
 
     public UserSetting findByUser(User user) {

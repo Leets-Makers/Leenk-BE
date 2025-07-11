@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
-import leets.leenk.domain.notification.application.dto.NotificationCountResponse;
-import leets.leenk.domain.notification.application.dto.NotificationListResponse;
-import leets.leenk.domain.notification.application.dto.NotificationResponse;
+import leets.leenk.domain.notification.application.dto.response.NotificationCountResponse;
+import leets.leenk.domain.notification.application.dto.response.NotificationListResponse;
+import leets.leenk.domain.notification.application.dto.response.NotificationResponse;
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.global.common.dto.PageableMapperUtil;
 

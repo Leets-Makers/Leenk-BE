@@ -1,4 +1,4 @@
-package leets.leenk.domain.notification.application.dto;
+package leets.leenk.domain.notification.application.dto.response;
 
 import java.util.List;
 

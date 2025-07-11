@@ -10,28 +10,28 @@ import leets.leenk.domain.notification.domain.entity.Notification;
 @Component
 public class SqsMessageEventMapper {
 
-	public SqsMessageEvent toSqsMessageEvent(Notification notification, String deviceToken) {
+	public SqsMessageEvent toSqsMessageEvent(Notification notification, String fcmToken) {
 
 		return SqsMessageEvent.builder()
 			.title(notification.getContent().getTitle())
 			.content(notification.getContent().getBody())
-			.deviceToken(deviceToken)
+			.fcmToken(fcmToken)
 			.build();
 	}
 
-	public SqsMessageEvent fromFeedFirstReaction(FeedFirstReaction feedFirstReaction, String deviceToken) {
+	public SqsMessageEvent fromFeedFirstReaction(FeedFirstReaction feedFirstReaction, String fcmToken) {
 		return SqsMessageEvent.builder()
 			.title(feedFirstReaction.getTitle())
 			.content(feedFirstReaction.getBody())
-			.deviceToken(deviceToken)
+			.fcmToken(fcmToken)
 			.build();
 	}
 
-	public SqsMessageEvent fromFeedReactionCount(FeedReactionCount feedReactionCount, String deviceToken) {
+	public SqsMessageEvent fromFeedReactionCount(FeedReactionCount feedReactionCount, String fcmToken) {
 		return SqsMessageEvent.builder()
 			.title(feedReactionCount.getTitle())
 			.content(feedReactionCount.getBody())
-			.deviceToken(deviceToken)
+			.fcmToken(fcmToken)
 			.build();
 	}
 }
