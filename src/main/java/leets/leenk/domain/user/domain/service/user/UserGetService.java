@@ -42,4 +42,9 @@ public class UserGetService {
     public List<User> findAllDeleteUser(LocalDateTime threshold) {
         return userRepository.findByDeleteDateIsNullAndLeaveDateBefore(threshold);
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByName("마스터")
+                .orElseThrow(UserNotFoundException::new);
+    }
 }

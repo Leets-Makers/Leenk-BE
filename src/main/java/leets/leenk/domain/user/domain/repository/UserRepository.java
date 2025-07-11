@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Slice<User> findAllByLeaveDateIsNullAndDeleteDateIsNullOrderByName(Pageable pageable);
 
     List<User> findByDeleteDateIsNullAndLeaveDateBefore(LocalDateTime threshold);
+
+    Optional<User> findByName(String name);
 }

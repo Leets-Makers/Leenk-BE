@@ -1,5 +1,6 @@
 package leets.leenk.global.auth.application.usecase;
 
+import leets.leenk.domain.user.application.exception.UserNotFoundException;
 import leets.leenk.domain.user.application.mapper.UserMapper;
 import leets.leenk.domain.user.application.mapper.UserSettingMapper;
 import leets.leenk.domain.user.domain.entity.User;
@@ -11,6 +12,7 @@ import leets.leenk.domain.user.domain.service.userbackup.UserBackupInfoDeleteSer
 import leets.leenk.domain.user.domain.service.userbackup.UserBackupInfoGetService;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingSaveService;
 import leets.leenk.global.auth.application.dto.request.RefreshTokenRequest;
+import leets.leenk.global.auth.application.dto.request.UsernamePasswordLoginRequest;
 import leets.leenk.global.auth.application.dto.response.LoginResponse;
 import leets.leenk.global.auth.application.dto.response.OauthTokenResponse;
 import leets.leenk.global.auth.application.dto.response.OauthUserInfoResponse;
@@ -18,6 +20,7 @@ import leets.leenk.global.auth.application.mapper.LoginMapper;
 import leets.leenk.global.auth.domain.service.KakaoOauthApiService;
 import leets.leenk.global.auth.domain.service.OauthApiService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,15 @@ public class AuthUsecase {
     private final UserSettingMapper userSettingMapper;
 
     private final JwtDecoder jwtDecoder;
+
+    @Value("${token.access_token}")
+    private String accessToken;
+
+    @Value("${token.refresh_token}")
+    private String refreshToken;
+
+    @Value("${token.password}")
+    private String password;
 
     @Transactional
     public LoginResponse kakaoLogin(String kakaoAccessToken) {
@@ -104,5 +116,15 @@ public class AuthUsecase {
         OauthTokenResponse response = kakaoOauthApiService.reissueOauthToken(request.refreshToken());
 
         return loginMapper.toLoginResponse(response.access_token(), response.refresh_token());
+    }
+
+    public LoginResponse login(UsernamePasswordLoginRequest request) {
+        User user = userGetService.findByEmail(request.email());
+        if (!request.password().equals(password)) {
+            throw new UserNotFoundException();
+        }
+
+        return loginMapper.toLoginResponse(accessToken, refreshToken);
+
     }
 }

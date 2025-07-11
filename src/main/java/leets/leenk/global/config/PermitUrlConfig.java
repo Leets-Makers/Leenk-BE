@@ -10,6 +10,7 @@ public class PermitUrlConfig {
                 "/swagger-ui/**",
                 "/health-check",
                 "/kakao/login",
+                "/login",
                 "/refresh"
         };
     }
