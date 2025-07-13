@@ -107,7 +107,7 @@ public class NotificationUsecase {
     }
 
     @Transactional
-    public void saveReactionCountNotification(Feed feed, Long reactionCount) {
+    public void saveReactionCountNotification(Feed feed, long reactionCount) {
         if (notificationDuplicateCheckService.checkReactionCountDuplicated(reactionCount, feed)) {
             return;    // 이미 해당 누적 공감에 대한 알림이 있는 경우 중복 생성 방지
         }
@@ -128,9 +128,9 @@ public class NotificationUsecase {
 
         UserSetting userSetting = userSettingGetService.findByUser(user).orElse(null);
 
-        if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
+        if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));
-
+        }
     }
 
     @Transactional
