@@ -88,7 +88,12 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        UserSetting userSetting = userSettingGetService.findByUser(user).orElse(null);
+        UserSetting userSetting;
+        try{
+            userSetting = userSettingGetService.findByUser(user);
+        } catch (Exception e){
+            return;
+        }
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReaction, user.getFcmToken()));
@@ -126,7 +131,12 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        UserSetting userSetting = userSettingGetService.findByUser(user).orElse(null);
+        UserSetting userSetting;
+        try{
+            userSetting = userSettingGetService.findByUser(user);
+        } catch (Exception e){
+            return;
+        }
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));

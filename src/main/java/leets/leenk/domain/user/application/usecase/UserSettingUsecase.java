@@ -2,7 +2,6 @@ package leets.leenk.domain.user.application.usecase;
 
 import leets.leenk.domain.user.application.dto.request.NotificationSettingUpdateRequest;
 import leets.leenk.domain.user.application.dto.response.NotificationSettingResponse;
-import leets.leenk.domain.user.application.exception.UserSettingNotFoundException;
 import leets.leenk.domain.user.application.mapper.UserSettingMapper;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserSetting;
@@ -30,7 +29,7 @@ public class UserSettingUsecase {
     @Transactional(readOnly = true)
     public NotificationSettingResponse getNotificationSetting(long userId) {
         User user = userGetService.findById(userId);
-        UserSetting userSetting = userSettingGetService.findByUser(user).orElseThrow(UserSettingNotFoundException::new);
+        UserSetting userSetting = userSettingGetService.findByUser(user);
 
         return userSettingMapper.toNotificationSettingResponse(userSetting);
     }
@@ -38,7 +37,7 @@ public class UserSettingUsecase {
     @Transactional
     public void updateNotifications(long userId, NotificationSettingUpdateRequest request) {
         User user = userGetService.findById(userId);
-        UserSetting userSetting = userSettingGetService.findByUser(user).orElseThrow(UserSettingNotFoundException::new);
+        UserSetting userSetting = userSettingGetService.findByUser(user);
 
         userSettingUpdateService.updateNotificationSetting(userSetting, request);
     }
