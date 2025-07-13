@@ -239,7 +239,8 @@ public class FeedUsecase {
     }
 
     private void notifyIfReachedReactionMilestone(long previous, long current, Feed feed) {
-        List<Long> milestones = List.of(5L, 10L, 25L, 50L, 100L, 250L, 500L, 1000L, 2000L, 5000L);
+        List<Long> milestones = List.of(5L, 10L, 25L, 50L, 100L, 250L, 500L, 1000L,
+                2000L, 5000L, 10000L, 20000L, 50000L, 100000L);
 
         for (Long milestone : milestones) {
             if (previous < milestone && current >= milestone) {
