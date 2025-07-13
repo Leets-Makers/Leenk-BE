@@ -16,6 +16,7 @@ import leets.leenk.domain.notification.domain.entity.content.FeedReactionCount;
 import leets.leenk.domain.notification.domain.entity.content.FeedReactionCountNotificationContent;
 import leets.leenk.domain.notification.domain.service.*;
 import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.domain.user.domain.entity.UserSetting;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService;
 import leets.leenk.global.sqs.application.mapper.SqsMessageEventMapper;
@@ -87,7 +88,9 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
+        UserSetting userSetting = userSettingGetService.findByUser(user).orElse(null);
+
+        if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReaction, user.getFcmToken()));
     }
 
@@ -123,7 +126,9 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
+        UserSetting userSetting = userSettingGetService.findByUser(user).orElse(null);
+
+        if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));
 
     }
