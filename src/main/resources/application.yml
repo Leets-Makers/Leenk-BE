@@ -23,3 +23,9 @@ token:
   access_token: ${ACCESS_TOKEN}
   refresh_token: ${REFRESH_TOKEN}
   password: ${PASSWORD}
+
+apns:
+  team-id: ${TEAM_ID}
+  key-id: ${KEY_ID}
+  bundle-id: ${BUNDLE_ID}
+  key-path: ${KEY_PATH}
