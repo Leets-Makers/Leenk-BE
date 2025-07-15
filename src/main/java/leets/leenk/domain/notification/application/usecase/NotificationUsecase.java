@@ -50,6 +50,8 @@ public class NotificationUsecase {
     private final SqsMessageEventMapper sqsMessageEventMapper;
     private final FeedReactionCountMapper feedReactionCountMapper;
 
+    private final ApnsNotificationService apnsNotificationService;
+
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
@@ -89,6 +91,9 @@ public class NotificationUsecase {
 
         if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReaction, user.getFcmToken()));
+
+        // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
+        apnsNotificationService.sendPush(user.getFcmToken(), feedFirstReaction.getTitle(), feedFirstReaction.getBody());
     }
 
     @Transactional
@@ -99,6 +104,9 @@ public class NotificationUsecase {
             notificationSaveService.save(notification);
             if(user.getFcmToken() != null) {
                 eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken()));
+
+                // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
+                apnsNotificationService.sendPush(user.getFcmToken(), notification.getContent().getTitle(), notification.getContent().getBody());
             }
         });
     }
@@ -126,6 +134,9 @@ public class NotificationUsecase {
         if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));
 
+        // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
+        apnsNotificationService.sendPush(user.getFcmToken(), feedReactionCount.getTitle(), feedReactionCount.getBody());
+
     }
 
     @Transactional
@@ -137,6 +148,9 @@ public class NotificationUsecase {
 
             if(fcmToken != null) {
                 eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, fcmToken));
+
+                // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
+                apnsNotificationService.sendPush(fcmToken, notification.getContent().getTitle(), notification.getContent().getBody());
             }
         });
     }
