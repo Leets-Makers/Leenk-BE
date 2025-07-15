@@ -89,11 +89,12 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
+        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReaction, user.getFcmToken()));
 
-        // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
-        apnsNotificationService.sendPush(user.getFcmToken(), feedFirstReaction.getTitle(), feedFirstReaction.getBody());
+            // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
+            apnsNotificationService.sendPush(user.getFcmToken(), feedFirstReaction.getTitle(), feedFirstReaction.getBody());
+        }
     }
 
     @Transactional
@@ -131,11 +132,12 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
+        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));
 
-        // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
-        apnsNotificationService.sendPush(user.getFcmToken(), feedReactionCount.getTitle(), feedReactionCount.getBody());
+            // 아이폰 알림 발송 용 메서드 추후 sqs로 마이그레이션
+            apnsNotificationService.sendPush(user.getFcmToken(), feedReactionCount.getTitle(), feedReactionCount.getBody());
+        }
 
     }
 
