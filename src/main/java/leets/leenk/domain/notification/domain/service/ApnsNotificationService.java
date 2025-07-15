@@ -35,7 +35,8 @@ public class ApnsNotificationService {
     @Value("${apns.key-path}")
     private String keyPath;
 
-    boolean production = false;
+    @Value("${apns.production}")
+    private boolean production;
 
     private ApnsClient apnsClient;
 
@@ -77,9 +78,9 @@ public class ApnsNotificationService {
 
         apnsClient.sendNotification(notification).whenComplete((response, cause) -> {
             if (response != null && response.isAccepted()) {
-                System.out.println("✅ 푸시 전송 성공!");
+                log.info("✅ 푸시 전송 성공!");
             } else {
-                System.err.println("❌ 푸시 실패: " +
+                log.info("❌ 푸시 실패: " +
                         (response != null ? response.getRejectionReason() : cause.getMessage()));
                 log.info(deviceToken);
             }
