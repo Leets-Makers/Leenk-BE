@@ -16,6 +16,7 @@ import leets.leenk.domain.notification.domain.entity.content.FeedReactionCount;
 import leets.leenk.domain.notification.domain.entity.content.FeedReactionCountNotificationContent;
 import leets.leenk.domain.notification.domain.service.*;
 import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.domain.user.domain.entity.UserSetting;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService;
 import leets.leenk.global.sqs.application.mapper.SqsMessageEventMapper;
@@ -87,7 +88,14 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
+        UserSetting userSetting;
+        try{
+            userSetting = userSettingGetService.findByUser(user);
+        } catch (Exception e){
+            return;
+        }
+
+        if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReaction, user.getFcmToken()));
     }
 
@@ -104,7 +112,7 @@ public class NotificationUsecase {
     }
 
     @Transactional
-    public void saveReactionCountNotification(Feed feed, Long reactionCount) {
+    public void saveReactionCountNotification(Feed feed, long reactionCount) {
         if (notificationDuplicateCheckService.checkReactionCountDuplicated(reactionCount, feed)) {
             return;    // 이미 해당 누적 공감에 대한 알림이 있는 경우 중복 생성 방지
         }
@@ -123,9 +131,16 @@ public class NotificationUsecase {
 
         notificationSaveService.save(notification);
 
-        if (userSettingGetService.findByUser(user).isNewReactionNotify() && user.getFcmToken() != null)
-            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));
+        UserSetting userSetting;
+        try{
+            userSetting = userSettingGetService.findByUser(user);
+        } catch (Exception e){
+            return;
+        }
 
+        if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null) {
+            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));
+        }
     }
 
     @Transactional
