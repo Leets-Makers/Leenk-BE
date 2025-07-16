@@ -24,9 +24,6 @@ token:
   refresh_token: ${REFRESH_TOKEN}
   password: ${PASSWORD}
 
-apns:
-  team-id: ${TEAM_ID}
-  key-id: ${KEY_ID}
-  bundle-id: ${BUNDLE_ID}
-  production: ${APNS_PRODUCTION:false}
-  key-path: ${KEY_PATH}
+
+
+
