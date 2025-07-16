@@ -49,8 +49,6 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.3.0")
 
-    implementation 'com.eatthepath:pushy:0.15.4'
-
 }
 
 tasks.named('test') {
