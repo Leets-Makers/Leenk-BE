@@ -2,9 +2,9 @@ package leets.leenk.domain.user.domain.service.usersetting;
 
 import java.util.List;
 
+import leets.leenk.domain.user.application.exception.UserSettingNotFoundException;
 import org.springframework.stereotype.Service;
 
-import leets.leenk.domain.user.application.exception.UserSettingNotFoundException;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserSetting;
 import leets.leenk.domain.user.domain.repository.UserSettingRepository;
@@ -20,7 +20,6 @@ public class UserSettingGetService {
 	}
 
     public UserSetting findByUser(User user) {
-        return userSettingRepository.findByUser(user)
-                .orElseThrow(UserSettingNotFoundException::new);
+        return userSettingRepository.findByUser(user).orElseThrow(UserSettingNotFoundException::new);
     }
 }

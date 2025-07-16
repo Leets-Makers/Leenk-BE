@@ -137,7 +137,6 @@ public class FeedUsecase {
         long previousReactionCount = reaction.getReactionCount();
 
         feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
-
         notificationUsecase.saveFirstReactionNotification(reaction);
 
         long updatedReactionCount = previousReactionCount + request.reactionCount();
@@ -239,9 +238,9 @@ public class FeedUsecase {
     }
 
     private void notifyIfReachedReactionMilestone(long previous, long current, Feed feed) {
-        List<Long> milestones = List.of(5L, 10L, 25L, 50L, 100L, 250L, 500L, 1000L, 2000L, 5000L);
+        long[] milestones = {5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000};
 
-        for (Long milestone : milestones) {
+        for (long milestone : milestones) {
             if (previous < milestone && current >= milestone) {
                 notificationUsecase.saveReactionCountNotification(feed, milestone);
             }

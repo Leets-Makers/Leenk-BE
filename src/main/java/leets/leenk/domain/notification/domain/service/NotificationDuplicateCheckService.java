@@ -18,7 +18,7 @@ public class NotificationDuplicateCheckService {
                 NotificationType.FEED_FIRST_REACTION, reaction.getFeed().getId(), reaction.getUser().getId()).isPresent();
     }
 
-    public boolean checkReactionCountDuplicated(Long reactionCount, Feed feed) {
+    public boolean checkReactionCountDuplicated(long reactionCount, Feed feed) {
         return notificationRepository.findByFeedIdAndReactionCount(NotificationType.FEED_REACTION_COUNT, feed.getId(), reactionCount).isPresent();
     }
 }
