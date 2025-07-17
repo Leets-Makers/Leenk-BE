@@ -14,7 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
   cloud:
     aws:
       credentials:
