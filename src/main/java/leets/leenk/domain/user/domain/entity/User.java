@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import leets.leenk.global.auth.application.dto.response.OauthUserInfoResponse;
 import leets.leenk.global.common.entity.BaseEntity;
 import lombok.AccessLevel;
@@ -14,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -48,7 +49,7 @@ public class User extends BaseEntity {
     private String fcmToken;
 
     @Size(max = 20)
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String kakaoTalkId;
 
     @Column(nullable = false)
