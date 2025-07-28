@@ -153,4 +153,8 @@ public class User extends BaseEntity {
         this.name = userInfo.name();
         this.cardinal = userInfo.cardinal();
     }
+
+    public boolean isAgree() {
+        return this.termsAgreement && this.privacyAgreement;
+    }
 }
