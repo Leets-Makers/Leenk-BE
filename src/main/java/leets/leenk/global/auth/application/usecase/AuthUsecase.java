@@ -63,6 +63,11 @@ public class AuthUsecase {
         long userId = parseUserId(response);
         Optional<User> optionalUser = userGetService.existById(userId);
 
+        return getUserLoginResponse(optionalUser, response);
+
+    }
+
+    private LoginResponse getUserLoginResponse(Optional<User> optionalUser, OauthTokenResponse response) {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
