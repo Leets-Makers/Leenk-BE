@@ -1,0 +1,23 @@
+package leets.leenk.domain.leenk.presentation;
+
+import leets.leenk.global.common.response.ResponseCodeInterface;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@AllArgsConstructor
+public enum ResponseCode implements ResponseCodeInterface {
+
+    GET_ALL_LEENK(1400, HttpStatus.OK, "전체 모집글 목록 조회에 성공했습니다."),
+    GET_LEENK_DETAIL(1401, HttpStatus.OK, "모집글 상세조회에 성공했습니다."),
+    GET_LEENK_PARTICIPANTS(1402, HttpStatus.OK, "모집글 참여자 목록 조회에 성공했습니다."),
+    UPLOAD_LEENK(1403, HttpStatus.OK, "모집글 작성에 성공했습니다."),
+
+    REMOVE_LEENK_PARTICIPANT(1404, HttpStatus.OK, "모집글 참여자 내보내기에 성공했습니다."),
+    CLOSE_LEENK(1405, HttpStatus.OK, "모집글 마감에 성공했습니다.");
+
+    private final int code;
+    private final HttpStatus status;
+    private final String message;
+}
