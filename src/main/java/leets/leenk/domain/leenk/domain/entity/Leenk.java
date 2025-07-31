@@ -17,11 +17,14 @@ import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.common.entity.BaseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Entity
+@SuperBuilder
 @Table(name = "leenks")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Leenk extends BaseEntity {
@@ -53,12 +56,14 @@ public class Leenk extends BaseEntity {
     @Column(nullable = false)
     private Long maxParticipants;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Long currentParticipants;
+    private Long currentParticipants = 1L;
 
+    @Builder.Default
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private LeenkStatus status;
+    private LeenkStatus status = LeenkStatus.RECRUITING;
 
 //    @Column(columnDefinition = "TEXT")
 //    private String imageUrls;
