@@ -1,6 +1,7 @@
 package leets.leenk.domain.leenk.domain.service;
 
 import java.util.List;
+import leets.leenk.domain.leenk.application.exception.LeenkParticipantNotFoundException;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
 import leets.leenk.domain.leenk.domain.repository.LeenkParticipantsRepository;
@@ -21,5 +22,11 @@ public class LeenkParticipantsGetService {
 
     public boolean existsByLeenkAndParticipant(Leenk leenk, User user) {
         return leenkParticipantsRepository.existsByLeenkAndParticipant(leenk, user);
+    }
+
+    public LeenkParticipants findByLeenkAndParticipantId(Long leenkId, Long participantId) {
+
+        return leenkParticipantsRepository.findByLeenkIdAndParticipantId(leenkId, participantId)
+                .orElseThrow(LeenkParticipantNotFoundException::new);
     }
 }

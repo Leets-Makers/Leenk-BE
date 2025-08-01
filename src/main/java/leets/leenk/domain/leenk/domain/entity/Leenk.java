@@ -72,4 +72,8 @@ public class Leenk extends BaseEntity {
     public void increaseCurrentParticipants() {
         this.currentParticipants++;
     }
+
+    public void decreaseCurrentParticipants() {
+        this.currentParticipants--;
+    }
 }

@@ -10,6 +10,7 @@ import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException;
+import leets.leenk.domain.leenk.application.exception.CannotKickSelfException;
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException;
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException;
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException;
@@ -135,9 +136,32 @@ public class LeenkUsecase {
         }
 
         LeenkParticipants participant = participantsMapper.toParticipants(leenk, user, LocalDateTime.now());
-        leenkParticipantsSaveService.save(participant);
 
+        leenkParticipantsSaveService.save(participant);
         leenk.increaseCurrentParticipants();
+    }
+
+    @Transactional
+    public void kickParticipant(Long userId, Long leenkId, Long participantId) {
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
+            throw new LeenkNotRecruitingException();
+        }
+
+        if (!leenk.getAuthor().getId().equals(userId)) {
+            throw new NotLeenkOwnerException();
+        }
+
+        if (userId.equals(participantId)) {
+            throw new CannotKickSelfException();
+        }
+
+        LeenkParticipants participant = leenkParticipantsGetService.findByLeenkAndParticipantId(leenk.getId(),
+                participantId);
+
+        leenkParticipantsSaveService.delete(participant);
+        leenk.decreaseCurrentParticipants();
     }
 
     @Transactional

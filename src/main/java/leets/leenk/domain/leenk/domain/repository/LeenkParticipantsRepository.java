@@ -1,6 +1,7 @@
 package leets.leenk.domain.leenk.domain.repository;
 
 import java.util.List;
+import java.util.Optional;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
 import leets.leenk.domain.user.domain.entity.User;
@@ -13,4 +14,6 @@ public interface LeenkParticipantsRepository extends JpaRepository<LeenkParticip
     List<LeenkParticipants> findAllByLeenk(Leenk leenk);
 
     boolean existsByLeenkAndParticipant(Leenk leenk, User user);
+
+    Optional<LeenkParticipants> findByLeenkIdAndParticipantId(Long leenkId, Long participantId);
 }

@@ -14,4 +14,8 @@ public class LeenkParticipantsSaveService {
     public LeenkParticipants save(LeenkParticipants participants) {
         return participantsRepository.save(participants);
     }
+
+    public void delete(LeenkParticipants participants) {
+        participantsRepository.delete(participants);
+    }
 }
