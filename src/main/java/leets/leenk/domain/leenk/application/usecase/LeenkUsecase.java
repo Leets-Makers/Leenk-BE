@@ -72,10 +72,12 @@ public class LeenkUsecase {
         LeenkParticipants self = participantsMapper.toParticipants(leenk, author, LocalDateTime.now());
         leenkParticipantsSaveService.save(self);
 
-        List<Media> images = IntStream.range(START_POSITION, request.imageUrls().size())
-                .mapToObj(i -> mediaMapper.toMedia(leenk, request.imageUrls().get(i), i))
+        List<String> imageUrls = request.imageUrls() == null ? List.of() : request.imageUrls();
+        List<Media> mediaList = IntStream.range(START_POSITION, imageUrls.size())
+                .mapToObj(i -> mediaMapper.toMedia(leenk, imageUrls.get(i), i))
                 .toList();
-        mediaSaveService.saveAll(images);
+
+        mediaSaveService.saveAll(mediaList);
     }
 
     @Transactional(readOnly = true)
@@ -134,6 +136,8 @@ public class LeenkUsecase {
 
         LeenkParticipants participant = participantsMapper.toParticipants(leenk, user, LocalDateTime.now());
         leenkParticipantsSaveService.save(participant);
+
+        leenk.increaseCurrentParticipants();
     }
 
     @Transactional

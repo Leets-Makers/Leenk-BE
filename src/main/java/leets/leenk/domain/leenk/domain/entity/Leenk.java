@@ -68,4 +68,8 @@ public class Leenk extends BaseEntity {
     public void changeStatusToClosed() {
         this.status = LeenkStatus.CLOSED;
     }
+
+    public void increaseCurrentParticipants() {
+        this.currentParticipants++;
+    }
 }
