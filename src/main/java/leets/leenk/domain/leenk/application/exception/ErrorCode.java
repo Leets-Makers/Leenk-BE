@@ -11,7 +11,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode implements ErrorCodeInterface {
 
     LEENK_NOT_FOUND(2400, HttpStatus.NOT_FOUND, "존재하지 않는 링크입니다."),
-    LEENK_STATUS_NOT_FOUND(2401, HttpStatus.NOT_FOUND, "존재하지 않는 모집글 상태입니다.");
+    LEENK_STATUS_NOT_FOUND(2401, HttpStatus.NOT_FOUND, "존재하지 않는 모집글 상태입니다."),
+    LEENK_NOT_RECRUITING(2402, HttpStatus.BAD_REQUEST, "모집글이 모집 중 상태가 아닙니다.");
 
     private final int code;
     private final HttpStatus status;
