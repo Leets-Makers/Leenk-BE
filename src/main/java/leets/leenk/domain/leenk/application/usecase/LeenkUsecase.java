@@ -7,6 +7,8 @@ import java.util.stream.IntStream;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
+import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
+import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException;
 import leets.leenk.domain.leenk.application.mapper.LeenkMapper;
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper;
 import leets.leenk.domain.leenk.application.mapper.LocationMapper;
@@ -14,7 +16,9 @@ import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
 import leets.leenk.domain.leenk.domain.entity.Location;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
+import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
 import leets.leenk.domain.leenk.domain.service.LeenkGetService;
+import leets.leenk.domain.leenk.domain.service.LeenkParticipantsGetService;
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsSaveService;
 import leets.leenk.domain.leenk.domain.service.LeenkSaveService;
 import leets.leenk.domain.leenk.domain.service.LocationSaveService;
@@ -43,6 +47,7 @@ public class LeenkUsecase {
     private final MediaSaveService mediaSaveService;
     private final UserGetService userGetService;
     private final LeenkGetService leenkGetService;
+    private final LeenkParticipantsGetService leenkParticipantsGetService;
     private final MediaGetService mediaGetService;
     private final LeenkMapper leenkMapper;
     private final LeenkParticipantsMapper participantsMapper;
@@ -90,5 +95,17 @@ public class LeenkUsecase {
         List<Media> medias = mediaGetService.findByLeenk(leenk);
 
         return leenkMapper.toLeenkDetailResponse(leenk, medias);
+    }
+
+    @Transactional(readOnly = true)
+    public LeenkParticipantsListResponse getLeenkParticipants(Long leenkId) {
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
+            throw new LeenkNotRecruitingException();
+        }
+
+        List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
+        return participantsMapper.toLeenkParticipantsListResponse(leenk, participants);
     }
 }
