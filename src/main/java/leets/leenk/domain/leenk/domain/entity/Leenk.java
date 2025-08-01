@@ -65,6 +65,7 @@ public class Leenk extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private LeenkStatus status = LeenkStatus.RECRUITING;
 
-//    @Column(columnDefinition = "TEXT")
-//    private String imageUrls;
+    public void changeStatusToClosed() {
+        this.status = LeenkStatus.CLOSED;
+    }
 }

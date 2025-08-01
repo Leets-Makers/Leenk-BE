@@ -1,5 +1,6 @@
 package leets.leenk.domain.leenk.application.usecase;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,7 +9,11 @@ import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
+import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException;
+import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException;
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException;
+import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException;
+import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException;
 import leets.leenk.domain.leenk.application.mapper.LeenkMapper;
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper;
 import leets.leenk.domain.leenk.application.mapper.LocationMapper;
@@ -64,7 +69,7 @@ public class LeenkUsecase {
         Leenk leenk = leenkMapper.toLeenk(author, location, request);
         leenkSaveService.save(leenk);
 
-        LeenkParticipants self = participantsMapper.toParticipants(leenk, author);
+        LeenkParticipants self = participantsMapper.toParticipants(leenk, author, LocalDateTime.now());
         leenkParticipantsSaveService.save(self);
 
         List<Media> images = IntStream.range(START_POSITION, request.imageUrls().size())
@@ -107,5 +112,43 @@ public class LeenkUsecase {
 
         List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
         return participantsMapper.toLeenkParticipantsListResponse(leenk, participants);
+    }
+
+    @Transactional
+    public void participantLeenk(Long userId, Long leenkId) {
+        User user = userGetService.findById(userId);
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
+            throw new LeenkNotRecruitingException();
+        }
+
+        boolean alreadyJoined = leenkParticipantsGetService.existsByLeenkAndParticipant(leenk, user);
+        if (alreadyJoined) {
+            throw new AlreadyParticipatedException();
+        }
+
+        if (leenk.getCurrentParticipants() >= leenk.getMaxParticipants()) {
+            throw new MaxParticipantsExceededException();
+        }
+
+        LeenkParticipants participant = participantsMapper.toParticipants(leenk, user, LocalDateTime.now());
+        leenkParticipantsSaveService.save(participant);
+    }
+
+    @Transactional
+    public void closeLeenk(Long userId, Long leenkId) {
+        userGetService.findById(userId);
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        if (!leenk.getAuthor().getId().equals(userId)) {
+            throw new NotLeenkOwnerException();
+        }
+
+        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
+            throw new LeenkAlreadyClosedException();
+        }
+
+        leenk.changeStatusToClosed();
     }
 }

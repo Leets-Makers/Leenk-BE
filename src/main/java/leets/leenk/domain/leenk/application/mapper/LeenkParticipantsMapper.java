@@ -1,5 +1,6 @@
 package leets.leenk.domain.leenk.application.mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
@@ -11,10 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class LeenkParticipantsMapper {
 
-    public LeenkParticipants toParticipants(Leenk leenk, User user) {
+    public LeenkParticipants toParticipants(Leenk leenk, User user, LocalDateTime joinedAt) {
         return LeenkParticipants.builder()
                 .leenk(leenk)
                 .participant(user)
+                .joinedAt(joinedAt)
                 .build();
     }
 
