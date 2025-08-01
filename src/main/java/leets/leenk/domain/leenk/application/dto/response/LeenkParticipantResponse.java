@@ -9,9 +9,6 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record LeenkParticipantResponse(
 
-        @Schema(description = "링크 id")
-        Long id,
-
         @Schema(description = "참여자 id")
         Long userId,
 
@@ -22,12 +19,6 @@ public record LeenkParticipantResponse(
         LocalDateTime joinedAt,
 
         @Schema(description = "방장 여부")
-        Boolean isHost,
-
-        @Schema(description = "생성일")
-        LocalDateTime createdAt,
-
-        @Schema(description = "수정일", nullable = true)
-        LocalDateTime updatedAt
+        Boolean isHost
 ) {
 }

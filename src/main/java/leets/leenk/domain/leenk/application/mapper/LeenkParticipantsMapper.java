@@ -26,13 +26,10 @@ public class LeenkParticipantsMapper {
     ) {
         List<LeenkParticipantResponse> responses = participants.stream()
                 .map(leenkParticipants -> LeenkParticipantResponse.builder()
-                        .id(leenk.getId())
                         .userId(leenkParticipants.getParticipant().getId())
                         .userName(leenkParticipants.getParticipant().getName())
                         .joinedAt(leenkParticipants.getJoinedAt())
                         .isHost(leenkParticipants.getParticipant().getId().equals(leenk.getAuthor().getId()))
-                        .createdAt(leenkParticipants.getCreateDate())
-                        .updatedAt(leenkParticipants.getUpdateDate())
                         .build())
                 .toList();
         return new LeenkParticipantsListResponse(responses);
