@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
+import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.usecase.LeenkUsecase;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
@@ -12,6 +13,7 @@ import leets.leenk.global.auth.application.annotation.CurrentUserId;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +29,7 @@ public class LeenkController {
     private final LeenkUsecase leenkUsecase;
 
     @PostMapping
-    @Operation(summary = "모집글 작성 API")
+    @Operation(summary = "모집글(링크) 작성 API")
     public CommonResponse<Void> uploadLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
                                             @RequestBody @Valid LeenkUploadRequest request) {
         leenkUsecase.uploadLeenk(userId, request);
@@ -36,7 +38,7 @@ public class LeenkController {
     }
 
     @GetMapping
-    @Operation(summary = "모집글 목록 조회 API [무한 스크롤]")
+    @Operation(summary = "모집글(링크) 목록 조회 API [무한 스크롤]")
     public CommonResponse<LeenkListResponse> getLeenks(@CurrentUserId @Parameter(hidden = true) Long userId,
                                                        @RequestParam(required = false, defaultValue = "ALL") LeenkFilter status,
                                                        @RequestParam int pageNumber,
@@ -44,5 +46,13 @@ public class LeenkController {
         LeenkListResponse response = leenkUsecase.getLeenks(userId, status, pageNumber, pageSize);
 
         return CommonResponse.success(ResponseCode.GET_ALL_LEENK, response);
+    }
+
+    @GetMapping("/{leenkId}")
+    @Operation(summary = "모집글(링크) 상세조회 API")
+    public CommonResponse<LeenkDetailResponse> getLeenkDetail(@PathVariable Long leenkId) {
+        LeenkDetailResponse data = leenkUsecase.getLeenkDetail(leenkId);
+
+        return CommonResponse.success(ResponseCode.GET_LEENK_DETAIL, data);
     }
 }
