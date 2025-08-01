@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
+import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.mapper.LeenkMapper;
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper;
@@ -81,5 +82,13 @@ public class LeenkUsecase {
                 .collect(Collectors.groupingBy(m -> m.getLeenk().getId()));
 
         return leenkMapper.toLeenkListResponse(slice, mediaMap);
+    }
+
+    @Transactional(readOnly = true)
+    public LeenkDetailResponse getLeenkDetail(Long leenkId) {
+        Leenk leenk = leenkGetService.findById(leenkId);
+        List<Media> medias = mediaGetService.findByLeenk(leenk);
+
+        return leenkMapper.toLeenkDetailResponse(leenk, medias);
     }
 }

@@ -3,6 +3,7 @@ package leets.leenk.domain.leenk.application.mapper;
 import java.util.List;
 import java.util.Map;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
+import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkResponse;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
@@ -33,6 +34,28 @@ public class LeenkMapper {
         return LeenkListResponse.builder()
                 .leenks(responses)
                 .pageable(PageableMapperUtil.from(slice))
+                .build();
+    }
+
+    public LeenkDetailResponse toLeenkDetailResponse(Leenk leenk, List<Media> medias) {
+        List<String> imageUrls = medias.stream()
+                .map(Media::getMediaUrl)
+                .toList();
+
+        return LeenkDetailResponse.builder()
+                .id(leenk.getId())
+                .userId(leenk.getAuthor().getId())
+                .userName(leenk.getAuthor().getName())
+                .userProfileImage(leenk.getAuthor().getProfileImage())
+                .title(leenk.getTitle())
+                .placeName(leenk.getLocation().getPlaceName())
+                .currentParticipants(leenk.getCurrentParticipants())
+                .maxParticipants(leenk.getMaxParticipants())
+                .startTime(leenk.getStartTime())
+                .content(leenk.getContent())
+                .images(imageUrls)
+                .createdAt(leenk.getCreateDate())
+                .updatedAt(leenk.getUpdateDate())
                 .build();
     }
 
