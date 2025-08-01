@@ -64,4 +64,22 @@ public class LeenkController {
 
         return CommonResponse.success(ResponseCode.GET_LEENK_PARTICIPANTS, response);
     }
+
+    @Operation(summary = "모집글 참여하기 API")
+    @PostMapping("/{leenkId}/participant")
+    public CommonResponse<Void> participantLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                                 @PathVariable Long leenkId) {
+        leenkUsecase.participantLeenk(userId, leenkId);
+
+        return CommonResponse.success(ResponseCode.JOIN_LEENK);
+    }
+
+    @PostMapping("/{leenkId}/close")
+    @Operation(summary = "모집글 마감(모집 완료 상태) API")
+    public CommonResponse<Void> closeLeenk(@CurrentUserId @Parameter(hidden = true) Long userId,
+                                           @PathVariable Long leenkId) {
+        leenkUsecase.closeLeenk(userId, leenkId);
+
+        return CommonResponse.success(ResponseCode.CLOSE_LEENK);
+    }
 }

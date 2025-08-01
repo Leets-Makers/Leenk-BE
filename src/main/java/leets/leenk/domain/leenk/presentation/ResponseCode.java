@@ -15,7 +15,9 @@ public enum ResponseCode implements ResponseCodeInterface {
     UPLOAD_LEENK(1403, HttpStatus.OK, "모집글 작성에 성공했습니다."),
 
     REMOVE_LEENK_PARTICIPANT(1404, HttpStatus.OK, "모집글 참여자 내보내기에 성공했습니다."),
-    CLOSE_LEENK(1405, HttpStatus.OK, "모집글 마감에 성공했습니다.");
+
+    JOIN_LEENK(1405, HttpStatus.OK, "모집글 참여에 성공했습니다."),
+    CLOSE_LEENK(1406, HttpStatus.OK, "모집글 마감에 성공했습니다.");
 
     private final int code;
     private final HttpStatus status;
