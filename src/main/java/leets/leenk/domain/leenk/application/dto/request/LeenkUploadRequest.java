@@ -1,4 +1,4 @@
-package leets.leenk.domain.leenk.application.dto;
+package leets.leenk.domain.leenk.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
