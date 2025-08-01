@@ -30,10 +30,10 @@ public record LeenkResponse(
         @Schema(description = "링크 생성 시간", example = "2025-08-01T12:00:00")
         LocalDateTime createdAt,
 
-        @Schema(description = "링크 수정 시간", example = "2025-08-01T12:00:00")
+        @Schema(description = "링크 수정 시간", example = "2025-08-01T12:00:00", nullable = true)
         LocalDateTime updatedAt,
 
-        @Schema(description = "링크 대표 이미지 URL(유저가 업로드한 이미지 중 첫번째)", example = "https://s3.example.com/representative_image.jpg")
+        @Schema(description = "링크 대표 이미지 URL(유저가 업로드한 이미지 중 첫번째)", example = "https://s3.example.com/representative_image.jpg", nullable = true)
         String representativeImage
 ) {
 }
