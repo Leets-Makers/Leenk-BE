@@ -14,6 +14,7 @@ import leets.leenk.global.auth.application.annotation.CurrentUserId;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,6 +64,16 @@ public class LeenkController {
         LeenkParticipantsListResponse response = leenkUsecase.getLeenkParticipants(leenkId);
 
         return CommonResponse.success(ResponseCode.GET_LEENK_PARTICIPANTS, response);
+    }
+
+    @Operation(summary = "참여자 내보내기(모집중 상태) API")
+    @PatchMapping("/{leenkId}/participants/{participantId}")
+    public CommonResponse<Void> kickParticipant(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                                @PathVariable Long leenkId,
+                                                @PathVariable Long participantId) {
+        leenkUsecase.kickParticipant(userId, leenkId, participantId);
+
+        return CommonResponse.success(ResponseCode.REMOVE_LEENK_PARTICIPANT);
     }
 
     @Operation(summary = "모집글 참여하기 API")
