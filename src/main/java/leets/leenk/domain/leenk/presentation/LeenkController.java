@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
+import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
 import leets.leenk.domain.leenk.application.usecase.LeenkUsecase;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
@@ -51,8 +52,16 @@ public class LeenkController {
     @GetMapping("/{leenkId}")
     @Operation(summary = "모집글(링크) 상세조회 API")
     public CommonResponse<LeenkDetailResponse> getLeenkDetail(@PathVariable Long leenkId) {
-        LeenkDetailResponse data = leenkUsecase.getLeenkDetail(leenkId);
+        LeenkDetailResponse response = leenkUsecase.getLeenkDetail(leenkId);
 
-        return CommonResponse.success(ResponseCode.GET_LEENK_DETAIL, data);
+        return CommonResponse.success(ResponseCode.GET_LEENK_DETAIL, response);
+    }
+
+    @GetMapping("/{leenkId}/participants")
+    @Operation(summary = "모집글 참여자 목록 조회 API")
+    public CommonResponse<LeenkParticipantsListResponse> getLeenkParticipants(@PathVariable Long leenkId) {
+        LeenkParticipantsListResponse response = leenkUsecase.getLeenkParticipants(leenkId);
+
+        return CommonResponse.success(ResponseCode.GET_LEENK_PARTICIPANTS, response);
     }
 }
