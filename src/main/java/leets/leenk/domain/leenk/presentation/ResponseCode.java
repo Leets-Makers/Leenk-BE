@@ -9,15 +9,15 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ResponseCode implements ResponseCodeInterface {
 
-    GET_ALL_LEENK(1400, HttpStatus.OK, "전체 모집글 목록 조회에 성공했습니다."),
-    GET_LEENK_DETAIL(1401, HttpStatus.OK, "모집글 상세조회에 성공했습니다."),
-    GET_LEENK_PARTICIPANTS(1402, HttpStatus.OK, "모집글 참여자 목록 조회에 성공했습니다."),
-    UPLOAD_LEENK(1403, HttpStatus.OK, "모집글 작성에 성공했습니다."),
+    GET_ALL_LEENK(1400, HttpStatus.OK, "전체 링크 목록 조회에 성공했습니다."),
+    GET_LEENK_DETAIL(1401, HttpStatus.OK, "링크 상세조회에 성공했습니다."),
+    GET_LEENK_PARTICIPANTS(1402, HttpStatus.OK, "링크 참여자 목록 조회에 성공했습니다."),
+    UPLOAD_LEENK(1403, HttpStatus.OK, "링크 작성에 성공했습니다."),
 
-    REMOVE_LEENK_PARTICIPANT(1404, HttpStatus.OK, "모집글 참여자 내보내기에 성공했습니다."),
+    REMOVE_LEENK_PARTICIPANT(1404, HttpStatus.OK, "링크 참여자 내보내기에 성공했습니다."),
 
-    JOIN_LEENK(1405, HttpStatus.OK, "모집글 참여에 성공했습니다."),
-    CLOSE_LEENK(1406, HttpStatus.OK, "모집글 마감에 성공했습니다.");
+    JOIN_LEENK(1405, HttpStatus.OK, "링크 참여에 성공했습니다."),
+    CLOSE_LEENK(1406, HttpStatus.OK, "링크 마감에 성공했습니다.");
 
     private final int code;
     private final HttpStatus status;

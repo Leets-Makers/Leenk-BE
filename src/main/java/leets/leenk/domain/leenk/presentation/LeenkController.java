@@ -31,7 +31,7 @@ public class LeenkController {
     private final LeenkUsecase leenkUsecase;
 
     @PostMapping
-    @Operation(summary = "모집글(링크) 작성 API")
+    @Operation(summary = "링크(모집글) 작성 API")
     public CommonResponse<Void> uploadLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
                                             @RequestBody @Valid LeenkUploadRequest request) {
         leenkUsecase.uploadLeenk(userId, request);
@@ -40,7 +40,7 @@ public class LeenkController {
     }
 
     @GetMapping
-    @Operation(summary = "모집글(링크) 목록 조회 API [무한 스크롤]")
+    @Operation(summary = "링크(모집글) 목록 조회 API [무한 스크롤]")
     public CommonResponse<LeenkListResponse> getLeenks(@CurrentUserId @Parameter(hidden = true) Long userId,
                                                        @RequestParam(required = false, defaultValue = "ALL") LeenkFilter status,
                                                        @RequestParam int pageNumber,
@@ -51,7 +51,7 @@ public class LeenkController {
     }
 
     @GetMapping("/{leenkId}")
-    @Operation(summary = "모집글(링크) 상세조회 API")
+    @Operation(summary = "링크(모집글) 상세조회 API")
     public CommonResponse<LeenkDetailResponse> getLeenkDetail(@PathVariable Long leenkId) {
         LeenkDetailResponse response = leenkUsecase.getLeenkDetail(leenkId);
 
@@ -59,14 +59,14 @@ public class LeenkController {
     }
 
     @GetMapping("/{leenkId}/participants")
-    @Operation(summary = "모집글 참여자 목록 조회 API")
+    @Operation(summary = "링크(모집글) 참여자 목록 조회 API")
     public CommonResponse<LeenkParticipantsListResponse> getLeenkParticipants(@PathVariable Long leenkId) {
         LeenkParticipantsListResponse response = leenkUsecase.getLeenkParticipants(leenkId);
 
         return CommonResponse.success(ResponseCode.GET_LEENK_PARTICIPANTS, response);
     }
 
-    @Operation(summary = "참여자 내보내기(모집중 상태) API")
+    @Operation(summary = "링크(모집글) 참여자 내보내기(모집중 상태) API")
     @PatchMapping("/{leenkId}/participants/{participantId}")
     public CommonResponse<Void> kickParticipant(@Parameter(hidden = true) @CurrentUserId Long userId,
                                                 @PathVariable Long leenkId,
@@ -76,17 +76,17 @@ public class LeenkController {
         return CommonResponse.success(ResponseCode.REMOVE_LEENK_PARTICIPANT);
     }
 
-    @Operation(summary = "모집글 참여하기 API")
+    @Operation(summary = "링크(모집글) 참여하기 API")
     @PostMapping("/{leenkId}/participant")
-    public CommonResponse<Void> participantLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
+    public CommonResponse<Void> participateLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
                                                  @PathVariable Long leenkId) {
-        leenkUsecase.participantLeenk(userId, leenkId);
+        leenkUsecase.participateLeenk(userId, leenkId);
 
         return CommonResponse.success(ResponseCode.JOIN_LEENK);
     }
 
     @PostMapping("/{leenkId}/close")
-    @Operation(summary = "모집글 마감(모집 완료 상태) API")
+    @Operation(summary = "링크(모집글) 마감(모집 완료 상태) API")
     public CommonResponse<Void> closeLeenk(@CurrentUserId @Parameter(hidden = true) Long userId,
                                            @PathVariable Long leenkId) {
         leenkUsecase.closeLeenk(userId, leenkId);
