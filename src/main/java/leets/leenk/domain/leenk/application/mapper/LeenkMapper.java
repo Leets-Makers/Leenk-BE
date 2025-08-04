@@ -3,6 +3,7 @@ package leets.leenk.domain.leenk.application.mapper;
 import java.util.List;
 import java.util.Map;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
+import leets.leenk.domain.leenk.application.dto.response.LeenkAuthorResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkResponse;
@@ -23,8 +24,16 @@ public class LeenkMapper {
                 .location(location)
                 .title(request.title())
                 .content(request.content())
-                .startTime(request.meetingTime())
+                .startTime(request.startTime())
                 .maxParticipants(request.maxParticipants())
+                .build();
+    }
+
+    public LeenkAuthorResponse toLeenkAuthorResponse(Leenk leenk) {
+        return LeenkAuthorResponse.builder()
+                .userId(leenk.getAuthor().getId())
+                .profileImage(leenk.getAuthor().getProfileImage())
+                .name(leenk.getAuthor().getName())
                 .build();
     }
 
@@ -37,23 +46,18 @@ public class LeenkMapper {
                 .build();
     }
 
-    public LeenkDetailResponse toLeenkDetailResponse(Leenk leenk, List<Media> medias) {
-        List<String> imageUrls = medias.stream()
-                .map(Media::getMediaUrl)
-                .toList();
+    public LeenkDetailResponse toLeenkDetailResponse(Leenk leenk, String mediaUrl) {
 
         return LeenkDetailResponse.builder()
                 .id(leenk.getId())
-                .userId(leenk.getAuthor().getId())
-                .userName(leenk.getAuthor().getName())
-                .userProfileImage(leenk.getAuthor().getProfileImage())
+                .author(toLeenkAuthorResponse(leenk))
                 .title(leenk.getTitle())
                 .placeName(leenk.getLocation().getPlaceName())
                 .currentParticipants(leenk.getCurrentParticipants())
                 .maxParticipants(leenk.getMaxParticipants())
                 .startTime(leenk.getStartTime())
                 .content(leenk.getContent())
-                .images(imageUrls)
+                .mediaUrl(mediaUrl)
                 .createdAt(leenk.getCreateDate())
                 .updatedAt(leenk.getUpdateDate())
                 .build();
@@ -83,7 +87,7 @@ public class LeenkMapper {
                 .startTime(leenk.getStartTime())
                 .createdAt(leenk.getCreateDate())
                 .updatedAt(leenk.getUpdateDate())
-                .representativeImage(imageUrl)
+                .thumbNail(imageUrl)
                 .build();
     }
 }

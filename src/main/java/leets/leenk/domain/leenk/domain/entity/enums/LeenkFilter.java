@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum LeenkFilter {
-    ALL("전체"),
-    OPEN("모집중"),
-    CLOSED("모집완료");
+    ALL(null),
+    OPEN(LeenkStatus.RECRUITING),
+    CLOSED(LeenkStatus.CLOSED);
 
-    private final String displayValue;
+    private final LeenkStatus leenkStatus;
 }

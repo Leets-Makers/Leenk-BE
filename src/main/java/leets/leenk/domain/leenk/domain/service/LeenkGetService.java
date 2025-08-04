@@ -26,9 +26,8 @@ public class LeenkGetService {
     }
 
     public Slice<Leenk> findAll(Pageable pageable) {
-        List<LeenkStatus> statuses = List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED);
 
-        return leenkRepository.findAllByStatusIn(statuses, pageable);
+        return leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable);
     }
 
     public Slice<Leenk> findByStatus(LeenkStatus status, Pageable pageable) {
@@ -36,11 +35,11 @@ public class LeenkGetService {
         return leenkRepository.findAllByStatus(status, pageable);
     }
 
-    public Slice<Leenk> findByStatusParam(LeenkFilter status, Pageable pageable) {
-        if (status == LeenkFilter.ALL) {
+    public Slice<Leenk> findByStatusParam(LeenkFilter filter, Pageable pageable) {
+        if (filter == LeenkFilter.ALL) {
             return leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable);
         }
-        LeenkStatus leenkStatus = LeenkStatus.valueOf(status.name());
-        return leenkRepository.findAllByStatus(leenkStatus, pageable);
+
+        return leenkRepository.findAllByStatus(filter.getLeenkStatus(), pageable);
     }
 }

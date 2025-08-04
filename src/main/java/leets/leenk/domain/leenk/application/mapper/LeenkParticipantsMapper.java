@@ -2,6 +2,7 @@ package leets.leenk.domain.leenk.application.mapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import leets.leenk.domain.leenk.application.dto.response.LeenkAuthorResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
@@ -20,18 +21,31 @@ public class LeenkParticipantsMapper {
                 .build();
     }
 
-    public LeenkParticipantsListResponse toLeenkParticipantsListResponse(
-            Leenk leenk,
-            List<LeenkParticipants> participants
-    ) {
+    public LeenkAuthorResponse toLeenkAuthorResponse(User user) {
+        return LeenkAuthorResponse.builder()
+                .userId(user.getId())
+                .profileImage(user.getProfileImage())
+                .name(user.getName())
+                .build();
+    }
+
+    public LeenkParticipantsListResponse toLeenkParticipantsListResponse(Leenk leenk,
+                                                                         List<LeenkParticipants> participants) {
         List<LeenkParticipantResponse> responses = participants.stream()
-                .map(leenkParticipants -> LeenkParticipantResponse.builder()
-                        .userId(leenkParticipants.getParticipant().getId())
-                        .userName(leenkParticipants.getParticipant().getName())
-                        .joinedAt(leenkParticipants.getJoinedAt())
-                        .isHost(leenkParticipants.getParticipant().getId().equals(leenk.getAuthor().getId()))
-                        .build())
+                .map(leenkParticipants -> {
+                    User participantUser = leenkParticipants.getParticipant();
+
+                    return LeenkParticipantResponse.builder()
+                            .participant(toLeenkAuthorResponse(participantUser))
+                            .kakaoTalkId(participantUser.getKakaoTalkId())
+                            .currentParticipants(leenk.getCurrentParticipants())
+                            .maxParticipants(leenk.getMaxParticipants())
+                            .joinedAt(leenkParticipants.getJoinedAt())
+                            .isHost(participantUser.getId().equals(leenk.getAuthor().getId()))
+                            .build();
+                })
                 .toList();
+
         return new LeenkParticipantsListResponse(responses);
     }
 }
