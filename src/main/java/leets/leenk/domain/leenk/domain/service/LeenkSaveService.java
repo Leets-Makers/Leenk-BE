@@ -11,7 +11,7 @@ public class LeenkSaveService {
 
     private final LeenkRepository leenkRepository;
 
-    public Leenk save(Leenk leenk) {
-        return leenkRepository.save(leenk);
+    public void save(Leenk leenk) {
+        leenkRepository.save(leenk);
     }
 }
