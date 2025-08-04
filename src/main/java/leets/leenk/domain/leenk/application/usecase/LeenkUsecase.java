@@ -72,8 +72,8 @@ public class LeenkUsecase {
         Leenk leenk = leenkMapper.toLeenk(author, location, request);
         leenkSaveService.save(leenk);
 
-        LeenkParticipants self = participantsMapper.toParticipants(leenk, author, LocalDateTime.now());
-        leenkParticipantsSaveService.save(self);
+        LeenkParticipants hostParticipant = participantsMapper.toParticipants(leenk, author, LocalDateTime.now());
+        leenkParticipantsSaveService.save(hostParticipant);
 
         Optional.ofNullable(request.mediaUrl())
                 .filter(StringUtils::hasText)
