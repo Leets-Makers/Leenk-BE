@@ -9,11 +9,17 @@ import lombok.Builder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record LeenkParticipantResponse(
 
-        @Schema(description = "참여자 id")
-        Long userId,
+        @Schema(description = "참여자 정보")
+        LeenkAuthorResponse participant,
 
-        @Schema(description = "참여자 이름")
-        String userName,
+        @Schema(description = "참여자 카카오톡 ID")
+        String kakaoTalkId,
+
+        @Schema(description = "현재 참여 인원", example = "3")
+        Long currentParticipants,
+
+        @Schema(description = "최대 참여 인원", example = "20")
+        Long maxParticipants,
 
         @Schema(description = "참여 시각")
         LocalDateTime joinedAt,
