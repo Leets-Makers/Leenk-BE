@@ -3,8 +3,8 @@ package leets.leenk.domain.leenk.application.usecase;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
@@ -24,6 +24,7 @@ import leets.leenk.domain.leenk.domain.entity.Location;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
 import leets.leenk.domain.leenk.domain.service.LeenkGetService;
+import leets.leenk.domain.leenk.domain.service.LeenkParticipantsDeleteService;
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsGetService;
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsSaveService;
 import leets.leenk.domain.leenk.domain.service.LeenkSaveService;
@@ -41,12 +42,12 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
 public class LeenkUsecase {
 
-    private static final int START_POSITION = 0;
     private final LocationSaveService locationSaveService;
     private final LeenkSaveService leenkSaveService;
     private final LeenkParticipantsSaveService leenkParticipantsSaveService;
@@ -55,6 +56,7 @@ public class LeenkUsecase {
     private final LeenkGetService leenkGetService;
     private final LeenkParticipantsGetService leenkParticipantsGetService;
     private final MediaGetService mediaGetService;
+    private final LeenkParticipantsDeleteService leenkParticipantsDeleteService;
     private final LeenkMapper leenkMapper;
     private final LeenkParticipantsMapper participantsMapper;
     private final LocationMapper locationMapper;
@@ -64,7 +66,7 @@ public class LeenkUsecase {
     public void uploadLeenk(Long userId, LeenkUploadRequest request) {
         User author = userGetService.findById(userId);
 
-        Location location = locationMapper.toLocation(request.place());
+        Location location = locationMapper.toLocation(request.placeName());
         locationSaveService.save(location);
 
         Leenk leenk = leenkMapper.toLeenk(author, location, request);
@@ -73,19 +75,19 @@ public class LeenkUsecase {
         LeenkParticipants self = participantsMapper.toParticipants(leenk, author, LocalDateTime.now());
         leenkParticipantsSaveService.save(self);
 
-        List<String> imageUrls = request.imageUrls() == null ? List.of() : request.imageUrls();
-        List<Media> mediaList = IntStream.range(START_POSITION, imageUrls.size())
-                .mapToObj(i -> mediaMapper.toMedia(leenk, imageUrls.get(i), i))
-                .toList();
-
-        mediaSaveService.saveAll(mediaList);
+        Optional.ofNullable(request.mediaUrl())
+                .filter(StringUtils::hasText)
+                .ifPresent(url -> {
+                    Media media = mediaMapper.toMedia(leenk, url);
+                    mediaSaveService.save(media);
+                });
     }
 
     @Transactional(readOnly = true)
     public LeenkListResponse getLeenks(Long userId, LeenkFilter status, int pageNumber, int pageSize) {
         userGetService.findById(userId);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createDate").descending());
 
         Slice<Leenk> slice = leenkGetService.findByStatusParam(status, pageable);
 
@@ -100,9 +102,9 @@ public class LeenkUsecase {
     @Transactional(readOnly = true)
     public LeenkDetailResponse getLeenkDetail(Long leenkId) {
         Leenk leenk = leenkGetService.findById(leenkId);
-        List<Media> medias = mediaGetService.findByLeenk(leenk);
+        String mediaUrl = mediaGetService.findMediaUrlByLeenk(leenk);
 
-        return leenkMapper.toLeenkDetailResponse(leenk, medias);
+        return leenkMapper.toLeenkDetailResponse(leenk, mediaUrl);
     }
 
     @Transactional(readOnly = true)
@@ -118,7 +120,7 @@ public class LeenkUsecase {
     }
 
     @Transactional
-    public void participantLeenk(Long userId, Long leenkId) {
+    public void participateLeenk(Long userId, Long leenkId) {
         User user = userGetService.findById(userId);
         Leenk leenk = leenkGetService.findById(leenkId);
 
@@ -160,7 +162,7 @@ public class LeenkUsecase {
         LeenkParticipants participant = leenkParticipantsGetService.findByLeenkAndParticipantId(leenk.getId(),
                 participantId);
 
-        leenkParticipantsSaveService.delete(participant);
+        leenkParticipantsDeleteService.delete(participant);
         leenk.decreaseCurrentParticipants();
     }
 

@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LeenkParticipantsSaveService {
+public class LeenkParticipantsDeleteService {
 
     private final LeenkParticipantsRepository participantsRepository;
 
-    public LeenkParticipants save(LeenkParticipants participants) {
-        return participantsRepository.save(participants);
+    public void delete(LeenkParticipants participants) {
+        participantsRepository.delete(participants);
     }
 }
