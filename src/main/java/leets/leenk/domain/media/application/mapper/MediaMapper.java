@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MediaMapper {
+    private static final int DEFAULT_POSITION = 1;
 
     public Media toMedia(Feed feed, FeedMediaRequest request) {
         return Media.builder()
@@ -19,12 +20,12 @@ public class MediaMapper {
                 .build();
     }
 
-    public Media toMedia(Leenk leenk, String url, int position) {
+    public Media toMedia(Leenk leenk, String url) {
         return Media.builder()
                 .leenk(leenk)
                 .mediaUrl(url)
                 .mediaType(MediaType.IMAGE)
-                .position(position)
+                .position(DEFAULT_POSITION)
                 .build();
     }
 }

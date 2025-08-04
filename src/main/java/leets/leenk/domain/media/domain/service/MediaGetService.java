@@ -28,8 +28,11 @@ public class MediaGetService {
         return mediaRepository.findAllByFeedInOrderByPosition(feeds);
     }
 
-    public List<Media> findByLeenk(Leenk leenk) {
-        return mediaRepository.findAllByLeenkOrderByPosition(leenk);
+    public String findMediaUrlByLeenk(Leenk leenk) {
+        return mediaRepository
+                .findFirstByLeenkOrderByPositionAsc(leenk)
+                .map(Media::getMediaUrl)
+                .orElse("");
     }
 
     public List<Media> findByLeenks(List<Leenk> leenks) {
