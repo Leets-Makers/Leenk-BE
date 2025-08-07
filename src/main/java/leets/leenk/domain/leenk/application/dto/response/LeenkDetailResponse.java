@@ -30,7 +30,7 @@ public record LeenkDetailResponse(
         @Schema(description = "링크 일시", example = "2025-08-01T18:00:00")
         LocalDateTime startTime,
 
-        @Schema(description = "상세 내용 (최대 200자)", example = "전정도에서 공부하실분~", nullable = true)
+        @Schema(description = "상세 내용 (최대 200자)", example = "전정도에서 공부하실분~")
         String content,
 
         @Schema(description = "업로드된 이미지 URL(단건)", example = "https://s3.example.com/img1.jpg", nullable = true)

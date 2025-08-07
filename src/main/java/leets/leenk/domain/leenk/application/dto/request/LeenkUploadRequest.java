@@ -3,22 +3,23 @@ package leets.leenk.domain.leenk.application.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public record LeenkUploadRequest(
 
-        @NotNull
+        @NotBlank
         @Schema(description = "제목", example = "전정도에서 번개 고고")
         @Size(max = 30, message = "제목은 최대 30자까지 입력할 수 있습니다")
         String title,
 
-        @NotNull
-        @Schema(description = "상세 내용 (최대 200자)", example = "전정도에서 공부하실분~", nullable = true)
+        @NotBlank
+        @Schema(description = "상세 내용 (최대 200자)", example = "전정도에서 공부하실분~")
         String content,
 
-        @NotNull
+        @NotBlank
         @Schema(description = "장소명", example = "전정도")
         @Size(max = 25, message = "장소는 최대 25자까지 입력할 수 있습니다")
         String placeName,
