@@ -5,14 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import leets.leenk.domain.leenk.application.dto.request.LeenkUpdateRequest;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException;
 import leets.leenk.domain.leenk.application.exception.CannotKickSelfException;
+import leets.leenk.domain.leenk.application.exception.CannotLeaveAsHostException;
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException;
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException;
+import leets.leenk.domain.leenk.application.exception.LeenkParticipantNotFoundException;
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException;
 import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException;
 import leets.leenk.domain.leenk.application.mapper.LeenkMapper;
@@ -23,14 +26,17 @@ import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
 import leets.leenk.domain.leenk.domain.entity.Location;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
+import leets.leenk.domain.leenk.domain.service.LeenkDeleteService;
 import leets.leenk.domain.leenk.domain.service.LeenkGetService;
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsDeleteService;
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsGetService;
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsSaveService;
 import leets.leenk.domain.leenk.domain.service.LeenkSaveService;
+import leets.leenk.domain.leenk.domain.service.LeenkUpdateService;
 import leets.leenk.domain.leenk.domain.service.LocationSaveService;
 import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
+import leets.leenk.domain.media.domain.service.MediaDeleteService;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
 import leets.leenk.domain.user.domain.entity.User;
@@ -49,14 +55,22 @@ import org.springframework.util.StringUtils;
 public class LeenkUsecase {
 
     private final LocationSaveService locationSaveService;
+
     private final LeenkSaveService leenkSaveService;
-    private final LeenkParticipantsSaveService leenkParticipantsSaveService;
-    private final MediaSaveService mediaSaveService;
-    private final UserGetService userGetService;
     private final LeenkGetService leenkGetService;
+    private final LeenkUpdateService leenkUpdateService;
+    private final LeenkDeleteService leenkDeleteService;
+
+    private final LeenkParticipantsSaveService leenkParticipantsSaveService;
     private final LeenkParticipantsGetService leenkParticipantsGetService;
-    private final MediaGetService mediaGetService;
     private final LeenkParticipantsDeleteService leenkParticipantsDeleteService;
+
+    private final MediaSaveService mediaSaveService;
+    private final MediaGetService mediaGetService;
+    private final MediaDeleteService mediaDeleteService;
+
+    private final UserGetService userGetService;
+
     private final LeenkMapper leenkMapper;
     private final LeenkParticipantsMapper participantsMapper;
     private final LocationMapper locationMapper;
@@ -82,6 +96,31 @@ public class LeenkUsecase {
                     mediaSaveService.save(media);
                 });
     }
+
+    @Transactional
+    public void updateLeenk(Long userId, Long leenkId, LeenkUpdateRequest request) {
+        userGetService.findById(userId);
+        Leenk leenk = leenkGetService.findById(leenkId);
+        Location location = leenk.getLocation();
+        Media media = mediaGetService.findFirstMediaByLeenk(leenk)
+                .orElse(null);
+
+        if (!leenk.getAuthor().getId().equals(userId)) {
+            throw new NotLeenkOwnerException();
+        }
+
+        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
+            throw new LeenkAlreadyClosedException();
+        }
+
+        leenkUpdateService.updateTitle(leenk, request.title());
+        leenkUpdateService.updateContent(leenk, request.content());
+        leenkUpdateService.updateStartTime(leenk, request.startTime());
+        leenkUpdateService.updateMaxParticipants(leenk, request.maxParticipants());
+        leenkUpdateService.updatePlaceName(location, request.placeName());
+        leenkUpdateService.updateMediaUrl(media, request.mediaUrl());
+    }
+
 
     @Transactional(readOnly = true)
     public LeenkListResponse getLeenks(Long userId, LeenkFilter status, int pageNumber, int pageSize) {
@@ -140,6 +179,22 @@ public class LeenkUsecase {
     }
 
     @Transactional
+    public void closeLeenk(Long userId, Long leenkId) {
+        userGetService.findById(userId);
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        if (!leenk.getAuthor().getId().equals(userId)) {
+            throw new NotLeenkOwnerException();
+        }
+
+        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
+            throw new LeenkAlreadyClosedException();
+        }
+
+        leenk.changeStatusToClosed();
+    }
+
+    @Transactional
     public void kickParticipant(Long userId, Long leenkId, Long participantId) {
         Leenk leenk = leenkGetService.findById(leenkId);
 
@@ -163,18 +218,42 @@ public class LeenkUsecase {
     }
 
     @Transactional
-    public void closeLeenk(Long userId, Long leenkId) {
+    public void deleteLeenk(Long userId, Long leenkId) {
         userGetService.findById(userId);
         Leenk leenk = leenkGetService.findById(leenkId);
+        List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
 
         if (!leenk.getAuthor().getId().equals(userId)) {
             throw new NotLeenkOwnerException();
         }
 
-        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
-            throw new LeenkAlreadyClosedException();
+        leenkParticipantsDeleteService.deleteAll(participants);
+        mediaGetService.findFirstMediaByLeenk(leenk)
+                .ifPresent(mediaDeleteService::delete);
+        leenkDeleteService.delete(leenk);
+    }
+
+    @Transactional
+    public void leaveLeenk(Long userId, Long leenkId) {
+        User user = userGetService.findById(userId);
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        if (leenk.getAuthor().getId().equals(userId)) {
+            throw new CannotLeaveAsHostException();
         }
 
-        leenk.changeStatusToClosed();
+        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
+            throw new LeenkNotRecruitingException();
+        }
+
+        boolean joined = leenkParticipantsGetService.existsByLeenkAndParticipant(leenk, user);
+        if (!joined) {
+            throw new LeenkParticipantNotFoundException();
+        }
+
+        LeenkParticipants participant = leenkParticipantsGetService.findByLeenkAndParticipantId(leenk.getId(), userId);
+        leenkParticipantsDeleteService.delete(participant);
+
+        leenk.decreaseCurrentParticipants();
     }
 }
