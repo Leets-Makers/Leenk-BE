@@ -10,9 +10,11 @@ import leets.leenk.global.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Entity
+@SuperBuilder
 @Table(name = "locations")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location extends BaseEntity {

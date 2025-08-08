@@ -1,10 +1,19 @@
 package leets.leenk.domain.feed.application.usecase;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import leets.leenk.domain.feed.application.dto.request.FeedReportRequest;
 import leets.leenk.domain.feed.application.dto.request.FeedUpdateRequest;
 import leets.leenk.domain.feed.application.dto.request.FeedUploadRequest;
 import leets.leenk.domain.feed.application.dto.request.ReactionRequest;
-import leets.leenk.domain.feed.application.dto.response.*;
+import leets.leenk.domain.feed.application.dto.response.FeedDetailResponse;
+import leets.leenk.domain.feed.application.dto.response.FeedListResponse;
+import leets.leenk.domain.feed.application.dto.response.FeedUserListResponse;
+import leets.leenk.domain.feed.application.dto.response.FeedUserResponse;
+import leets.leenk.domain.feed.application.dto.response.ReactionUserResponse;
 import leets.leenk.domain.feed.application.exception.FeedDeleteNotAllowedException;
 import leets.leenk.domain.feed.application.exception.SelfReactionNotAllowedException;
 import leets.leenk.domain.feed.application.mapper.FeedMapper;
@@ -13,7 +22,14 @@ import leets.leenk.domain.feed.application.mapper.ReactionMapper;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.domain.entity.Reaction;
-import leets.leenk.domain.feed.domain.service.*;
+import leets.leenk.domain.feed.domain.service.FeedDeleteService;
+import leets.leenk.domain.feed.domain.service.FeedGetService;
+import leets.leenk.domain.feed.domain.service.FeedSaveService;
+import leets.leenk.domain.feed.domain.service.FeedUpdateService;
+import leets.leenk.domain.feed.domain.service.LinkedUserGetService;
+import leets.leenk.domain.feed.domain.service.LinkedUserSaveService;
+import leets.leenk.domain.feed.domain.service.ReactionGetService;
+import leets.leenk.domain.feed.domain.service.ReactionSaveService;
 import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
 import leets.leenk.domain.media.domain.service.MediaGetService;
@@ -31,12 +47,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +87,7 @@ public class FeedUsecase {
         Slice<Feed> slice = feedGetService.findAll(pageable, blockedUsers);
 
         List<Feed> feeds = slice.getContent();
-        List<Media> medias = mediaGetService.findAll(feeds);
+        List<Media> medias = mediaGetService.findAllByFeeds(feeds);
 
         Map<Long, List<Media>> mediaMap = medias.stream()
                 .collect(Collectors.groupingBy(media -> media.getFeed().getId()));
@@ -88,7 +98,7 @@ public class FeedUsecase {
     @Transactional(readOnly = true)
     public FeedDetailResponse getFeedDetail(Long feedId) {
         Feed feed = feedGetService.findById(feedId);
-        List<Media> medias = mediaGetService.findAll(feed);
+        List<Media> medias = mediaGetService.findAllByFeed(feed);
         List<LinkedUser> linkedUsers = linkedUserGetService.findAll(feed);
 
         return feedMapper.toFeedDetailResponse(feed, medias, linkedUsers);
@@ -177,7 +187,7 @@ public class FeedUsecase {
         User user = userGetService.findById(userId);
 
         Slice<Feed> slice = feedGetService.findAllByUser(user, pageable);
-        List<Media> medias = mediaGetService.findAll(slice.getContent());
+        List<Media> medias = mediaGetService.findAllByFeeds(slice.getContent());
 
         Map<Long, List<Media>> mediaMap = medias.stream()
                 .collect(Collectors.groupingBy(media -> media.getFeed().getId()));
@@ -191,7 +201,7 @@ public class FeedUsecase {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         Slice<Feed> slice = linkedUserGetService.findAllByUser(user, pageable);
-        List<Media> medias = mediaGetService.findAll(slice.getContent());
+        List<Media> medias = mediaGetService.findAllByFeeds(slice.getContent());
 
         Map<Long, List<Media>> mediaMap = medias.stream()
                 .collect(Collectors.groupingBy(media -> media.getFeed().getId()));
