@@ -111,10 +111,6 @@ public class LeenkUsecase {
     public LeenkParticipantsListResponse getLeenkParticipants(Long leenkId) {
         Leenk leenk = leenkGetService.findById(leenkId);
 
-        if (leenk.getStatus() != LeenkStatus.RECRUITING) {
-            throw new LeenkNotRecruitingException();
-        }
-
         List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
         return participantsMapper.toLeenkParticipantsListResponse(leenk, participants);
     }
