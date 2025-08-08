@@ -86,7 +86,7 @@ public class LeenkController {
         return CommonResponse.success(ResponseCode.GET_LEENK_PARTICIPANTS, response);
     }
 
-    @PatchMapping
+    @PatchMapping("/{leenkId}")
     @Operation(summary = "링크(모집글) 수정하기 API")
     public CommonResponse<Void> updateLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
                                             @PathVariable Long leenkId,

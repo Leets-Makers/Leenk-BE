@@ -13,6 +13,7 @@ public record LeenkUpdateRequest(
         String title,
 
         @Schema(description = "상세 내용 (최대 200자)", example = "전정도에서 공부하실분~")
+        @Size(max = 200, message = "상세 내용은 최대 200자까지 입력할 수 있습니다")
         String content,
 
         @Schema(description = "장소명", example = "전정도")
