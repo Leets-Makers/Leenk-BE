@@ -15,6 +15,9 @@ public record LeenkDetailResponse(
         @Schema(description = "작성자 정보")
         LeenkAuthorResponse author,
 
+        @Schema(description = "카카오톡 id", example = "kakao123")
+        String kakaoId,
+
         @Schema(description = "제목", example = "전정도에서 번개 고고")
         String title,
 
