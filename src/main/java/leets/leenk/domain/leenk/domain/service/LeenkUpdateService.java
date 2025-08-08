@@ -1,6 +1,7 @@
 package leets.leenk.domain.leenk.domain.service;
 
 import java.time.LocalDateTime;
+import leets.leenk.domain.leenk.application.exception.MaxParticipantsTooLowException;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.Location;
 import leets.leenk.domain.media.application.mapper.MediaMapper;
@@ -38,9 +39,17 @@ public class LeenkUpdateService {
     }
 
     public void updateMaxParticipants(Leenk leenk, Long maxParticipants) {
-        if (maxParticipants != null) {
-            leenk.updateMaxParticipants(maxParticipants);
+        if (maxParticipants == null) {
+            return;
         }
+
+        long currentCount = leenk.getCurrentParticipants();
+
+        if (maxParticipants < currentCount) {
+            throw new MaxParticipantsTooLowException();
+        }
+
+        leenk.updateMaxParticipants(maxParticipants);
     }
 
     public void updatePlaceName(Location location, String placeName) {
