@@ -3,13 +3,21 @@ package leets.leenk.domain.leenk.domain.service;
 import java.time.LocalDateTime;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.Location;
+import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
+import leets.leenk.domain.media.domain.service.MediaDeleteService;
+import leets.leenk.domain.media.domain.service.MediaSaveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class LeenkUpdateService {
+
+    private final MediaSaveService mediaSaveService;
+    private final MediaDeleteService mediaDeleteService;
+
+    private final MediaMapper mediaMapper;
 
     public void updateTitle(Leenk leenk, String title) {
         if (title != null && !title.isBlank()) {
@@ -41,9 +49,19 @@ public class LeenkUpdateService {
         }
     }
 
-    public void updateMediaUrl(Media media, String newUrl) {
-        if (media != null && newUrl != null && !newUrl.isBlank()) {
+    public void updateMediaUrl(Leenk leenk, Media media, String newUrl) {
+        if (newUrl == null || newUrl.isBlank()) {
+            if (media != null) {
+                mediaDeleteService.delete(media);
+            }
+            return;
+        }
+
+        if (media != null) {
             media.updateMediaUrl(newUrl);
+        } else {
+            Media newMedia = mediaMapper.toMedia(leenk, newUrl);
+            mediaSaveService.save(newMedia);
         }
     }
 }

@@ -118,7 +118,7 @@ public class LeenkUsecase {
         leenkUpdateService.updateStartTime(leenk, request.startTime());
         leenkUpdateService.updateMaxParticipants(leenk, request.maxParticipants());
         leenkUpdateService.updatePlaceName(location, request.placeName());
-        leenkUpdateService.updateMediaUrl(media, request.mediaUrl());
+        leenkUpdateService.updateMediaUrl(leenk, media, request.mediaUrl());
     }
 
 
