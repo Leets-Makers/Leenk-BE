@@ -25,4 +25,8 @@ public class Location extends BaseEntity {
 
     @Column(nullable = false, length = 25)
     private String placeName;
+
+    public void updatePlaceName(String placeName) {
+        this.placeName = placeName;
+    }
 }

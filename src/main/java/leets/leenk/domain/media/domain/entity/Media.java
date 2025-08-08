@@ -60,4 +60,8 @@ public class Media {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leenk_id", updatable = false)
     private Leenk leenk;
+
+    public void updateMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
+    }
 }
