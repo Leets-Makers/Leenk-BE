@@ -65,6 +65,22 @@ public class Leenk extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private LeenkStatus status = LeenkStatus.RECRUITING;
 
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void updateMaxParticipants(Long maxParticipants) {
+        this.maxParticipants = maxParticipants;
+    }
+
     public void changeStatusToClosed() {
         this.status = LeenkStatus.CLOSED;
     }
