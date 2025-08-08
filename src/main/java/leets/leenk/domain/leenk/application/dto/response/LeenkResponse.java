@@ -12,8 +12,8 @@ public record LeenkResponse(
         @Schema(description = "링크 Id", example = "1")
         long leenkId,
 
-        @Schema(description = "유저 Id", example = "1")
-        long userId,
+        @Schema(description = "작성자 정보")
+        LeenkAuthorResponse author,
 
         @Schema(description = "링크 제목")
         String title,

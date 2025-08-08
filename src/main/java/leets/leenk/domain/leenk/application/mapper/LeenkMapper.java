@@ -76,12 +76,11 @@ public class LeenkMapper {
     }
 
     private LeenkResponse toLeenkResponse(Leenk leenk, Media representative) {
-        LeenkAuthorResponse author = toLeenkAuthorResponse(leenk);
         String imageUrl = (representative != null) ? representative.getMediaUrl() : null;
 
         return LeenkResponse.builder()
                 .leenkId(leenk.getId())
-                .userId(author.userId())
+                .author(toLeenkAuthorResponse(leenk))
                 .title(leenk.getTitle())
                 .currentParticipants(leenk.getCurrentParticipants())
                 .maxParticipants(leenk.getMaxParticipants())
