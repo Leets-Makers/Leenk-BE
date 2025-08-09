@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import leets.leenk.domain.leenk.application.dto.request.LeenkReportRequest;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUpdateRequest;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
@@ -40,6 +41,8 @@ import leets.leenk.domain.media.domain.service.MediaDeleteService;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
 import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.domain.user.domain.service.NotionDatabaseService;
+import leets.leenk.domain.user.domain.service.SlackWebhookService;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -70,6 +73,8 @@ public class LeenkUsecase {
     private final MediaDeleteService mediaDeleteService;
 
     private final UserGetService userGetService;
+    private final SlackWebhookService slackWebhookService;
+    private final NotionDatabaseService notionDatabaseService;
 
     private final LeenkMapper leenkMapper;
     private final LeenkParticipantsMapper participantsMapper;
@@ -121,6 +126,14 @@ public class LeenkUsecase {
         leenkUpdateService.updateMediaUrl(leenk, media, request.mediaUrl());
     }
 
+    @Transactional(readOnly = true)
+    public void reportLeenk(Long userId, Long leenkId, LeenkReportRequest request) {
+        User user = userGetService.findById(userId);
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        notionDatabaseService.sendLeenkReport(request.report(), user.getId(), leenk.getId());
+        slackWebhookService.sendLeenkReport(request.report());
+    }
 
     @Transactional(readOnly = true)
     public LeenkListResponse getLeenks(Long userId, LeenkFilter status, int pageNumber, int pageSize) {
