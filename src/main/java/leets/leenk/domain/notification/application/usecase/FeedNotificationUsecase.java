@@ -3,12 +3,9 @@ package leets.leenk.domain.notification.application.usecase;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.domain.entity.Reaction;
-import leets.leenk.domain.notification.application.dto.response.NotificationCountResponse;
-import leets.leenk.domain.notification.application.dto.response.NotificationListResponse;
 import leets.leenk.domain.notification.application.mapper.FeedFirstReactionDetailMapper;
 import leets.leenk.domain.notification.application.mapper.FeedReactionCountDetailMapper;
 import leets.leenk.domain.notification.application.mapper.FeedNotificationMapper;
-import leets.leenk.domain.notification.application.mapper.NotificationResponseMapper;
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionDetail;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionNotificationContent;
@@ -23,10 +20,6 @@ import leets.leenk.global.sqs.application.mapper.SqsMessageEventMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +28,8 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NotificationUsecase {
+public class FeedNotificationUsecase {
     private final NotificationGetService notificationGetService;
-    private final NotificationCountGetService notificationCountGetService;
 
     private final NotificationMarkReadService notificationMarkReadService;
     private final NotificationSaveService notificationSaveService;
@@ -45,27 +37,12 @@ public class NotificationUsecase {
     private final UserGetService userGetService;
     private final NotificationDuplicateCheckService notificationDuplicateCheckService;
 
-    private final NotificationResponseMapper notificationResponseMapper;
     private final FeedNotificationMapper feedNotificationMapper;
     private final FeedFirstReactionDetailMapper feedFirstReactionDetailMapper;
     private final SqsMessageEventMapper sqsMessageEventMapper;
     private final FeedReactionCountDetailMapper feedReactionCountDetailMapper;
 
     private final ApplicationEventPublisher eventPublisher;
-
-    @Transactional(readOnly = true)
-    public NotificationListResponse getNotifications(Long userId, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "updateDate"));
-        Slice<Notification> notifications = notificationGetService.findRecentNotifications(userId, pageable);
-
-        return notificationResponseMapper.toNotificationListResponse(notifications);
-    }
-
-    @Transactional(readOnly = true)
-    public NotificationCountResponse getNotificationCount(long userId) {
-        User user = userGetService.findById(userId);
-        return notificationResponseMapper.toCountResponse(notificationCountGetService.getNotificationCount(user));
-    }
 
     @Transactional
     public void saveFirstReactionNotification(Reaction reaction) {
