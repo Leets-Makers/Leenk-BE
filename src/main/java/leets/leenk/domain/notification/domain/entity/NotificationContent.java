@@ -1,12 +1,11 @@
 package leets.leenk.domain.notification.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import leets.leenk.domain.notification.domain.entity.content.FeedFirstReactionNotificationContent;
-import leets.leenk.domain.notification.domain.entity.content.FeedReactionCountNotificationContent;
-import leets.leenk.domain.notification.domain.entity.content.FeedTagNotificationContent;
-import leets.leenk.domain.notification.domain.entity.content.NewFeedNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedTagNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.NewFeedNotificationContent;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -5,15 +5,15 @@ import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.domain.entity.Reaction;
 import leets.leenk.domain.notification.application.dto.response.NotificationCountResponse;
 import leets.leenk.domain.notification.application.dto.response.NotificationListResponse;
-import leets.leenk.domain.notification.application.mapper.FeedFirstReactionMapper;
-import leets.leenk.domain.notification.application.mapper.FeedReactionCountMapper;
-import leets.leenk.domain.notification.application.mapper.NotificationMapper;
+import leets.leenk.domain.notification.application.mapper.FeedFirstReactionDetailMapper;
+import leets.leenk.domain.notification.application.mapper.FeedReactionCountDetailMapper;
+import leets.leenk.domain.notification.application.mapper.FeedNotificationMapper;
 import leets.leenk.domain.notification.application.mapper.NotificationResponseMapper;
 import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.content.FeedFirstReaction;
-import leets.leenk.domain.notification.domain.entity.content.FeedFirstReactionNotificationContent;
-import leets.leenk.domain.notification.domain.entity.content.FeedReactionCount;
-import leets.leenk.domain.notification.domain.entity.content.FeedReactionCountNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionDetail;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountDetail;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountNotificationContent;
 import leets.leenk.domain.notification.domain.service.*;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserSetting;
@@ -46,10 +46,10 @@ public class NotificationUsecase {
     private final NotificationDuplicateCheckService notificationDuplicateCheckService;
 
     private final NotificationResponseMapper notificationResponseMapper;
-    private final NotificationMapper notificationMapper;
-    private final FeedFirstReactionMapper feedFirstReactionMapper;
+    private final FeedNotificationMapper feedNotificationMapper;
+    private final FeedFirstReactionDetailMapper feedFirstReactionDetailMapper;
     private final SqsMessageEventMapper sqsMessageEventMapper;
-    private final FeedReactionCountMapper feedReactionCountMapper;
+    private final FeedReactionCountDetailMapper feedReactionCountDetailMapper;
 
     private final ApplicationEventPublisher eventPublisher;
 
@@ -78,12 +78,12 @@ public class NotificationUsecase {
 
         User user = userGetService.findById(notification.getUserId());
 
-        FeedFirstReaction feedFirstReaction = feedFirstReactionMapper.toFeedFirstReaction(reaction.getUser());
+        FeedFirstReactionDetail feedFirstReactionDetail = feedFirstReactionDetailMapper.toFeedFirstReactionDetail(reaction.getUser());
         if (!(notification.getContent() instanceof FeedFirstReactionNotificationContent content)) {
             return;
         }
 
-        content.getFeedFirstReactions().add(feedFirstReaction);
+        content.getFeedFirstReactionDetails().add(feedFirstReactionDetail);
         notification.markUnread();
 
         notificationSaveService.save(notification);
@@ -96,14 +96,14 @@ public class NotificationUsecase {
         }
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
-            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReaction, user.getFcmToken()));
+            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReactionDetail, user.getFcmToken()));
     }
 
     @Transactional
     public void saveNewFeedNotification(Feed feed) {
         List<User> users = userSettingGetService.getUsersToNotifyNewFeed(feed.getUser().getId());
         users.forEach(user -> {
-            Notification notification = notificationMapper.toNewFeedNotification(feed, user);
+            Notification notification = feedNotificationMapper.toNewFeedNotification(feed, user);
             notificationSaveService.save(notification);
             if(user.getFcmToken() != null) {
                 eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken()));
@@ -121,12 +121,12 @@ public class NotificationUsecase {
 
         User user = userGetService.findById(notification.getUserId());
 
-        FeedReactionCount feedReactionCount = feedReactionCountMapper.toFeedReactionCount(reactionCount);
+        FeedReactionCountDetail feedReactionCountDetail = feedReactionCountDetailMapper.toFeedReactionCountDetail(reactionCount);
         if (!(notification.getContent() instanceof FeedReactionCountNotificationContent content)) {
             return;
         }
 
-        content.getFeedReactionCounts().add(feedReactionCount);
+        content.getFeedReactionCountDetails().add(feedReactionCountDetail);
         notification.markUnread();
 
         notificationSaveService.save(notification);
@@ -139,14 +139,14 @@ public class NotificationUsecase {
         }
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null) {
-            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCount, user.getFcmToken()));
+            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCountDetail, user.getFcmToken()));
         }
     }
 
     @Transactional
     public void saveTagNotification(Feed feed, List<LinkedUser> linkedUsers) {
         linkedUsers.forEach(linkedUser -> {
-            Notification notification = notificationMapper.toFeedTagNotification(feed, linkedUser);
+            Notification notification = feedNotificationMapper.toFeedTagNotification(feed, linkedUser);
             String fcmToken = linkedUser.getUser().getFcmToken();
             notificationSaveService.save(notification);
 

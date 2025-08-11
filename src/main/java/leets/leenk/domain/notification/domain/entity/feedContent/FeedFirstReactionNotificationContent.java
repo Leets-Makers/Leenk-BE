@@ -1,4 +1,4 @@
-package leets.leenk.domain.notification.domain.entity.content;
+package leets.leenk.domain.notification.domain.entity.feedContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,6 @@ public class FeedFirstReactionNotificationContent extends NotificationContent {
     private Long feedId;
 
     @Builder.Default
-    private List<FeedFirstReaction> feedFirstReactions = new ArrayList<>();
+    private List<FeedFirstReactionDetail> feedFirstReactionDetails = new ArrayList<>();
 
 }

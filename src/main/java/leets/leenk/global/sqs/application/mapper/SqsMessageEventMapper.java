@@ -2,8 +2,8 @@ package leets.leenk.global.sqs.application.mapper;
 
 import org.springframework.stereotype.Component;
 
-import leets.leenk.domain.notification.domain.entity.content.FeedFirstReaction;
-import leets.leenk.domain.notification.domain.entity.content.FeedReactionCount;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionDetail;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountDetail;
 import leets.leenk.global.sqs.application.dto.SqsMessageEvent;
 import leets.leenk.domain.notification.domain.entity.Notification;
 
@@ -19,18 +19,18 @@ public class SqsMessageEventMapper {
 			.build();
 	}
 
-	public SqsMessageEvent fromFeedFirstReaction(FeedFirstReaction feedFirstReaction, String fcmToken) {
+	public SqsMessageEvent fromFeedFirstReaction(FeedFirstReactionDetail feedFirstReactionDetail, String fcmToken) {
 		return SqsMessageEvent.builder()
-			.title(feedFirstReaction.getTitle())
-			.content(feedFirstReaction.getBody())
+			.title(feedFirstReactionDetail.getTitle())
+			.content(feedFirstReactionDetail.getBody())
 			.fcmToken(fcmToken)
 			.build();
 	}
 
-	public SqsMessageEvent fromFeedReactionCount(FeedReactionCount feedReactionCount, String fcmToken) {
+	public SqsMessageEvent fromFeedReactionCount(FeedReactionCountDetail feedReactionCountDetail, String fcmToken) {
 		return SqsMessageEvent.builder()
-			.title(feedReactionCount.getTitle())
-			.content(feedReactionCount.getBody())
+			.title(feedReactionCountDetail.getTitle())
+			.content(feedReactionCountDetail.getBody())
 			.fcmToken(fcmToken)
 			.build();
 	}
