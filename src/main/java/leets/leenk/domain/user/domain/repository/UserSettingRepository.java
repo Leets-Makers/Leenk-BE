@@ -12,8 +12,13 @@ public interface UserSettingRepository extends JpaRepository<UserSetting, Long> 
 
 	@Query("SELECT us.user FROM UserSetting us WHERE us.isNewFeedNotify = true " +
 			"AND us.user.leaveDate IS NULL " +
-			"AND us.user.id <> :userId")
-	List<User> findAllActiveUsersWithNewFeedNotifyTrueExcludingUserId(Long userId);
+			"AND us.user.id <> :authorId")
+	List<User> findAllActiveUsersWithNewFeedNotifyTrueExcludingUserId(Long authorId);
 
     Optional<UserSetting> findByUser(User user);
+
+    @Query("SELECT us.user FROM UserSetting us WHERE us.isNewLeenkNotify = true " +
+            "AND us.user.leaveDate IS NULL " +
+            "AND us.user.id <> :authorId")
+    List<User> findAllActiveUsersWithNewLeenkNotifyTrueExcludingUserId(Long authorId);
 }

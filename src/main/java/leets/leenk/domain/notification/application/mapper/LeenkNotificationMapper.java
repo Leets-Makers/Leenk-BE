@@ -1,0 +1,33 @@
+package leets.leenk.domain.notification.application.mapper;
+
+import leets.leenk.domain.leenk.domain.entity.Leenk;
+import leets.leenk.domain.notification.domain.entity.Notification;
+import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkNotificationContent;
+import leets.leenk.domain.user.domain.entity.User;
+import org.springframework.stereotype.Component;
+
+@Component
+public class LeenkNotificationMapper {
+
+    public Notification toNewLeenkNotification(Leenk leenk, User user) {
+        return Notification.builder()
+                .userId(user.getId())
+                .notificationType(NotificationType.NEW_LEENK)
+                .isRead(Boolean.FALSE)
+                .content(toNewLeenkNotificationContent(leenk))
+                .build();
+    }
+
+    private NewLeenkNotificationContent toNewLeenkNotificationContent(Leenk leenk) {
+        return NewLeenkNotificationContent.builder()
+                .leenkId(leenk.getId())
+                .authorUserId(leenk.getAuthor().getId())
+                .authorName(leenk.getAuthor().getName())
+                .leenkTitle(leenk.getTitle())
+                .title(NotificationType.NEW_LEENK.getTitle())
+                .body(NotificationType.NEW_LEENK.getContent())
+                .build();
+    }
+
+}

@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum NotificationType {
 
+    // Leenk
+    NEW_LEENK("Leenk", "새로운 모임을 확인해 봐."),
+
+    // Feed
     FEED_TAG("Leenk", "%s이 나를 함께한 사람에 추가했어"),
     NEW_FEED("Leenk", "새로운 게시글을 확인해 봐"),
     FEED_FIRST_REACTION("Leenk", "내가 쓴 피드에 좋아요를 받았어"),
@@ -24,4 +28,3 @@ public enum NotificationType {
         return String.format(content, reactionCount);
     }
 }
-

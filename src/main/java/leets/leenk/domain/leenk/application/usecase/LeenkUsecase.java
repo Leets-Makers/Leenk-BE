@@ -33,6 +33,7 @@ import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
+import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,8 @@ public class LeenkUsecase {
     private final LocationMapper locationMapper;
     private final MediaMapper mediaMapper;
 
+    private final LeenkNotificationUsecase leenkNotificationUsecase;
+
     @Transactional
     public void uploadLeenk(Long userId, LeenkUploadRequest request) {
         User author = userGetService.findById(userId);
@@ -81,6 +84,8 @@ public class LeenkUsecase {
                     Media media = mediaMapper.toMedia(leenk, url);
                     mediaSaveService.save(media);
                 });
+
+        leenkNotificationUsecase.saveNewLeenkNotification(leenk);
     }
 
     @Transactional(readOnly = true)
