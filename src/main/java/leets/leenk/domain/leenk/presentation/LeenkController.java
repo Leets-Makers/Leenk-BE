@@ -54,11 +54,19 @@ public class LeenkController {
 
     @PostMapping("/{leenkId}/close")
     @Operation(summary = "링크(모집글) 마감(모집 완료 상태) API")
-    public CommonResponse<Void> closeLeenk(@CurrentUserId @Parameter(hidden = true) Long userId,
+    public CommonResponse<Void> closeLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
                                            @PathVariable @Positive Long leenkId) {
         leenkUsecase.closeLeenk(userId, leenkId);
 
         return CommonResponse.success(ResponseCode.CLOSE_LEENK);
+    }
+
+    @PostMapping("/{leenkId}/finish")
+    @Operation(summary = "링크(모집글) 종료하기 API")
+    public CommonResponse<Void> finishLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                            @PathVariable @Positive Long leenkId) {
+        leenkUsecase.finishLeenk(userId, leenkId);
+        return CommonResponse.success(ResponseCode.FINISH_LEENK);
     }
 
     @PostMapping("/{leenkId}/reports")
