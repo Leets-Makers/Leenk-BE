@@ -5,6 +5,7 @@ import leets.leenk.domain.notification.application.mapper.LeenkNotificationMappe
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.service.NotificationSaveService;
 import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.domain.user.domain.entity.UserSetting;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService;
 import leets.leenk.global.sqs.application.mapper.SqsMessageEventMapper;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,13 @@ public class LeenkNotificationUsecase {
         Notification notification = leenkNotificationMapper.toParticipateLeenkNotification(leenk, user);
         notificationSaveService.save(notification);
 
-        if (user.getFcmToken() != null) {
+        UserSetting userSetting;
+        try{
+            userSetting = userSettingGetService.findByUser(user);
+        } catch (Exception e){
+            return;
+        }
+        if (userSetting != null && userSetting.isLeenkStatusNotify() && user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken(), leenk));
         }
     }
