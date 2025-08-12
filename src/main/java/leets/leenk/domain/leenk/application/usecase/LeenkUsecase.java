@@ -15,6 +15,7 @@ import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedExcepti
 import leets.leenk.domain.leenk.application.exception.CannotKickSelfException;
 import leets.leenk.domain.leenk.application.exception.CannotLeaveAsHostException;
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException;
+import leets.leenk.domain.leenk.application.exception.LeenkAlreadyFinishedException;
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException;
 import leets.leenk.domain.leenk.application.exception.LeenkParticipantNotFoundException;
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException;
@@ -214,6 +215,21 @@ public class LeenkUsecase {
         }
 
         leenk.changeStatusToClosed();
+    }
+
+    @Transactional
+    public void finishLeenk(Long userId, Long leenkId) {
+        userGetService.findById(userId);
+        Leenk leenk = leenkGetService.findById(leenkId);
+
+        if (!leenk.getAuthor().getId().equals(userId)) {
+            throw new NotLeenkOwnerException();
+        }
+        if (leenk.getStatus() == LeenkStatus.FINISHED) {
+            throw new LeenkAlreadyFinishedException();
+        }
+
+        leenk.changeStatusToFinished();
     }
 
     @Transactional
