@@ -46,16 +46,7 @@ public class LeenkNotificationUsecase {
         Notification notification = leenkNotificationMapper.toParticipateLeenkNotification(leenk, user);
         notificationSaveService.save(notification);
 
-        UserSetting userSetting;
-        try{
-            userSetting = userSettingGetService.findByUser(user);
-        } catch (Exception e){
-            return;
-        }
-        if (userSetting != null && userSetting.isLeenkStatusNotify() && user.getFcmToken() != null) {
-            eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification,
-                    user.getFcmToken(), leenk));
-        }
+        publishLeenkStatusNotificationIfEnabled(notification, user, leenk);
     }
 
     @Transactional
@@ -71,24 +62,24 @@ public class LeenkNotificationUsecase {
 
     @Transactional
     public void saveLeenkClosedNotification(Leenk leenk, List<LeenkParticipants> participants) {
+        participants.forEach(participant -> {
+            User user = participant.getParticipant();
+            Notification notification = leenkNotificationMapper.toLeenkClosedNotification(leenk, user);
+            notificationSaveService.save(notification);
+            publishLeenkStatusNotificationIfEnabled(notification, user, leenk);
+        });
+    }
 
-        participants
-                .forEach(participant -> {
-                    Notification notification = leenkNotificationMapper.toLeenkClosedNotification(leenk,
-                            participant.getParticipant());
-                    notificationSaveService.save(notification);
-
-                    User user = participant.getParticipant();
-                    UserSetting userSetting;
-                    try{
-                        userSetting = userSettingGetService.findByUser(user);
-                    } catch (Exception e){
-                        return;
-                    }
-                    if (userSetting != null && userSetting.isLeenkStatusNotify() && user.getFcmToken() != null) {
-                        eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification,
-                                user.getFcmToken(), leenk));
-                    }
-                });
+    private void publishLeenkStatusNotificationIfEnabled(Notification notification, User user, Leenk leenk) {
+        if (user.getFcmToken() == null) {
+            return;
+        }
+        try {
+            UserSetting userSetting = userSettingGetService.findByUser(user);
+            if (userSetting.isLeenkStatusNotify()) {
+                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken(), leenk));
+            }
+        } catch (Exception e) {
+        }
     }
 }
