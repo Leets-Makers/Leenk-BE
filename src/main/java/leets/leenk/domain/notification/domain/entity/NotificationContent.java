@@ -6,6 +6,8 @@ import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReacti
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountNotificationContent;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedTagNotificationContent;
 import leets.leenk.domain.notification.domain.entity.feedContent.NewFeedNotificationContent;
+import leets.leenk.domain.notification.domain.entity.leenkContent.KickedFromLeenkNotificationContent;
+import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkClosedNotificationContent;
 import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkJoinCompletedNotificationContent;
 import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkNotificationContent;
 import lombok.AccessLevel;
@@ -22,7 +24,9 @@ import lombok.experimental.SuperBuilder;
         @JsonSubTypes.Type(value = FeedReactionCountNotificationContent.class, name = "FEED_REACTION_COUNT"),
         @JsonSubTypes.Type(value = NewFeedNotificationContent.class, name = "NEW_FEED"),
         @JsonSubTypes.Type(value = NewLeenkNotificationContent.class, name = "NEW_LEENK"),
-        @JsonSubTypes.Type(value = LeenkJoinCompletedNotificationContent.class, name = "LEENK_JOIN_COMPLETED")
+        @JsonSubTypes.Type(value = LeenkJoinCompletedNotificationContent.class, name = "LEENK_JOIN_COMPLETED"),
+        @JsonSubTypes.Type(value = KickedFromLeenkNotificationContent.class, name = "KICKED_FROM_LEENK"),
+        @JsonSubTypes.Type(value = LeenkClosedNotificationContent.class, name = "LEENK_CLOSED")
 })
 public class NotificationContent {
 

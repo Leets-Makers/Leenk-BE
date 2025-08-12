@@ -185,5 +185,8 @@ public class LeenkUsecase {
         }
 
         leenk.changeStatusToClosed();
+
+        List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
+        leenkNotificationUsecase.saveLeenkClosedNotification(leenk, participants);
     }
 }

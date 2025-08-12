@@ -12,6 +12,7 @@ public enum NotificationType {
     LEENK_JOIN_COMPLETED("Leenk", "에 참여했어"),
     NEW_LEENK_PARTICIPANT("Leenk", "에 새로운 참여자가 들어왔어"),
     KICKED_FROM_LEENK("Leenk", "모임에서 내보내졌어."),
+    LEENK_CLOSED("Leenk", "의 모집이 종료됐어\n모임원들을 확인해 봐!."),
 
     // Feed
     FEED_TAG("Leenk", "%s이 나를 함께한 사람에 추가했어"),

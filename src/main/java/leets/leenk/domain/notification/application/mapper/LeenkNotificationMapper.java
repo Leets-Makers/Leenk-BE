@@ -3,6 +3,7 @@ package leets.leenk.domain.notification.application.mapper;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.entity.leenkContent.KickedFromLeenkNotificationContent;
+import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkClosedNotificationContent;
 import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkJoinCompletedNotificationContent;
 import leets.leenk.domain.notification.domain.entity.NotificationType;
 import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkNotificationContent;
@@ -65,6 +66,24 @@ public class LeenkNotificationMapper {
                 .leenkTitle(leenk.getTitle())
                 .title(NotificationType.KICKED_FROM_LEENK.getTitle())
                 .body(NotificationType.KICKED_FROM_LEENK.getContent())
+                .build();
+    }
+
+    public Notification toLeenkClosedNotification(Leenk leenk, User user) {
+        return Notification.builder()
+                .userId(user.getId())
+                .notificationType(NotificationType.LEENK_CLOSED)
+                .isRead(Boolean.FALSE)
+                .content(toLeenkClosedNotificationContent(leenk))
+                .build();
+    }
+
+    private LeenkClosedNotificationContent toLeenkClosedNotificationContent(Leenk leenk) {
+        return LeenkClosedNotificationContent.builder()
+                .leenkId(leenk.getId())
+                .leenkTitle(leenk.getTitle())
+                .title(NotificationType.LEENK_CLOSED.getTitle())
+                .body(NotificationType.LEENK_CLOSED.getContent())
                 .build();
     }
 
