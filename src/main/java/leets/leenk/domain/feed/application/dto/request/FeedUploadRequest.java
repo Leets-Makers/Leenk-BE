@@ -10,6 +10,7 @@ import java.util.List;
 
 public record FeedUploadRequest(
         @Schema(description = "피드 설명", example = "행복한 링크 생활")
+        @Size(max = 100)
         String description,
 
         @Valid
