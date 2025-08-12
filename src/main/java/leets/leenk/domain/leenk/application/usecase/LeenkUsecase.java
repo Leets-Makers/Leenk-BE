@@ -118,12 +118,21 @@ public class LeenkUsecase {
             throw new LeenkAlreadyClosedException();
         }
 
-        leenkUpdateService.updateTitle(leenk, request.title());
-        leenkUpdateService.updateContent(leenk, request.content());
-        leenkUpdateService.updateStartTime(leenk, request.startTime());
-        leenkUpdateService.updateMaxParticipants(leenk, request.maxParticipants());
-        leenkUpdateService.updatePlaceName(location, request.placeName());
-        leenkUpdateService.updateMediaUrl(leenk, media, request.mediaUrl());
+        leenkUpdateService.updateLeenk(leenk, location, request);
+
+        String newUrl = request.mediaUrl();
+        if (newUrl == null || newUrl.isBlank()) {
+            if (media != null) {
+                mediaDeleteService.delete(media);
+            }
+        } else {
+            if (media != null) {
+                media.updateMediaUrl(newUrl);
+            } else {
+                Media newMedia = mediaMapper.toMedia(leenk, newUrl);
+                mediaSaveService.save(newMedia);
+            }
+        }
     }
 
     @Transactional(readOnly = true)

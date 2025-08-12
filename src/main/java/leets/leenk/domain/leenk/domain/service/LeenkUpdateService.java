@@ -1,13 +1,10 @@
 package leets.leenk.domain.leenk.domain.service;
 
 import java.time.LocalDateTime;
+import leets.leenk.domain.leenk.application.dto.request.LeenkUpdateRequest;
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsTooLowException;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.Location;
-import leets.leenk.domain.media.application.mapper.MediaMapper;
-import leets.leenk.domain.media.domain.entity.Media;
-import leets.leenk.domain.media.domain.service.MediaDeleteService;
-import leets.leenk.domain.media.domain.service.MediaSaveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,30 +12,33 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LeenkUpdateService {
 
-    private final MediaSaveService mediaSaveService;
-    private final MediaDeleteService mediaDeleteService;
+    public void updateLeenk(Leenk leenk, Location location, LeenkUpdateRequest request) {
+        updateTitle(leenk, request.title());
+        updateContent(leenk, request.content());
+        updateStartTime(leenk, request.startTime());
+        updateMaxParticipants(leenk, request.maxParticipants());
+        updatePlaceName(location, request.placeName());
+    }
 
-    private final MediaMapper mediaMapper;
-
-    public void updateTitle(Leenk leenk, String title) {
+    private void updateTitle(Leenk leenk, String title) {
         if (title != null && !title.isBlank()) {
             leenk.updateTitle(title);
         }
     }
 
-    public void updateContent(Leenk leenk, String content) {
+    private void updateContent(Leenk leenk, String content) {
         if (content != null && !content.isBlank()) {
             leenk.updateContent(content);
         }
     }
 
-    public void updateStartTime(Leenk leenk, LocalDateTime startTime) {
+    private void updateStartTime(Leenk leenk, LocalDateTime startTime) {
         if (startTime != null) {
             leenk.updateStartTime(startTime);
         }
     }
 
-    public void updateMaxParticipants(Leenk leenk, Long maxParticipants) {
+    private void updateMaxParticipants(Leenk leenk, Long maxParticipants) {
         if (maxParticipants == null) {
             return;
         }
@@ -52,25 +52,9 @@ public class LeenkUpdateService {
         leenk.updateMaxParticipants(maxParticipants);
     }
 
-    public void updatePlaceName(Location location, String placeName) {
+    private void updatePlaceName(Location location, String placeName) {
         if (location != null && placeName != null && !placeName.isBlank()) {
             location.updatePlaceName(placeName);
-        }
-    }
-
-    public void updateMediaUrl(Leenk leenk, Media media, String newUrl) {
-        if (newUrl == null || newUrl.isBlank()) {
-            if (media != null) {
-                mediaDeleteService.delete(media);
-            }
-            return;
-        }
-
-        if (media != null) {
-            media.updateMediaUrl(newUrl);
-        } else {
-            Media newMedia = mediaMapper.toMedia(leenk, newUrl);
-            mediaSaveService.save(newMedia);
         }
     }
 }
