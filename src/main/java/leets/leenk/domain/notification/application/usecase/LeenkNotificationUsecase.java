@@ -34,7 +34,7 @@ public class LeenkNotificationUsecase {
             notificationSaveService.save(notification);
 
             if (user.getFcmToken() != null) {
-                eventPublisher.publishEvent(sqsMessageEventMapper.toNewLeenkSqsMessageEvent(notification, user.getFcmToken(), leenk));
+                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEventWithLeenk(notification, user.getFcmToken(), leenk));
             }
         });
     }
@@ -52,6 +52,16 @@ public class LeenkNotificationUsecase {
         }
         if (userSetting != null && userSetting.isLeenkStatusNotify() && user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken(), leenk));
+        }
+    }
+
+    @Transactional
+    public void saveKickedFromLeenkNotification(Leenk leenk, User user) {
+        Notification notification = leenkNotificationMapper.toKickedFromLeenkNotification(leenk, user);
+        notificationSaveService.save(notification);
+
+        if (user.getFcmToken() != null) {
+            eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEventWithLeenk(notification, user.getFcmToken(), leenk));
         }
     }
 

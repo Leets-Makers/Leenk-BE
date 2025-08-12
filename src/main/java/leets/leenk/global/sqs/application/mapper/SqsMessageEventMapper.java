@@ -44,7 +44,7 @@ public class SqsMessageEventMapper {
                 .build();
     }
 
-    public SqsMessageEvent toNewLeenkSqsMessageEvent(Notification notification, String fcmToken, Leenk leenk) {
+    public SqsMessageEvent toSqsMessageEventWithLeenk(Notification notification, String fcmToken, Leenk leenk) {
         return SqsMessageEvent.builder()
                 .title(notification.getContent().getTitle())
                 .content(leenk.getTitle() + notification.getContent().getBody() + "\n" + "[" + leenk.getTitle() + "]")
