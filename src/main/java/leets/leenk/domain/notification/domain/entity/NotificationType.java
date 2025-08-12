@@ -9,6 +9,8 @@ public enum NotificationType {
 
     // Leenk
     NEW_LEENK("Leenk", "새로운 모임을 확인해 봐."),
+    LEENK_JOIN_COMPLETED("Leenk", "에 참여했어"),
+    NEW_LEENK_PARTICIPANT("Leenk", "에 새로운 참여자가 들어왔어"),
 
     // Feed
     FEED_TAG("Leenk", "%s이 나를 함께한 사람에 추가했어"),

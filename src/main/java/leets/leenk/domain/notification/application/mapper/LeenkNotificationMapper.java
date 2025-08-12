@@ -2,6 +2,7 @@ package leets.leenk.domain.notification.application.mapper;
 
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.notification.domain.entity.Notification;
+import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkJoinCompletedNotificationContent;
 import leets.leenk.domain.notification.domain.entity.NotificationType;
 import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkNotificationContent;
 import leets.leenk.domain.user.domain.entity.User;
@@ -27,6 +28,24 @@ public class LeenkNotificationMapper {
                 .leenkTitle(leenk.getTitle())
                 .title(NotificationType.NEW_LEENK.getTitle())
                 .body(NotificationType.NEW_LEENK.getContent())
+                .build();
+    }
+
+    public Notification toParticipateLeenkNotification(Leenk leenk, User user) {
+        return Notification.builder()
+                .userId(user.getId())
+                .notificationType(NotificationType.LEENK_JOIN_COMPLETED)
+                .isRead(Boolean.FALSE)
+                .content(toJoinCompletedNotificationContent(leenk))
+                .build();
+    }
+
+    private LeenkJoinCompletedNotificationContent toJoinCompletedNotificationContent(Leenk leenk) {
+        return LeenkJoinCompletedNotificationContent.builder()
+                .leenkId(leenk.getId())
+                .leenkTitle(leenk.getTitle())
+                .title(NotificationType.LEENK_JOIN_COMPLETED.getTitle())
+                .body(NotificationType.LEENK_JOIN_COMPLETED.getContent())
                 .build();
     }
 

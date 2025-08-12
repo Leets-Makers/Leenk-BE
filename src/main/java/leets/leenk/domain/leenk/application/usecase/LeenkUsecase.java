@@ -142,6 +142,8 @@ public class LeenkUsecase {
 
         leenkParticipantsSaveService.save(participant);
         leenk.increaseCurrentParticipants();
+
+        leenkNotificationUsecase.saveParticipateLeenkNotification(leenk, user);
     }
 
     @Transactional

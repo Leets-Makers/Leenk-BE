@@ -37,4 +37,15 @@ public class LeenkNotificationUsecase {
             }
         });
     }
+
+    @Transactional
+    public void saveParticipateLeenkNotification(Leenk leenk, User user) {
+        Notification notification = leenkNotificationMapper.toParticipateLeenkNotification(leenk, user);
+        notificationSaveService.save(notification);
+
+        if (user.getFcmToken() != null) {
+            eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken(), leenk));
+        }
+    }
+
 }

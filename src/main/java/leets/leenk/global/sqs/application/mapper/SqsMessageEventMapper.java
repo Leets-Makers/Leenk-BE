@@ -1,5 +1,6 @@
 package leets.leenk.global.sqs.application.mapper;
 
+import leets.leenk.domain.leenk.domain.entity.Leenk;
 import org.springframework.stereotype.Component;
 
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionDetail;
@@ -34,4 +35,14 @@ public class SqsMessageEventMapper {
 			.fcmToken(fcmToken)
 			.build();
 	}
+
+    public SqsMessageEvent toSqsMessageEvent(Notification notification, String fcmToken, Leenk leenk) {
+
+        return SqsMessageEvent.builder()
+                .title(notification.getContent().getTitle())
+                .content(leenk.getTitle() + notification.getContent().getBody())
+                .fcmToken(fcmToken)
+                .build();
+    }
+
 }
