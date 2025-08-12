@@ -33,7 +33,7 @@ public class LeenkNotificationUsecase {
             notificationSaveService.save(notification);
 
             if (user.getFcmToken() != null) {
-                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken()));
+                eventPublisher.publishEvent(sqsMessageEventMapper.toNewLeenkSqsMessageEvent(notification, user.getFcmToken(), leenk));
             }
         });
     }

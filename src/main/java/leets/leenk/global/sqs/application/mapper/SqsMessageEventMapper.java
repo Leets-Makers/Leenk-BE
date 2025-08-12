@@ -37,12 +37,18 @@ public class SqsMessageEventMapper {
 	}
 
     public SqsMessageEvent toSqsMessageEvent(Notification notification, String fcmToken, Leenk leenk) {
-
         return SqsMessageEvent.builder()
                 .title(notification.getContent().getTitle())
-                .content(leenk.getTitle() + notification.getContent().getBody())
+                .content("[" + leenk.getTitle() + "]" + leenk.getTitle() + notification.getContent().getBody())
                 .fcmToken(fcmToken)
                 .build();
     }
 
+    public SqsMessageEvent toNewLeenkSqsMessageEvent(Notification notification, String fcmToken, Leenk leenk) {
+        return SqsMessageEvent.builder()
+                .title(notification.getContent().getTitle())
+                .content(leenk.getTitle() + notification.getContent().getBody() + "\n" + "[" + leenk.getTitle() + "]")
+                .fcmToken(fcmToken)
+                .build();
+    }
 }
