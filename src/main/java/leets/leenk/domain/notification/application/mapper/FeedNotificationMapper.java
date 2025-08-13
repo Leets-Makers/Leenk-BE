@@ -55,7 +55,7 @@ public class FeedNotificationMapper {
                 .feedId(feed.getId())
                 .authorName(feed.getUser().getName())
                 .title(NotificationType.FEED_TAG.getTitle())
-                .body(NotificationType.FEED_TAG.getFormattedContent(feed.getUser().getName()))
+                .body(NotificationType.FEED_TAG.getContent())
                 .build();
     }
 

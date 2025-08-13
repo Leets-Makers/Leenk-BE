@@ -119,7 +119,7 @@ public class FeedUsecase {
         linkedUserSaveService.saveAll(linkedUsers);
 
         feedNotificationUsecase.saveNewFeedNotification(feed);
-        feedNotificationUsecase.saveTagNotification(feed, linkedUsers);
+        feedNotificationUsecase.saveTagNotification(feed, linkedUsers, author);
     }
 
     private List<LinkedUser> getLinkedUsers(User author, List<Long> userIds, Feed feed) {

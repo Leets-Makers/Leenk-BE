@@ -21,6 +21,14 @@ public class SqsMessageEventMapper {
 			.build();
 	}
 
+    public SqsMessageEvent fromNotificationWithTag(Notification notification, String fcmToken, String authorName) {
+        return SqsMessageEvent.builder()
+                .title(notification.getContent().getTitle())
+                .content("[" + authorName + "]" +  notification.getContent().getBody())
+                .fcmToken(fcmToken)
+                .build();
+    }
+
 	public SqsMessageEvent fromFeedFirstReaction(FeedFirstReactionDetail feedFirstReactionDetail, String fcmToken) {
 		return SqsMessageEvent.builder()
 			.title(feedFirstReactionDetail.getTitle())

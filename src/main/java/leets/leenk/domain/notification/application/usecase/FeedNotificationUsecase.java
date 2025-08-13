@@ -121,16 +121,20 @@ public class FeedNotificationUsecase {
     }
 
     @Transactional
-    public void saveTagNotification(Feed feed, List<LinkedUser> linkedUsers) {
-        linkedUsers.forEach(linkedUser -> {
-            Notification notification = feedNotificationMapper.toFeedTagNotification(feed, linkedUser);
-            String fcmToken = linkedUser.getUser().getFcmToken();
-            notificationSaveService.save(notification);
+    public void saveTagNotification(Feed feed, List<LinkedUser> linkedUsers, User author) {
+        final String authorName = author.getName();
 
-            if(fcmToken != null) {
-                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, fcmToken));
-            }
-        });
+        linkedUsers.stream()
+            .filter(linkedUser -> !linkedUser.getUser().getId().equals(author.getId()))
+            .forEach(linkedUser -> {
+                Notification notification = feedNotificationMapper.toFeedTagNotification(feed, linkedUser);
+                notificationSaveService.save(notification);
+
+                String fcmToken = linkedUser.getUser().getFcmToken();
+                if (fcmToken != null) {
+                    eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithTag(notification, fcmToken, authorName));
+                }
+            });
     }
 
     @Transactional
