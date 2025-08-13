@@ -63,8 +63,25 @@ public class AuthUsecase {
         long userId = parseUserId(response);
         Optional<User> optionalUser = userGetService.existById(userId);
 
+        return getUserLoginResponse(optionalUser, response);
+
+    }
+
+    private LoginResponse getUserLoginResponse(Optional<User> optionalUser, OauthTokenResponse response) {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+
+            if (user.getKakaoTalkId() == null) {
+                OauthUserInfoResponse userInfo = oauthApiService.getUserInfo(response.access_token());
+
+                return loginMapper.toLoginResponse(user, userInfo, response.access_token(), response.refresh_token());
+            }
+
+            if (!user.isAgree()) {
+                OauthUserInfoResponse userInfo = oauthApiService.getUserInfo(response.access_token());
+
+                return loginMapper.toLoginResponse(user, userInfo, response.access_token(), response.refresh_token());
+            }
 
             if (user.isDeleted()) {
                 return reRegisterUser(user, response);
