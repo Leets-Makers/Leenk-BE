@@ -89,6 +89,18 @@ public class LeenkNotificationUsecase {
         });
     }
 
+    @Transactional
+    public void saveLeenkStartingSoonNotification(Leenk leenk) {
+        List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
+
+        participants.forEach(participant -> {
+            User user = participant.getParticipant();
+            Notification notification = leenkNotificationMapper.toLeenkStartingSoonNotification(leenk, user);
+            notificationSaveService.save(notification);
+            publishLeenkStatusNotificationIfEnabled(notification, user, leenk, TitlePosition.PREFIX);
+        });
+    }
+
     private void publishLeenkStatusNotificationIfEnabled(Notification notification, User user, Leenk leenk,
                                                          TitlePosition titlePosition) {
         if (user.getFcmToken() == null) {

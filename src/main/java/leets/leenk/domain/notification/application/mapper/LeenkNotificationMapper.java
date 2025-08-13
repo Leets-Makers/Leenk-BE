@@ -2,12 +2,8 @@ package leets.leenk.domain.notification.application.mapper;
 
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.leenkContent.KickedFromLeenkNotificationContent;
-import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkClosedNotificationContent;
-import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkJoinCompletedNotificationContent;
+import leets.leenk.domain.notification.domain.entity.leenkContent.*;
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
-import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkParticipantNotificationContent;
-import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkNotificationContent;
 import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -105,6 +101,24 @@ public class LeenkNotificationMapper {
                 .leenkTitle(leenk.getTitle())
                 .title(NotificationType.LEENK_CLOSED.getTitle())
                 .body(NotificationType.LEENK_CLOSED.getContent())
+                .build();
+    }
+
+    public Notification toLeenkStartingSoonNotification(Leenk leenk, User user) {
+        return Notification.builder()
+                .userId(user.getId())
+                .notificationType(NotificationType.LEENK_STARTING_SOON)
+                .isRead(Boolean.FALSE)
+                .content(toLeenkStartingSoonNotificationContent(leenk))
+                .build();
+    }
+
+    private LeenkStartingSoonNotificationContent toLeenkStartingSoonNotificationContent(Leenk leenk) {
+        return LeenkStartingSoonNotificationContent.builder()
+                .leenkId(leenk.getId())
+                .leenkTitle(leenk.getTitle())
+                .title(NotificationType.LEENK_STARTING_SOON.getTitle())
+                .body(NotificationType.LEENK_STARTING_SOON.getContent())
                 .build();
     }
 

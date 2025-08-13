@@ -24,5 +24,7 @@ public class LeenkAutoFinishScheduler {
         LocalDateTime now = LocalDateTime.now(KST);
         int affected = leenkStatusBatchService.finishDueLeenks(now);
         log.info("자동 종료된 링크 수 = {}", affected);
+
+        leenkStatusBatchService.notifyStartSoon(now);
     }
 }

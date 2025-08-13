@@ -28,4 +28,6 @@ public interface LeenkRepository extends JpaRepository<Leenk, Long> {
             """)
     int finishDue(@Param("now") LocalDateTime now, @Param("finished") LeenkStatus finished,
                   @Param("targets") List<LeenkStatus> targets);
+
+    List<Leenk> findAllByStatusInAndStartTimeLessThanEqual(List<LeenkStatus> statuses, LocalDateTime startTime);
 }
