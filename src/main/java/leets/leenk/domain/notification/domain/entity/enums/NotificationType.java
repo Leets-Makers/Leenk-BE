@@ -1,4 +1,4 @@
-package leets.leenk.domain.notification.domain.entity;
+package leets.leenk.domain.notification.domain.entity.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package leets.leenk.domain.notification.application.mapper;
 
 import org.springframework.stereotype.Component;
 
-import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionDetail;
 import leets.leenk.domain.user.domain.entity.User;
 

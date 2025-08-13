@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import lombok.RequiredArgsConstructor;
 
 import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 
 @Repository
 @RequiredArgsConstructor

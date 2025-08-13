@@ -2,8 +2,10 @@ package leets.leenk.domain.notification.application.usecase;
 
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
+import leets.leenk.domain.leenk.domain.service.LeenkParticipantsGetService;
 import leets.leenk.domain.notification.application.mapper.LeenkNotificationMapper;
 import leets.leenk.domain.notification.domain.entity.Notification;
+import leets.leenk.domain.notification.domain.entity.enums.TitlePosition;
 import leets.leenk.domain.notification.domain.service.NotificationSaveService;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserSetting;
@@ -25,6 +27,7 @@ public class LeenkNotificationUsecase {
     private final NotificationSaveService notificationSaveService;
     private final ApplicationEventPublisher eventPublisher;
     private final SqsMessageEventMapper sqsMessageEventMapper;
+    private final LeenkParticipantsGetService leenkParticipantsGetService;
 
     @Transactional
     public void saveNewLeenkNotification(Leenk leenk) {
@@ -35,18 +38,32 @@ public class LeenkNotificationUsecase {
             notificationSaveService.save(notification);
 
             if (user.getFcmToken() != null) {
-                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEventWithLeenk(notification,
-                        user.getFcmToken(), leenk));
+                eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithLeenk(notification,
+                        user.getFcmToken(), leenk, TitlePosition.SUFFIX));
             }
         });
     }
 
     @Transactional
-    public void saveParticipateLeenkNotification(Leenk leenk, User user) {
-        Notification notification = leenkNotificationMapper.toParticipateLeenkNotification(leenk, user);
-        notificationSaveService.save(notification);
+    public void saveNewLeenkParticipantNotification(Leenk leenk, User newUser) {
+        // 새로 참여한 사용자에게 '참여 완료' 알림
+        Notification joinNotification = leenkNotificationMapper.toParticipateLeenkNotification(leenk, newUser);
+        notificationSaveService.save(joinNotification);
+        publishLeenkStatusNotificationIfEnabled(joinNotification, newUser, leenk, TitlePosition.PREFIX);
 
-        publishLeenkStatusNotificationIfEnabled(notification, user, leenk);
+        // 기존 참여자들에게 알림
+        List<LeenkParticipants> otherParticipants = leenkParticipantsGetService.findAllByLeenk(leenk)
+            .stream()
+            .filter(leenkParticipant -> !leenkParticipant.getParticipant().getId().equals(newUser.getId()))
+            .toList();
+
+        otherParticipants.forEach(participant -> {
+            User existingUser = participant.getParticipant();
+            Notification notification = leenkNotificationMapper.toNewLeenkParticipantNotification(leenk,
+                    existingUser, newUser);
+            notificationSaveService.save(notification);
+            publishLeenkStatusNotificationIfEnabled(notification, existingUser, leenk, TitlePosition.PREFIX);
+        });
     }
 
     @Transactional
@@ -55,29 +72,33 @@ public class LeenkNotificationUsecase {
         notificationSaveService.save(notification);
 
         if (user.getFcmToken() != null) {
-            eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEventWithLeenk(notification,
-                    user.getFcmToken(), leenk));
+            eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithLeenk(notification,
+                    user.getFcmToken(), leenk, TitlePosition.SUFFIX));
         }
     }
 
     @Transactional
-    public void saveLeenkClosedNotification(Leenk leenk, List<LeenkParticipants> participants) {
+    public void saveLeenkClosedNotification(Leenk leenk) {
+        List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
+
         participants.forEach(participant -> {
             User user = participant.getParticipant();
             Notification notification = leenkNotificationMapper.toLeenkClosedNotification(leenk, user);
             notificationSaveService.save(notification);
-            publishLeenkStatusNotificationIfEnabled(notification, user, leenk);
+            publishLeenkStatusNotificationIfEnabled(notification, user, leenk, TitlePosition.PREFIX);
         });
     }
 
-    private void publishLeenkStatusNotificationIfEnabled(Notification notification, User user, Leenk leenk) {
+    private void publishLeenkStatusNotificationIfEnabled(Notification notification, User user, Leenk leenk,
+                                                         TitlePosition titlePosition) {
         if (user.getFcmToken() == null) {
             return;
         }
         try {
             UserSetting userSetting = userSettingGetService.findByUser(user);
             if (userSetting.isLeenkStatusNotify()) {
-                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken(), leenk));
+                eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithLeenk(notification, user.getFcmToken(),
+                        leenk, titlePosition));
             }
         } catch (Exception e) {
         }

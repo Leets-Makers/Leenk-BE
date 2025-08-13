@@ -5,7 +5,8 @@ import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.entity.leenkContent.KickedFromLeenkNotificationContent;
 import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkClosedNotificationContent;
 import leets.leenk.domain.notification.domain.entity.leenkContent.LeenkJoinCompletedNotificationContent;
-import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
+import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkParticipantNotificationContent;
 import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkNotificationContent;
 import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.stereotype.Component;
@@ -49,6 +50,26 @@ public class LeenkNotificationMapper {
                 .title(NotificationType.LEENK_JOIN_COMPLETED.getTitle())
                 .body(NotificationType.LEENK_JOIN_COMPLETED.getContent())
                 .build();
+    }
+
+    public Notification toNewLeenkParticipantNotification(Leenk leenk, User userToNotify, User newUser) {
+        return Notification.builder()
+            .userId(userToNotify.getId())
+            .notificationType(NotificationType.NEW_LEENK_PARTICIPANT)
+            .isRead(Boolean.FALSE)
+            .content(toNewLeenkParticipantNotificationContent(leenk, newUser))
+            .build();
+    }
+
+    private NewLeenkParticipantNotificationContent toNewLeenkParticipantNotificationContent(Leenk leenk, User newUser) {
+        return NewLeenkParticipantNotificationContent.builder()
+            .leenkId(leenk.getId())
+            .leenkTitle(leenk.getTitle())
+            .newParticipantId(newUser.getId())
+            .newParticipantName(newUser.getName())
+            .title(NotificationType.NEW_LEENK_PARTICIPANT.getTitle())
+            .body(NotificationType.NEW_LEENK_PARTICIPANT.getContent())
+            .build();
     }
 
     public Notification toKickedFromLeenkNotification(Leenk leenk, User user) {

@@ -1,6 +1,7 @@
 package leets.leenk.global.sqs.application.mapper;
 
 import leets.leenk.domain.leenk.domain.entity.Leenk;
+import leets.leenk.domain.notification.domain.entity.enums.TitlePosition;
 import org.springframework.stereotype.Component;
 
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionDetail;
@@ -36,18 +37,21 @@ public class SqsMessageEventMapper {
 			.build();
 	}
 
-    public SqsMessageEvent toSqsMessageEvent(Notification notification, String fcmToken, Leenk leenk) {
-        return SqsMessageEvent.builder()
-                .title(notification.getContent().getTitle())
-                .content("[" + leenk.getTitle() + "]" + notification.getContent().getBody())
-                .fcmToken(fcmToken)
-                .build();
-    }
+	public SqsMessageEvent fromNotificationWithLeenk(Notification notification, String fcmToken, Leenk leenk
+            , TitlePosition position) {
+        String body;
+        String leenkTitleFormatted = "[" + leenk.getTitle() + "]";
+        String notificationBody = notification.getContent().getBody();
 
-    public SqsMessageEvent toSqsMessageEventWithLeenk(Notification notification, String fcmToken, Leenk leenk) {
+        if (position == TitlePosition.PREFIX) {
+            body = leenkTitleFormatted + notificationBody;
+        } else {
+            body = notificationBody + "\n" + leenkTitleFormatted;
+        }
+
         return SqsMessageEvent.builder()
                 .title(notification.getContent().getTitle())
-                .content(notification.getContent().getBody() + "\n" + "[" + leenk.getTitle() + "]")
+                .content(body)
                 .fcmToken(fcmToken)
                 .build();
     }

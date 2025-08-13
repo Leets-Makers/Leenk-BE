@@ -143,7 +143,8 @@ public class LeenkUsecase {
         leenkParticipantsSaveService.save(participant);
         leenk.increaseCurrentParticipants();
 
-        leenkNotificationUsecase.saveParticipateLeenkNotification(leenk, user);
+
+        leenkNotificationUsecase.saveNewLeenkParticipantNotification(leenk, user);
     }
 
     @Transactional
@@ -186,7 +187,6 @@ public class LeenkUsecase {
 
         leenk.changeStatusToClosed();
 
-        List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
-        leenkNotificationUsecase.saveLeenkClosedNotification(leenk, participants);
+        leenkNotificationUsecase.saveLeenkClosedNotification(leenk);
     }
 }

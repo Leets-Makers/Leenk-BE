@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionNotificationContent;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountNotificationContent;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedTagNotificationContent;

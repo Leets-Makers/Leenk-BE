@@ -8,7 +8,7 @@ import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.Reaction;
 import leets.leenk.domain.notification.application.mapper.FeedNotificationMapper;
 import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import leets.leenk.domain.notification.domain.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 
