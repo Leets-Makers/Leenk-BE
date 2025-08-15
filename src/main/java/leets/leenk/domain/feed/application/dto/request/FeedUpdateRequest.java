@@ -17,6 +17,6 @@ public record FeedUpdateRequest(
         List<FeedMediaRequest> media,
 
         @Schema(description = "함께한 사용자 목록 (수정할 값만 보내주세요)")
-        List<Long> userId
+        List<Long> userIds
 ) {
 }

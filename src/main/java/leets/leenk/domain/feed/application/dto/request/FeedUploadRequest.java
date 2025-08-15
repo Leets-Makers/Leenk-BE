@@ -19,6 +19,6 @@ public record FeedUploadRequest(
         List<FeedMediaRequest> media,
 
         @Schema(description = "함께한 사용자 목록")
-        List<Long> userId
+        List<Long> userIds
 ) {
 }

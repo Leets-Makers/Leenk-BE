@@ -1,15 +1,14 @@
 package leets.leenk.domain.notification.domain.repository;
 
-import java.util.Optional;
-
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.stereotype.Repository;
-import org.springframework.data.mongodb.core.query.Query;
-import lombok.RequiredArgsConstructor;
-
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.entity.NotificationType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
                                                                         Long userId) {
         Query query = new Query(Criteria.where("notificationType").is(type)
                 .and("content.feedId").is(feedId)
-                .and("content.feedFirstReactions.userId").is(userId));
+                .and("content.feedFirstReactions.userIds").is(userId));
         return Optional.ofNullable(mongoTemplate.findOne(query, Notification.class));
     }
 
