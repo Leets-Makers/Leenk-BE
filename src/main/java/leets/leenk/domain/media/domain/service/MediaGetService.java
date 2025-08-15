@@ -1,6 +1,7 @@
 package leets.leenk.domain.media.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.media.application.exception.MediaNotFoundException;
@@ -26,6 +27,10 @@ public class MediaGetService {
 
     public List<Media> findAllByFeeds(List<Feed> feeds) {
         return mediaRepository.findAllByFeedInOrderByPosition(feeds);
+    }
+
+    public Optional<Media> findFirstMediaByLeenk(Leenk leenk) {
+        return mediaRepository.findFirstByLeenkOrderByPositionAsc(leenk);
     }
 
     public String findMediaUrlByLeenk(Leenk leenk) {
