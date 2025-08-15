@@ -17,6 +17,6 @@ public class FeedReactionCountNotificationContent extends NotificationContent {
     private Long feedId;
 
     @Builder.Default
-    List<FeedReactionCountDetail> feedReactionCountDetails = new ArrayList<>();
+    private List<FeedReactionCountDetail> feedReactionCountDetails = new ArrayList<>();
 
 }
