@@ -26,8 +26,8 @@ public class LeenkStatusBatchService {
     }
 
     public void notifyStartSoon(LocalDateTime now) {
-        List<Leenk> leenksToNotify = leenkRepository.findAllByStatusInAndStartTimeLessThanEqual(
-                List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now.plusMinutes(30));
+        List<Leenk> leenksToNotify = leenkRepository.findAllByStatusInAndStartTimeBetween(
+                List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now, now.plusMinutes(30));
 
         leenksToNotify.forEach(leenkNotificationUsecase::saveLeenkStartingSoonNotification);
     }

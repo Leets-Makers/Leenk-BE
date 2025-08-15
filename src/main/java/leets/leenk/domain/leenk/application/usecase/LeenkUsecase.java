@@ -264,7 +264,7 @@ public class LeenkUsecase {
         leenkParticipantsDeleteService.delete(participant);
         leenk.decreaseCurrentParticipants();
 
-        leenkNotificationUsecase.saveKickedFromLeenkNotification(leenk, userGetService.findById(participantId));
+        leenkNotificationUsecase.saveKickedFromLeenkNotification(leenk, participant.getParticipant());
     }
 
     @Transactional
