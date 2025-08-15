@@ -109,7 +109,7 @@ public class FeedUsecase {
                 .toList();
         mediaSaveService.saveAll(medias);
 
-        List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userId(), feed);
+        List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userIds(), feed);
         linkedUserSaveService.saveAll(linkedUsers);
 
         notificationUsecase.saveNewFeedNotification(feed);
@@ -180,9 +180,9 @@ public class FeedUsecase {
             mediaSaveService.saveAll(newMedias);
         }
 
-        if (request.userId() != null) {
+        if (request.userIds() != null) {
             linkedUserDeleteService.deleteAllByFeed(feed);
-            List<LinkedUser> newLinkedUsers = getLinkedUsers(author, request.userId(), feed);
+            List<LinkedUser> newLinkedUsers = getLinkedUsers(author, request.userIds(), feed);
             linkedUserSaveService.saveAll(newLinkedUsers);
         }
     }
