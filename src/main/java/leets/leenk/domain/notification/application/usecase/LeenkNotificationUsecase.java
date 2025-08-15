@@ -12,12 +12,14 @@ import leets.leenk.domain.user.domain.entity.UserSetting;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService;
 import leets.leenk.global.sqs.application.mapper.SqsMessageEventMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class LeenkNotificationUsecase {
@@ -113,6 +115,8 @@ public class LeenkNotificationUsecase {
                         leenk, titlePosition));
             }
         } catch (Exception e) {
+            log.warn("Failed to publish Leenk notification for user: {}, leenk: {}",
+                    user.getId(), leenk.getId(), e);
         }
     }
 }
