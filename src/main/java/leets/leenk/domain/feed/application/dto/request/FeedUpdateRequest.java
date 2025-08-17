@@ -2,6 +2,8 @@ package leets.leenk.domain.feed.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import leets.leenk.domain.media.application.dto.request.FeedMediaRequest;
 
@@ -13,7 +15,9 @@ public record FeedUpdateRequest(
         String description,
 
         @Valid
-        @Size(max = 3)
+        @NotNull
+        @NotEmpty
+        @Size(min = 1, max = 3)
         List<FeedMediaRequest> media,
 
         @Schema(description = "함께한 사용자 목록 (수정할 값만 보내주세요)")
