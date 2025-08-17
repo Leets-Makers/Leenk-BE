@@ -28,7 +28,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
                                                                         Long userId) {
         Query query = new Query(Criteria.where("notificationType").is(type)
                 .and("content.feedId").is(feedId)
-                .and("content.feedFirstReactions.userIds").is(userId));
+                .and("content.feedFirstReactions.userId").is(userId));
         return Optional.ofNullable(mongoTemplate.findOne(query, Notification.class));
     }
 
