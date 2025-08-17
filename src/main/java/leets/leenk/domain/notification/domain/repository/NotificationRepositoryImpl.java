@@ -1,15 +1,15 @@
 package leets.leenk.domain.notification.domain.repository;
 
-import java.util.Optional;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
+import leets.leenk.domain.notification.domain.entity.Notification;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 
-import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
