@@ -20,9 +20,8 @@ public class LeenkStatusBatchService {
     private final LeenkNotificationUsecase leenkNotificationUsecase;
 
     @Transactional
-    public int finishDueLeenks(LocalDateTime now) {
-        return leenkRepository.finishDue(now, LeenkStatus.FINISHED,
-                List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED));
+    public List<Leenk> finishDueLeenks(LocalDateTime now) {
+        return leenkRepository.findAllByStatusInAndStartTimeLessThanEqual(List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now);
     }
 
     public void notifyStartSoon(LocalDateTime now) {
