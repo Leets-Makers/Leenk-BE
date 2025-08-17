@@ -20,8 +20,4 @@ public class LeenkStatusBatchService {
         return leenkRepository.findAllByStatusInAndStartTimeLessThanEqual(List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now);
     }
 
-    public List<Leenk> findLeenksStartingSoon(LocalDateTime now) {
-        return leenkRepository.findAllByStatusInAndStartTimeGreaterThanAndStartTimeLessThanEqual(
-                List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now, now.plusMinutes(30));
-    }
 }

@@ -1,5 +1,6 @@
 package leets.leenk.domain.leenk.domain.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import leets.leenk.domain.leenk.application.exception.LeenkNotFoundException;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
@@ -41,5 +42,10 @@ public class LeenkGetService {
         }
 
         return leenkRepository.findAllByStatus(filter.getLeenkStatus(), pageable);
+    }
+
+    public List<Leenk> findLeenksStartingWithin30Minutes(LocalDateTime now) {
+        return leenkRepository.findAllByStatusInAndStartTimeGreaterThanAndStartTimeLessThanEqual(
+                List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now, now.plusMinutes(30));
     }
 }

@@ -122,4 +122,22 @@ public class LeenkNotificationMapper {
                 .build();
     }
 
+    public Notification toLeenkFinishedNotification(Leenk leenk, User user) {
+        return Notification.builder()
+                .userId(user.getId())
+                .notificationType(NotificationType.LEENK_FINISHED)
+                .isRead(Boolean.FALSE)
+                .content(toLeenkFinishedNotificationContent(leenk))
+                .build();
+    }
+
+    private LeenkFinishedNotificationContent toLeenkFinishedNotificationContent(Leenk leenk) {
+        return LeenkFinishedNotificationContent.builder()
+                .leenkId(leenk.getId())
+                .leenkTitle(leenk.getTitle())
+                .title(NotificationType.LEENK_FINISHED.getTitle())
+                .body(NotificationType.LEENK_FINISHED.getContent())
+                .build();
+    }
+
 }

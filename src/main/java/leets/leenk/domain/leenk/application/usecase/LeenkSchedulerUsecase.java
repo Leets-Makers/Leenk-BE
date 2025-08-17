@@ -1,6 +1,7 @@
 package leets.leenk.domain.leenk.application.usecase;
 
 import leets.leenk.domain.leenk.domain.entity.Leenk;
+import leets.leenk.domain.leenk.domain.service.LeenkGetService;
 import leets.leenk.domain.leenk.domain.service.LeenkStatusBatchService;
 import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase;
 import lombok.RequiredArgsConstructor;
@@ -15,19 +16,23 @@ import java.util.List;
 public class LeenkSchedulerUsecase {
 
     private final LeenkStatusBatchService leenkStatusBatchService;
+    private final LeenkGetService leenkGetService;
 
     private final LeenkNotificationUsecase leenkNotificationUsecase;
 
     @Transactional
-    public List<Leenk> finishDueLeenks(LocalDateTime now) {
+    public int finishDueLeenks(LocalDateTime now) {
         List<Leenk> leenksToFinish = leenkStatusBatchService.findDueLeenks(now);
 
-        leenksToFinish.forEach(Leenk::changeStatusToFinished);
-        return leenksToFinish;
+        leenksToFinish.forEach(leenk -> {
+            leenk.changeStatusToFinished();
+            leenkNotificationUsecase.saveLeenkFinishedNotification(leenk);
+        });
+        return leenksToFinish.size();
     }
 
     public void notifyLeenksStartingWithin30Minutes(LocalDateTime now) {
-        List<Leenk> leenksToNotify = leenkStatusBatchService.findLeenksStartingSoon(now);
+        List<Leenk> leenksToNotify = leenkGetService.findLeenksStartingWithin30Minutes(now);
 
         leenksToNotify.forEach(leenkNotificationUsecase::saveLeenkStartingSoonNotification);
     }
