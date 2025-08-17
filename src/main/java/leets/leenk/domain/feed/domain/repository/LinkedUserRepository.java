@@ -17,4 +17,6 @@ public interface LinkedUserRepository extends JpaRepository<LinkedUser, Long> {
 
     @Query("SELECT lu.feed FROM LinkedUser lu JOIN lu.feed f JOIN FETCH f.user WHERE lu.user = :user AND f.user != :user AND f.deletedAt IS NULL ORDER BY f.createDate DESC")
     Slice<Feed> findFeedsByLinkedUser(User user, Pageable pageable);
+
+    void deleteAllByFeed(Feed feed);
 }

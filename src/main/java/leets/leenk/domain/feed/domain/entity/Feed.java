@@ -40,4 +40,8 @@ public class Feed extends BaseEntity {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 }

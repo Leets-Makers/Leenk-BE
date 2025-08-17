@@ -1,20 +1,12 @@
 package leets.leenk.domain.feed.application.usecase;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import leets.leenk.domain.feed.application.dto.request.FeedReportRequest;
 import leets.leenk.domain.feed.application.dto.request.FeedUpdateRequest;
 import leets.leenk.domain.feed.application.dto.request.FeedUploadRequest;
 import leets.leenk.domain.feed.application.dto.request.ReactionRequest;
-import leets.leenk.domain.feed.application.dto.response.FeedDetailResponse;
-import leets.leenk.domain.feed.application.dto.response.FeedListResponse;
-import leets.leenk.domain.feed.application.dto.response.FeedUserListResponse;
-import leets.leenk.domain.feed.application.dto.response.FeedUserResponse;
-import leets.leenk.domain.feed.application.dto.response.ReactionUserResponse;
+import leets.leenk.domain.feed.application.dto.response.*;
 import leets.leenk.domain.feed.application.exception.FeedDeleteNotAllowedException;
+import leets.leenk.domain.feed.application.exception.FeedUpdateNotAllowedException;
 import leets.leenk.domain.feed.application.exception.SelfReactionNotAllowedException;
 import leets.leenk.domain.feed.application.mapper.FeedMapper;
 import leets.leenk.domain.feed.application.mapper.FeedUserMapper;
@@ -22,16 +14,10 @@ import leets.leenk.domain.feed.application.mapper.ReactionMapper;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.domain.entity.Reaction;
-import leets.leenk.domain.feed.domain.service.FeedDeleteService;
-import leets.leenk.domain.feed.domain.service.FeedGetService;
-import leets.leenk.domain.feed.domain.service.FeedSaveService;
-import leets.leenk.domain.feed.domain.service.FeedUpdateService;
-import leets.leenk.domain.feed.domain.service.LinkedUserGetService;
-import leets.leenk.domain.feed.domain.service.LinkedUserSaveService;
-import leets.leenk.domain.feed.domain.service.ReactionGetService;
-import leets.leenk.domain.feed.domain.service.ReactionSaveService;
+import leets.leenk.domain.feed.domain.service.*;
 import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
+import leets.leenk.domain.media.domain.service.MediaDeleteService;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
 import leets.leenk.domain.notification.application.usecase.NotificationUsecase;
@@ -47,6 +33,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,9 +56,11 @@ public class FeedUsecase {
 
     private final MediaGetService mediaGetService;
     private final MediaSaveService mediaSaveService;
+    private final MediaDeleteService mediaDeleteService;
 
     private final LinkedUserGetService linkedUserGetService;
     private final LinkedUserSaveService linkedUserSaveService;
+    private final LinkedUserDeleteService linkedUserDeleteService;
 
     private final ReactionGetService reactionGetService;
     private final ReactionSaveService reactionSaveService;
@@ -115,7 +109,7 @@ public class FeedUsecase {
                 .toList();
         mediaSaveService.saveAll(medias);
 
-        List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userId(), feed);
+        List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userIds(), feed);
         linkedUserSaveService.saveAll(linkedUsers);
 
         notificationUsecase.saveNewFeedNotification(feed);
@@ -169,7 +163,28 @@ public class FeedUsecase {
                 .toList();
     }
 
-    public void updateFeed(FeedUpdateRequest request) {
+    @Transactional
+    public void updateFeed(long userId, long feedId, FeedUpdateRequest request) {
+        Feed feed = feedGetService.findById(feedId);
+        User author = userGetService.findById(userId);
+
+        checkAuthor(author, feed);
+
+        feedUpdateService.update(feed, request);
+
+        if (request.media() != null) {
+            mediaDeleteService.deleteAllByFeed(feed);
+            List<Media> newMedias = request.media().stream()
+                    .map(mediaRequest -> mediaMapper.toMedia(feed, mediaRequest))
+                    .toList();
+            mediaSaveService.saveAll(newMedias);
+        }
+
+        if (request.userIds() != null) {
+            linkedUserDeleteService.deleteAllByFeed(feed);
+            List<LinkedUser> newLinkedUsers = getLinkedUsers(author, request.userIds(), feed);
+            linkedUserSaveService.saveAll(newLinkedUsers);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -254,6 +269,12 @@ public class FeedUsecase {
             if (previous < milestone && current >= milestone) {
                 notificationUsecase.saveReactionCountNotification(feed, milestone);
             }
+        }
+    }
+
+    private void checkAuthor(User user, Feed feed) {
+        if (!feed.getUser().equals(user)) {
+            throw new FeedUpdateNotAllowedException();
         }
     }
 }

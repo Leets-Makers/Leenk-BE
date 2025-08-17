@@ -10,6 +10,7 @@ import java.util.List;
 
 public record FeedUploadRequest(
         @Schema(description = "피드 설명", example = "행복한 링크 생활")
+        @Size(max = 100)
         String description,
 
         @Valid
@@ -18,6 +19,6 @@ public record FeedUploadRequest(
         List<FeedMediaRequest> media,
 
         @Schema(description = "함께한 사용자 목록")
-        List<Long> userId
+        List<Long> userIds
 ) {
 }

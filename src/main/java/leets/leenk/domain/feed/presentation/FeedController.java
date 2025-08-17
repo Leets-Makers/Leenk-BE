@@ -71,11 +71,12 @@ public class FeedController {
         return CommonResponse.success(ResponseCode.GET_REACTED_USERS, response);
     }
 
-    @PatchMapping
+    @PatchMapping("/{feedId}")
     @Operation(summary = "피드 수정 API")
     public CommonResponse<Void> updateFeed(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                           @PathVariable @Positive long feedId,
                                            @RequestBody @Valid FeedUpdateRequest request) {
-        feedUsecase.updateFeed(request);
+        feedUsecase.updateFeed(userId, feedId, request);
 
         return CommonResponse.success(ResponseCode.UPDATE_FEED);
     }
