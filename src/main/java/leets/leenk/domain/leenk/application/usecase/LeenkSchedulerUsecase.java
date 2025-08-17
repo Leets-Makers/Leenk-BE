@@ -2,7 +2,6 @@ package leets.leenk.domain.leenk.application.usecase;
 
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.service.LeenkGetService;
-import leets.leenk.domain.leenk.domain.service.LeenkStatusBatchService;
 import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,14 +14,13 @@ import java.util.List;
 @Service
 public class LeenkSchedulerUsecase {
 
-    private final LeenkStatusBatchService leenkStatusBatchService;
     private final LeenkGetService leenkGetService;
 
     private final LeenkNotificationUsecase leenkNotificationUsecase;
 
     @Transactional
     public int finishDueLeenks(LocalDateTime now) {
-        List<Leenk> leenksToFinish = leenkStatusBatchService.findDueLeenks(now);
+        List<Leenk> leenksToFinish = leenkGetService.findDueLeenks(now);
 
         leenksToFinish.forEach(leenk -> {
             leenk.changeStatusToFinished();

@@ -48,4 +48,9 @@ public class LeenkGetService {
         return leenkRepository.findAllByStatusInAndStartTimeGreaterThanAndStartTimeLessThanEqual(
                 List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now, now.plusMinutes(30));
     }
+
+    public List<Leenk> findDueLeenks(LocalDateTime now) {
+        return leenkRepository.findAllByStatusInAndStartTimeLessThanEqual(List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now);
+    }
+
 }
