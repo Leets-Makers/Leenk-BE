@@ -33,6 +33,6 @@ public class LeenkAutoFinishScheduler {
             log.info("자동 종료된 링크 수 = {}", finishedLeenks.size());
         }
 
-        leenkStatusBatchService.notifyStartSoon(now);
+        leenkSchedulerUsecase.notifyLeenksStartingWithin30Minutes(now);
     }
 }
