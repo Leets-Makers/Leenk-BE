@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+import static leets.leenk.domain.feed.application.util.FeedDescriptionUtil.normalizeDescription;
+
 @Component
 public class FeedMapper {
 
@@ -64,9 +66,11 @@ public class FeedMapper {
     }
 
     public Feed toFeed(User user, String description) {
+        String normalizedDescription = normalizeDescription(description);
+
         return Feed.builder()
                 .user(user)
-                .description(description)
+                .description(normalizedDescription)
                 .build();
     }
 
