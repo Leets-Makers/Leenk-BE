@@ -3,6 +3,7 @@ package leets.leenk.domain.leenk.application.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
 import lombok.Builder;
 
 @Builder
@@ -17,6 +18,9 @@ public record LeenkDetailResponse(
 
         @Schema(description = "카카오톡 id", example = "kakao123")
         String kakaoId,
+
+        @Schema(description = "링크 상태", example = "RECRUITING")
+        LeenkStatus status,
 
         @Schema(description = "제목", example = "전정도에서 번개 고고")
         String title,
