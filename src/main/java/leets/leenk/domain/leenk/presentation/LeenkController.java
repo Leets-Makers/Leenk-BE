@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Positive;
 import leets.leenk.domain.leenk.application.dto.request.LeenkReportRequest;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUpdateRequest;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
+import leets.leenk.domain.leenk.application.dto.response.LeenkCreateResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
@@ -36,11 +37,11 @@ public class LeenkController {
 
     @PostMapping
     @Operation(summary = "링크(모집글) 작성 API")
-    public CommonResponse<Void> uploadLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
-                                            @RequestBody @Valid LeenkUploadRequest request) {
-        leenkUsecase.uploadLeenk(userId, request);
+    public CommonResponse<LeenkCreateResponse> uploadLeenk(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                                           @RequestBody @Valid LeenkUploadRequest request) {
+        LeenkCreateResponse response = leenkUsecase.uploadLeenk(userId, request);
 
-        return CommonResponse.success(ResponseCode.UPLOAD_LEENK);
+        return CommonResponse.success(ResponseCode.UPLOAD_LEENK, response);
     }
 
     @PostMapping("/{leenkId}/participant")
