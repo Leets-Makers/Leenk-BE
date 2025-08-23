@@ -166,11 +166,14 @@ public class LeenkUsecase {
     }
 
     @Transactional(readOnly = true)
-    public LeenkDetailResponse getLeenkDetail(Long leenkId) {
+    public LeenkDetailResponse getLeenkDetail(Long userId, Long leenkId) {
         Leenk leenk = leenkGetService.findById(leenkId);
         String mediaUrl = mediaGetService.findMediaUrlByLeenk(leenk);
 
-        return leenkMapper.toLeenkDetailResponse(leenk, mediaUrl);
+        User user = userGetService.findById(userId);
+        boolean isParticipated = leenkParticipantsGetService.existsByLeenkAndParticipant(leenk, user);
+
+        return leenkMapper.toLeenkDetailResponse(leenk, mediaUrl, isParticipated);
     }
 
     @Transactional(readOnly = true)
