@@ -140,4 +140,22 @@ public class LeenkNotificationMapper {
                 .build();
     }
 
+    public Notification toLeenkStartedHostReminderNotification(Leenk leenk) {
+        return Notification.builder()
+                .userId(leenk.getAuthor().getId())
+                .notificationType(NotificationType.LEENK_STARTED_HOST_REMINDER)
+                .isRead(Boolean.FALSE)
+                .content(toLeenkStartedHostReminderNotificationContent(leenk))
+                .build();
+    }
+
+    private LeenkStartedHostReminderNotificationContent toLeenkStartedHostReminderNotificationContent(Leenk leenk) {
+        return LeenkStartedHostReminderNotificationContent.builder()
+                .leenkId(leenk.getId())
+                .leenkTitle(leenk.getTitle())
+                .title(NotificationType.LEENK_STARTED_HOST_REMINDER.getTitle())
+                .body(NotificationType.LEENK_STARTED_HOST_REMINDER.getContent())
+                .build();
+    }
+
 }

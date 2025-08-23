@@ -19,10 +19,12 @@ public class LeenkAutoNotifyScheduler {
 
     @Transactional
     @Scheduled(cron = "0 0/30 * * * *", zone = "Asia/Seoul")
-    public void notifyForUpcomingLeenks() {
-
+    public void scheduleLeenkNotifications() {
         LocalDateTime now = LocalDateTime.now(KST);
 
         leenkSchedulerUsecase.notifyLeenksStartingWithin30Minutes(now);
+
+        leenkSchedulerUsecase.notifyHostsOfUnclosedLeenks(now);
+
     }
 }

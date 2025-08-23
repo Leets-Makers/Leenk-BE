@@ -59,4 +59,12 @@ public class LeenkGetService {
                 LeenkStatus.FINISHED, now);
     }
 
+    public List<Leenk> findOverdueRecruitingLeenksToNotify(LocalDateTime now) {
+        return leenkRepository.findAllByStatusAndStartTimeBetween(
+                LeenkStatus.RECRUITING,
+                now.minusMinutes(5),
+                now
+        );
+    }
+
 }

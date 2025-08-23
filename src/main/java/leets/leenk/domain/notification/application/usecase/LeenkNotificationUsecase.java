@@ -115,6 +115,14 @@ public class LeenkNotificationUsecase {
         });
     }
 
+    @Transactional
+    public void saveLeenkStartedHostReminderNotification(Leenk leenk) {
+        User author = leenk.getAuthor();
+        Notification notification = leenkNotificationMapper.toLeenkStartedHostReminderNotification(leenk);
+        notificationSaveService.save(notification);
+        publishLeenkStatusNotificationIfEnabled(notification, author, leenk, TitlePosition.SUFFIX);
+    }
+
     private void publishLeenkStatusNotificationIfEnabled(Notification notification, User user, Leenk leenk,
                                                          TitlePosition titlePosition) {
         if (user.getFcmToken() == null) {

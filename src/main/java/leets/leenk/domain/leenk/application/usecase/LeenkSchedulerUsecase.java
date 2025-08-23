@@ -46,4 +46,12 @@ public class LeenkSchedulerUsecase {
         });
         return leenksToNotify.size();
     }
+
+    @Transactional
+    public void notifyHostsOfUnclosedLeenks(LocalDateTime now) {
+        List<Leenk> leenksToNotify = leenkGetService.findOverdueRecruitingLeenksToNotify(now);
+
+        leenksToNotify.forEach(leenkNotificationUsecase::saveLeenkStartedHostReminderNotification);
+
+    }
 }
