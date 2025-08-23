@@ -111,7 +111,7 @@ public class LeenkNotificationUsecase {
             User user = participant.getParticipant();
             Notification notification = leenkNotificationMapper.toLeenkFinishedNotification(leenk, user);
             notificationSaveService.save(notification);
-            publishLeenkStatusNotificationIfEnabled(notification, user, leenk, TitlePosition.PREFIX);
+            publishLeenkStatusNotificationIfEnabled(notification, user, leenk, TitlePosition.SUFFIX);
         });
     }
 
