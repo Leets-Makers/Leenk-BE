@@ -58,12 +58,7 @@ public class LeenkParticipantsMapper {
                 .map(leenkParticipants -> {
                     Leenk leenk = leenkParticipants.getLeenk();
                     User author = leenk.getAuthor();
-
-                    LeenkAuthorResponse authorResponse = LeenkAuthorResponse.builder()
-                            .userId(author.getId())
-                            .profileImage(author.getProfileImage())
-                            .name(author.getName())
-                            .build();
+                    LeenkAuthorResponse authorResponse = toLeenkAuthorResponse(author);
 
                     return LeenkParticipatedResponse.builder()
                             .id(leenk.getId())
