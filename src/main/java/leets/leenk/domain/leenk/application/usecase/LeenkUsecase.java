@@ -12,6 +12,7 @@ import leets.leenk.domain.leenk.application.dto.response.LeenkCreateResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
+import leets.leenk.domain.leenk.application.dto.response.LeenkParticipatedListResponse;
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException;
 import leets.leenk.domain.leenk.application.exception.CannotKickSelfException;
 import leets.leenk.domain.leenk.application.exception.CannotLeaveAsHostException;
@@ -178,6 +179,26 @@ public class LeenkUsecase {
 
         List<LeenkParticipants> participants = leenkParticipantsGetService.findAllByLeenk(leenk);
         return participantsMapper.toLeenkParticipantsListResponse(leenk, participants);
+    }
+
+    @Transactional(readOnly = true)
+    public LeenkParticipatedListResponse getMyParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
+        User user = userGetService.findById(userId);
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("joinedAt").descending());
+        Slice<LeenkParticipants> slice = leenkParticipantsGetService.findSliceByParticipant(user, pageable);
+
+        return participantsMapper.toLeenkParticipatedListResponse(slice);
+    }
+
+    @Transactional(readOnly = true)
+    public LeenkParticipatedListResponse getUserParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
+        User user = userGetService.findById(userId);
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("joinedAt").descending());
+        Slice<LeenkParticipants> slice = leenkParticipantsGetService.findSliceByParticipant(user, pageable);
+
+        return participantsMapper.toLeenkParticipatedListResponse(slice);
     }
 
     @Transactional
