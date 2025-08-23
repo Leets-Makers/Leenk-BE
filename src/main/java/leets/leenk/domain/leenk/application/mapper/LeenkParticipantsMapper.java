@@ -5,9 +5,13 @@ import java.util.List;
 import leets.leenk.domain.leenk.application.dto.response.LeenkAuthorResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
+import leets.leenk.domain.leenk.application.dto.response.LeenkParticipatedListResponse;
+import leets.leenk.domain.leenk.application.dto.response.LeenkParticipatedResponse;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
 import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.global.common.dto.PageableMapperUtil;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -47,5 +51,35 @@ public class LeenkParticipantsMapper {
                 .toList();
 
         return new LeenkParticipantsListResponse(responses);
+    }
+
+    public LeenkParticipatedListResponse toLeenkParticipatedListResponse(Slice<LeenkParticipants> slice) {
+        List<LeenkParticipatedResponse> responses = slice.getContent().stream()
+                .map(leenkParticipants -> {
+                    Leenk leenk = leenkParticipants.getLeenk();
+                    User author = leenk.getAuthor();
+
+                    LeenkAuthorResponse authorResponse = LeenkAuthorResponse.builder()
+                            .userId(author.getId())
+                            .profileImage(author.getProfileImage())
+                            .name(author.getName())
+                            .build();
+
+                    return LeenkParticipatedResponse.builder()
+                            .id(leenk.getId())
+                            .author(authorResponse)
+                            .status(leenk.getStatus())
+                            .title(leenk.getTitle())
+                            .startTime(leenk.getStartTime())
+                            .currentParticipants(leenk.getCurrentParticipants())
+                            .maxParticipants(leenk.getMaxParticipants())
+                            .build();
+                })
+                .toList();
+
+        return new LeenkParticipatedListResponse(
+                responses,
+                PageableMapperUtil.from(slice)
+        );
     }
 }
