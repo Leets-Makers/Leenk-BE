@@ -188,7 +188,7 @@ public class LeenkUsecase {
     public LeenkParticipatedListResponse getMyParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
         User user = userGetService.findById(userId);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("joinedAt").descending());
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createDate").descending());
         Slice<LeenkParticipants> slice = leenkParticipantsGetService.findSliceByParticipant(user, pageable);
 
         return participantsMapper.toLeenkParticipatedListResponse(slice);
@@ -198,7 +198,7 @@ public class LeenkUsecase {
     public LeenkParticipatedListResponse getUserParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
         User user = userGetService.findById(userId);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("joinedAt").descending());
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createDate").descending());
         Slice<LeenkParticipants> slice = leenkParticipantsGetService.findSliceByParticipant(user, pageable);
 
         return participantsMapper.toLeenkParticipatedListResponse(slice);
