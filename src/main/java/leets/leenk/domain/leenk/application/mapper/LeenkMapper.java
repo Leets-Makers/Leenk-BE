@@ -46,7 +46,7 @@ public class LeenkMapper {
                 .build();
     }
 
-    public LeenkDetailResponse toLeenkDetailResponse(Leenk leenk, String mediaUrl) {
+    public LeenkDetailResponse toLeenkDetailResponse(Leenk leenk, String mediaUrl, boolean isParticipated) {
 
         return LeenkDetailResponse.builder()
                 .id(leenk.getId())
@@ -62,6 +62,7 @@ public class LeenkMapper {
                 .mediaUrl(mediaUrl)
                 .createdAt(leenk.getCreateDate())
                 .updatedAt(leenk.getUpdateDate())
+                .isParticipated(isParticipated)
                 .build();
     }
 

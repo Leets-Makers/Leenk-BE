@@ -94,8 +94,9 @@ public class LeenkController {
 
     @GetMapping("/{leenkId}")
     @Operation(summary = "링크(모집글) 상세조회 API")
-    public CommonResponse<LeenkDetailResponse> getLeenkDetail(@PathVariable @Positive Long leenkId) {
-        LeenkDetailResponse response = leenkUsecase.getLeenkDetail(leenkId);
+    public CommonResponse<LeenkDetailResponse> getLeenkDetail(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                                              @PathVariable @Positive Long leenkId) {
+        LeenkDetailResponse response = leenkUsecase.getLeenkDetail(userId, leenkId);
 
         return CommonResponse.success(ResponseCode.GET_LEENK_DETAIL, response);
     }

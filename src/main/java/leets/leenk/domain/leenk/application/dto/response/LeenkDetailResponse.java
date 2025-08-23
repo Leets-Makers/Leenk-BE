@@ -47,6 +47,9 @@ public record LeenkDetailResponse(
         LocalDateTime createdAt,
 
         @Schema(description = "수정일", example = "2025-08-01T12:05:00", nullable = true)
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+
+        @Schema(description = "유저의 해당 링크 참여 여부", example = "true")
+        boolean isParticipated
 ) {
 }
