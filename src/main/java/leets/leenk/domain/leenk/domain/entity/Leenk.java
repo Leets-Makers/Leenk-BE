@@ -60,6 +60,10 @@ public class Leenk extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private LeenkStatus status = LeenkStatus.RECRUITING;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isFinishedNotified = false;
+
     public void updateTitle(String title) {
         this.title = title;
     }
@@ -90,5 +94,9 @@ public class Leenk extends BaseEntity {
 
     public void decreaseCurrentParticipants() {
         this.currentParticipants--;
+    }
+
+    public void markAsFinishedNotified() {
+        this.isFinishedNotified = true;
     }
 }

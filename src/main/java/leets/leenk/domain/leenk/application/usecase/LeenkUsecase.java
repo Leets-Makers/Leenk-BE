@@ -241,7 +241,6 @@ public class LeenkUsecase {
 
         leenk.changeStatusToFinished();
 
-        leenkNotificationUsecase.saveLeenkFinishedNotification(leenk);
     }
 
     @Transactional
