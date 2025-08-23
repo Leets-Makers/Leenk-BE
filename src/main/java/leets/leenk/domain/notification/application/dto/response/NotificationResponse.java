@@ -14,6 +14,7 @@ public record NotificationResponse(
         String id,
         Long userId,
         NotificationType notificationType,
+        String path,
         Boolean isRead,
         NotificationContent content,
         LocalDateTime updateDate
