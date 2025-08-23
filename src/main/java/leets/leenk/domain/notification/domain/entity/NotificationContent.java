@@ -26,7 +26,8 @@ import lombok.experimental.SuperBuilder;
         @JsonSubTypes.Type(value = LeenkClosedNotificationContent.class, name = "LEENK_CLOSED"),
         @JsonSubTypes.Type(value = NewLeenkParticipantNotificationContent.class, name = "NEW_LEENK_PARTICIPANT"),
         @JsonSubTypes.Type(value = LeenkStartingSoonNotificationContent.class, name = "LEENK_STARTING_SOON"),
-        @JsonSubTypes.Type(value = LeenkFinishedNotificationContent.class, name = "LEENK_FINISHED")
+        @JsonSubTypes.Type(value = LeenkFinishedNotificationContent.class, name = "LEENK_FINISHED"),
+        @JsonSubTypes.Type(value = LeenkStartedHostReminderNotificationContent.class, name = "LEENK_STARTED_HOST_REMINDER")
 })
 public class NotificationContent {
 
