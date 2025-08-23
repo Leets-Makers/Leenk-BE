@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import leets.leenk.domain.leenk.application.dto.request.LeenkReportRequest;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUpdateRequest;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
+import leets.leenk.domain.leenk.application.dto.response.LeenkCreateResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
@@ -86,7 +87,7 @@ public class LeenkUsecase {
     private final LeenkNotificationUsecase leenkNotificationUsecase;
 
     @Transactional
-    public void uploadLeenk(Long userId, LeenkUploadRequest request) {
+    public LeenkCreateResponse uploadLeenk(Long userId, LeenkUploadRequest request) {
         User author = userGetService.findById(userId);
 
         Location location = locationMapper.toLocation(request.placeName());
@@ -106,6 +107,8 @@ public class LeenkUsecase {
                 });
 
         leenkNotificationUsecase.saveNewLeenkNotification(leenk);
+
+        return new LeenkCreateResponse(leenk.getId());
     }
 
     @Transactional

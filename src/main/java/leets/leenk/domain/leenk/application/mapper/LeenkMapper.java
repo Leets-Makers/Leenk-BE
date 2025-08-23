@@ -52,6 +52,7 @@ public class LeenkMapper {
                 .id(leenk.getId())
                 .author(toLeenkAuthorResponse(leenk))
                 .kakaoId(leenk.getAuthor().getKakaoTalkId())
+                .status(leenk.getStatus())
                 .title(leenk.getTitle())
                 .placeName(leenk.getLocation().getPlaceName())
                 .currentParticipants(leenk.getCurrentParticipants())
