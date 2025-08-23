@@ -74,7 +74,7 @@ public class FeedNotificationUsecase {
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReactionDetail,
-                    user.getFcmToken(), notification.getNotificationType()));
+                    user.getFcmToken(), notification.getNotificationType(), reaction.getFeed().getId()));
     }
 
     @Transactional
@@ -84,7 +84,8 @@ public class FeedNotificationUsecase {
             Notification notification = feedNotificationMapper.toNewFeedNotification(feed, user);
             notificationSaveService.save(notification);
             if(user.getFcmToken() != null) {
-                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(notification, user.getFcmToken()));
+                eventPublisher.publishEvent(sqsMessageEventMapper.toSqsMessageEvent(
+                        notification, user.getFcmToken(), feed.getId()));
             }
         });
     }
@@ -118,7 +119,7 @@ public class FeedNotificationUsecase {
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCountDetail,
-                    user.getFcmToken(), notification.getNotificationType()));
+                    user.getFcmToken(), notification.getNotificationType(), feed.getId()));
         }
     }
 
@@ -134,7 +135,8 @@ public class FeedNotificationUsecase {
 
                 String fcmToken = linkedUser.getUser().getFcmToken();
                 if (fcmToken != null) {
-                    eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithTag(notification, fcmToken, authorName));
+                    eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithTag(notification,
+                            fcmToken, authorName, feed.getId()));
                 }
             });
     }

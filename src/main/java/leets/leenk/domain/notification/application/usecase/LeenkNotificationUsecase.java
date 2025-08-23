@@ -41,7 +41,7 @@ public class LeenkNotificationUsecase {
 
             if (user.getFcmToken() != null) {
                 eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithLeenk(notification,
-                        user.getFcmToken(), leenk, TitlePosition.SUFFIX));
+                        user.getFcmToken(), leenk, TitlePosition.SUFFIX, leenk.getId()));
             }
         });
     }
@@ -75,7 +75,7 @@ public class LeenkNotificationUsecase {
 
         if (user.getFcmToken() != null) {
             eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithLeenk(notification,
-                    user.getFcmToken(), leenk, TitlePosition.SUFFIX));
+                    user.getFcmToken(), leenk, TitlePosition.SUFFIX, leenk.getId()));
         }
     }
 
@@ -132,7 +132,7 @@ public class LeenkNotificationUsecase {
             UserSetting userSetting = userSettingGetService.findByUser(user);
             if (userSetting.isLeenkStatusNotify()) {
                 eventPublisher.publishEvent(sqsMessageEventMapper.fromNotificationWithLeenk(notification, user.getFcmToken(),
-                        leenk, titlePosition));
+                        leenk, titlePosition, leenk.getId()));
             }
         } catch (Exception e) {
             log.warn("Failed to publish Leenk notification for user: {}, leenk: {}",

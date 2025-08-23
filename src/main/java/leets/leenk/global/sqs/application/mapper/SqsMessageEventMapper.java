@@ -13,47 +13,52 @@ import leets.leenk.domain.notification.domain.entity.Notification;
 @Component
 public class SqsMessageEventMapper {
 
-	public SqsMessageEvent toSqsMessageEvent(Notification notification, String fcmToken) {
+	public SqsMessageEvent toSqsMessageEvent(Notification notification, String fcmToken, Long id) {
 
 		return SqsMessageEvent.builder()
                 .title(notification.getContent().getTitle())
                 .content(notification.getContent().getBody())
                 .fcmToken(fcmToken)
                 .path(notification.getNotificationType().getPath())
+                .id(id)
                 .build();
 	}
 
-    public SqsMessageEvent fromNotificationWithTag(Notification notification, String fcmToken, String authorName) {
+    public SqsMessageEvent fromNotificationWithTag(Notification notification, String fcmToken, String authorName,
+                                                   Long id) {
         return SqsMessageEvent.builder()
                 .title(notification.getContent().getTitle())
                 .content("[" + authorName + "]" +  notification.getContent().getBody())
                 .fcmToken(fcmToken)
                 .path(notification.getNotificationType().getPath())
+                .id(id)
                 .build();
     }
 
 	public SqsMessageEvent fromFeedFirstReaction(FeedFirstReactionDetail feedFirstReactionDetail, String fcmToken,
-                                                 NotificationType notificationType) {
+                                                 NotificationType notificationType, Long id) {
 		return SqsMessageEvent.builder()
                 .title(feedFirstReactionDetail.getTitle())
                 .content(feedFirstReactionDetail.getBody())
                 .fcmToken(fcmToken)
                 .path(notificationType.getPath())
+                .id(id)
                 .build();
 	}
 
 	public SqsMessageEvent fromFeedReactionCount(FeedReactionCountDetail feedReactionCountDetail, String fcmToken,
-                                                 NotificationType notificationType) {
+                                                 NotificationType notificationType, Long id) {
 		return SqsMessageEvent.builder()
                 .title(feedReactionCountDetail.getTitle())
                 .content(feedReactionCountDetail.getBody())
                 .fcmToken(fcmToken)
                 .path(notificationType.getPath())
+                .id(id)
 			    .build();
 	}
 
 	public SqsMessageEvent fromNotificationWithLeenk(Notification notification, String fcmToken, Leenk leenk,
-                                                     TitlePosition position) {
+                                                     TitlePosition position, Long id) {
         String body;
         String leenkTitleFormatted = "[" + leenk.getTitle() + "]";
         String notificationBody = notification.getContent().getBody();
@@ -69,6 +74,7 @@ public class SqsMessageEventMapper {
                 .content(body)
                 .fcmToken(fcmToken)
                 .path(notification.getNotificationType().getPath())
+                .id(id)
                 .build();
     }
 }
