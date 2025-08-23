@@ -1,6 +1,6 @@
 package leets.leenk.domain.leenk.domain.service.scheduler;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import leets.leenk.domain.leenk.application.usecase.LeenkSchedulerUsecase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
