@@ -73,7 +73,8 @@ public class FeedNotificationUsecase {
         }
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null)
-            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReactionDetail, user.getFcmToken()));
+            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedFirstReaction(feedFirstReactionDetail,
+                    user.getFcmToken(), notification.getNotificationType()));
     }
 
     @Transactional
@@ -116,7 +117,8 @@ public class FeedNotificationUsecase {
         }
 
         if (userSetting != null && userSetting.isNewReactionNotify() && user.getFcmToken() != null) {
-            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCountDetail, user.getFcmToken()));
+            eventPublisher.publishEvent(sqsMessageEventMapper.fromFeedReactionCount(feedReactionCountDetail,
+                    user.getFcmToken(), notification.getNotificationType()));
         }
     }
 

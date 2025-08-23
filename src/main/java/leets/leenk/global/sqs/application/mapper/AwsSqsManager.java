@@ -28,8 +28,9 @@ public class AwsSqsManager {
 			.delaySeconds(awsSqsProperties.getMessageDelaySecs())
 			.messageBody(event.getContent())
 			.messageAttributes(Map.of(
-				"title", convertToAttributeValue(event.getTitle()),
-				"fcmToken", convertToAttributeValue(event.getFcmToken())
+                    "title", convertToAttributeValue(event.getTitle()),
+                    "fcmToken", convertToAttributeValue(event.getFcmToken()),
+                    "path", convertToAttributeValue(event.getPath())
 			))
 			.build();
 	}

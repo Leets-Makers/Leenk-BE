@@ -10,5 +10,6 @@ public class SqsMessageEvent {
 	private final String title;
 	private final String content;
 	private final String fcmToken;
+    private final String path;
 
 }
