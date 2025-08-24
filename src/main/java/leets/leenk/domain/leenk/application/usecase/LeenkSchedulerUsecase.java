@@ -25,7 +25,6 @@ public class LeenkSchedulerUsecase {
         leenksToFinish.forEach(leenk -> {
             leenk.changeStatusToFinished();
             leenkNotificationUsecase.saveLeenkFinishedNotification(leenk);
-            leenk.markAsFinishedNotified();
         });
         return leenksToFinish.size();
     }
@@ -40,10 +39,7 @@ public class LeenkSchedulerUsecase {
     public int notifyFinishedLeenks(LocalDateTime now) {
         List<Leenk> leenksToNotify = leenkGetService.findUnnotifiedFinishedLeenks(now);
 
-        leenksToNotify.forEach(leenk -> {
-            leenkNotificationUsecase.saveLeenkFinishedNotification(leenk);
-            leenk.markAsFinishedNotified();
-        });
+        leenksToNotify.forEach(leenkNotificationUsecase::saveLeenkFinishedNotification);
         return leenksToNotify.size();
     }
 

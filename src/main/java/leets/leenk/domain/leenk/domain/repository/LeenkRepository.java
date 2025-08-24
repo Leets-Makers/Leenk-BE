@@ -16,10 +16,10 @@ public interface LeenkRepository extends JpaRepository<Leenk, Long> {
 
     Slice<Leenk> findAllByStatusIn(List<LeenkStatus> statuses, Pageable pageable);
 
-    List<Leenk> findAllByIsFinishedNotifiedIsFalseAndStatusInAndStartTimeLessThanEqual(List<LeenkStatus> statuses,
+    List<Leenk> findAllByStatusInAndStartTimeLessThanEqual(List<LeenkStatus> statuses,
                                                                                        LocalDateTime startTime);
 
-    List<Leenk> findAllByIsFinishedNotifiedIsFalseAndStatusAndStartTimeLessThanEqual(LeenkStatus status,
+    List<Leenk> findAllByStatusAndStartTimeLessThanEqual(LeenkStatus status,
                                                                                      LocalDateTime startTime);
 
     List<Leenk> findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(LeenkStatus status, LocalDateTime startTimeAfter,
