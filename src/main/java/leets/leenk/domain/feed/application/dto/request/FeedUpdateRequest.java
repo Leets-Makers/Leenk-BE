@@ -13,7 +13,7 @@ public record FeedUpdateRequest(
         String description,
 
         @Valid
-        @Size(max = 3)
+        @Size(min = 1, max = 3)
         List<FeedMediaRequest> media,
 
         @Schema(description = "함께한 사용자 목록 (수정할 값만 보내주세요)")
