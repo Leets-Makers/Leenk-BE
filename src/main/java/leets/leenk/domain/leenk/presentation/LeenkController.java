@@ -93,8 +93,9 @@ public class LeenkController {
 
     @GetMapping("/{leenkId}")
     @Operation(summary = "링크(모집글) 상세조회 API")
-    public CommonResponse<LeenkDetailResponse> getLeenkDetail(@PathVariable @Positive Long leenkId) {
-        LeenkDetailResponse response = leenkUsecase.getLeenkDetail(leenkId);
+    public CommonResponse<LeenkDetailResponse> getLeenkDetail(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                                              @PathVariable @Positive Long leenkId) {
+        LeenkDetailResponse response = leenkUsecase.getLeenkDetail(userId, leenkId);
 
         return CommonResponse.success(ResponseCode.GET_LEENK_DETAIL, response);
     }
@@ -105,6 +106,25 @@ public class LeenkController {
         LeenkParticipantsListResponse response = leenkUsecase.getLeenkParticipants(leenkId);
 
         return CommonResponse.success(ResponseCode.GET_LEENK_PARTICIPANTS, response);
+    }
+
+    @GetMapping("/participated")
+    @Operation(summary = "내가 참여한 링크 목록 조회 API [무한 스크롤]")
+    public CommonResponse<LeenkListResponse> getMyParticipatedLeenks(
+            @Parameter(hidden = true) @CurrentUserId Long userId, @RequestParam int pageNumber,
+            @RequestParam int pageSize) {
+        LeenkListResponse response = leenkUsecase.getMyParticipatedLeenks(userId, pageNumber, pageSize);
+
+        return CommonResponse.success(ResponseCode.GET_PARTICIPATED_LEENKS, response);
+    }
+
+    @GetMapping("/participated/users/{userId}")
+    @Operation(summary = "특정 유저가 참여한 링크 목록 조회 API [무한 스크롤]")
+    public CommonResponse<LeenkListResponse> getUserParticipatedLeenks(
+            @PathVariable @Positive Long userId, @RequestParam int pageNumber, @RequestParam int pageSize) {
+        LeenkListResponse response = leenkUsecase.getUserParticipatedLeenks(userId, pageNumber, pageSize);
+
+        return CommonResponse.success(ResponseCode.GET_USER_PARTICIPATED_LEENKS, response);
     }
 
     @PatchMapping("/{leenkId}")

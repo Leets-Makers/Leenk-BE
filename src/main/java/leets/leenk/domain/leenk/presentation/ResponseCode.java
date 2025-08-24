@@ -20,7 +20,9 @@ public enum ResponseCode implements ResponseCodeInterface {
     LEAVE_LEENK(1408, HttpStatus.OK, "링크 나가기에 성공했습니다."),
     UPDATE_LEENK(1409, HttpStatus.OK, "링크 수정에 성공했습니다."),
     REPORT_LEENK(1410, HttpStatus.OK, "링크 신고에 성공했습니다."),
-    FINISH_LEENK(1411, HttpStatus.OK, "링크 종료에 성공했습니다.");
+    FINISH_LEENK(1411, HttpStatus.OK, "링크 종료에 성공했습니다."),
+    GET_PARTICIPATED_LEENKS(1412, HttpStatus.OK, "내가 참여한 링크 목록 조회에 성공했습니다."),
+    GET_USER_PARTICIPATED_LEENKS(1413, HttpStatus.OK, "다른 유저가 참여한 링크 목록 조회에 성공했습니다.");
 
     private final int code;
     private final HttpStatus status;
