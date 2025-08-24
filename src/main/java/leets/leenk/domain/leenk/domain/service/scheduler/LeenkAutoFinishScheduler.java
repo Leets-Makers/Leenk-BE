@@ -24,11 +24,19 @@ public class LeenkAutoFinishScheduler {
     public void finishDue() {
         LocalDateTime now = LocalDateTime.now(KST);
 
-        int affected = leenkSchedulerUsecase.finishDueLeenks(now);
-        log.info("자동 종료 후 링크 발송 수 = {}", affected);
+        try {
+            int affected = leenkSchedulerUsecase.finishDueLeenks(now);
+            log.info("자동 종료 후 링크 발송 수 = {}", affected);
+        } catch (Exception e) {
+            log.error("자동 종료 처리 실패", e);
+        }
 
-        int notifiedCount = leenkSchedulerUsecase.notifyFinishedLeenks(now);
-        log.info("수동 종료 알림 발송 수 = {}", notifiedCount);
+        try {
+            int notifiedCount = leenkSchedulerUsecase.notifyFinishedLeenks(now);
+            log.info("수동 종료 알림 발송 수 = {}", notifiedCount);
+        } catch (Exception e) {
+            log.error("수동 종료 알림 발송 실패", e);
+        }
 
     }
 }
