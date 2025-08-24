@@ -12,7 +12,6 @@ import leets.leenk.domain.leenk.application.dto.response.LeenkCreateResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
-import leets.leenk.domain.leenk.application.dto.response.LeenkParticipatedListResponse;
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException;
 import leets.leenk.domain.leenk.application.exception.CannotKickSelfException;
 import leets.leenk.domain.leenk.application.exception.CannotLeaveAsHostException;
@@ -51,6 +50,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,23 +185,40 @@ public class LeenkUsecase {
     }
 
     @Transactional(readOnly = true)
-    public LeenkParticipatedListResponse getMyParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
+    public LeenkListResponse getMyParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
         User user = userGetService.findById(userId);
-
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createDate").descending());
-        Slice<LeenkParticipants> slice = leenkParticipantsGetService.findSliceByParticipant(user, pageable);
+        Slice<LeenkParticipants> participantsSlice = leenkParticipantsGetService.findSliceByParticipant(user, pageable);
 
-        return participantsMapper.toLeenkParticipatedListResponse(slice);
+        List<Leenk> leenks = participantsSlice.getContent().stream()
+                .map(LeenkParticipants::getLeenk)
+                .toList();
+        List<Media> medias = mediaGetService.findByLeenks(leenks);
+        Map<Long, List<Media>> mediaMap = medias.stream()
+                .collect(Collectors.groupingBy(media -> media.getLeenk().getId()));
+
+        Slice<Leenk> leenkSlice = new SliceImpl<>(leenks, pageable, participantsSlice.hasNext());
+
+        return leenkMapper.toLeenkListResponse(leenkSlice, mediaMap);
     }
 
     @Transactional(readOnly = true)
-    public LeenkParticipatedListResponse getUserParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
+    public LeenkListResponse getUserParticipatedLeenks(Long userId, int pageNumber, int pageSize) {
         User user = userGetService.findById(userId);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("joinedAt").descending());
+        Slice<LeenkParticipants> participantsSlice =
+                leenkParticipantsGetService.findSliceByParticipant(user, pageable);
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createDate").descending());
-        Slice<LeenkParticipants> slice = leenkParticipantsGetService.findSliceByParticipant(user, pageable);
+        List<Leenk> leenks = participantsSlice.getContent().stream()
+                .map(LeenkParticipants::getLeenk)
+                .toList();
+        List<Media> medias = mediaGetService.findByLeenks(leenks);
+        Map<Long, List<Media>> mediaMap = medias.stream()
+                .collect(Collectors.groupingBy(media -> media.getLeenk().getId()));
 
-        return participantsMapper.toLeenkParticipatedListResponse(slice);
+        Slice<Leenk> leenkSlice = new SliceImpl<>(leenks, pageable, participantsSlice.hasNext());
+
+        return leenkMapper.toLeenkListResponse(leenkSlice, mediaMap);
     }
 
     @Transactional

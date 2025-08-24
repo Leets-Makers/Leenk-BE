@@ -12,7 +12,6 @@ import leets.leenk.domain.leenk.application.dto.response.LeenkCreateResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
-import leets.leenk.domain.leenk.application.dto.response.LeenkParticipatedListResponse;
 import leets.leenk.domain.leenk.application.usecase.LeenkUsecase;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
@@ -111,20 +110,19 @@ public class LeenkController {
 
     @GetMapping("/participated")
     @Operation(summary = "내가 참여한 링크 목록 조회 API [무한 스크롤]")
-    public CommonResponse<LeenkParticipatedListResponse> getMyParticipatedLeenks(
+    public CommonResponse<LeenkListResponse> getMyParticipatedLeenks(
             @Parameter(hidden = true) @CurrentUserId Long userId, @RequestParam int pageNumber,
             @RequestParam int pageSize) {
-        LeenkParticipatedListResponse response = leenkUsecase.getMyParticipatedLeenks(userId, pageNumber, pageSize);
+        LeenkListResponse response = leenkUsecase.getMyParticipatedLeenks(userId, pageNumber, pageSize);
 
         return CommonResponse.success(ResponseCode.GET_PARTICIPATED_LEENKS, response);
     }
 
     @GetMapping("/participated/users/{userId}")
     @Operation(summary = "특정 유저가 참여한 링크 목록 조회 API [무한 스크롤]")
-    public CommonResponse<LeenkParticipatedListResponse> getUserParticipatedLeenks(@PathVariable @Positive Long userId,
-                                                                                   @RequestParam int pageNumber,
-                                                                                   @RequestParam int pageSize) {
-        LeenkParticipatedListResponse response = leenkUsecase.getUserParticipatedLeenks(userId, pageNumber, pageSize);
+    public CommonResponse<LeenkListResponse> getUserParticipatedLeenks(
+            @PathVariable @Positive Long userId, @RequestParam int pageNumber, @RequestParam int pageSize) {
+        LeenkListResponse response = leenkUsecase.getUserParticipatedLeenks(userId, pageNumber, pageSize);
 
         return CommonResponse.success(ResponseCode.GET_USER_PARTICIPATED_LEENKS, response);
     }
