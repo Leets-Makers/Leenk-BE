@@ -25,10 +25,10 @@ public class LeenkAutoFinishScheduler {
         LocalDateTime now = LocalDateTime.now(KST);
 
         int affected = leenkSchedulerUsecase.finishDueLeenks(now);
-        log.info("자동 종료된 링크 수 = {}", affected);
+        log.info("자동 종료 후 링크 발송 수 = {}", affected);
 
         int notifiedCount = leenkSchedulerUsecase.notifyFinishedLeenks(now);
-        log.info("수동 종료된 링크 수 = {}", notifiedCount);
+        log.info("수동 종료 알림 발송 수 = {}", notifiedCount);
 
     }
 }
