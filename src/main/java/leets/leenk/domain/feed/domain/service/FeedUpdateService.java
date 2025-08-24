@@ -8,11 +8,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static leets.leenk.domain.feed.application.util.FeedDescriptionUtil.normalizeDescription;
+
 @Service
 public class FeedUpdateService {
 
     public void update(Feed feed, FeedUpdateRequest request) {
-        Optional.ofNullable(request.description())
+        String normalized = normalizeDescription(request.description());
+        Optional.ofNullable(normalized)
                 .ifPresent(feed::updateDescription);
     }
 
