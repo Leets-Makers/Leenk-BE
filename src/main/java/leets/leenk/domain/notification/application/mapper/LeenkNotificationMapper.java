@@ -48,21 +48,19 @@ public class LeenkNotificationMapper {
                 .build();
     }
 
-    public Notification toNewLeenkParticipantNotification(Leenk leenk, User userToNotify, User newUser) {
+    public Notification toNewLeenkParticipantNotification(Leenk leenk, User author) {
         return Notification.builder()
-            .userId(userToNotify.getId())
-            .notificationType(NotificationType.NEW_LEENK_PARTICIPANT)
-            .isRead(Boolean.FALSE)
-            .content(toNewLeenkParticipantNotificationContent(leenk, newUser))
-            .build();
+                .userId(author.getId())
+                .notificationType(NotificationType.NEW_LEENK_PARTICIPANT)
+                .content(toNewLeenkParticipantNotificationContent(leenk))
+                .isRead(Boolean.FALSE)
+                .build();
     }
 
-    private NewLeenkParticipantNotificationContent toNewLeenkParticipantNotificationContent(Leenk leenk, User newUser) {
+    private NewLeenkParticipantNotificationContent toNewLeenkParticipantNotificationContent(Leenk leenk) {
         return NewLeenkParticipantNotificationContent.builder()
             .leenkId(leenk.getId())
             .leenkTitle(leenk.getTitle())
-            .newParticipantId(newUser.getId())
-            .newParticipantName(newUser.getName())
             .title(NotificationType.NEW_LEENK_PARTICIPANT.getTitle())
             .body(NotificationType.NEW_LEENK_PARTICIPANT.getContent())
             .build();
@@ -117,6 +115,9 @@ public class LeenkNotificationMapper {
         return LeenkStartingSoonNotificationContent.builder()
                 .leenkId(leenk.getId())
                 .leenkTitle(leenk.getTitle())
+                .placeId(leenk.getLocation().getId())
+                .placeName(leenk.getLocation().getPlaceName())
+                .startTime(leenk.getStartTime())
                 .title(NotificationType.LEENK_STARTING_SOON.getTitle())
                 .body(NotificationType.LEENK_STARTING_SOON.getContent())
                 .build();

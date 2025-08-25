@@ -47,4 +47,12 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
                 .and("content.feedReactionCounts.reactionCount").is(reactionCount));
         return Optional.ofNullable(mongoTemplate.findOne(query, Notification.class));
     }
+
+    @Override
+    public Optional<Notification> findByUserIdAndNotificationTypeAndContentLeenkId(Long userId, NotificationType notificationType, Long leenkId) {
+        Query query = new Query(Criteria.where("userId").is(userId)
+                .and("notificationType").is(notificationType)
+                .and("content.leenkId").is(leenkId));
+        return Optional.ofNullable(mongoTemplate.findOne(query, Notification.class));
+    }
 }
