@@ -4,8 +4,12 @@ import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsGetService;
 import leets.leenk.domain.notification.application.mapper.LeenkNotificationMapper;
+import leets.leenk.domain.notification.application.mapper.NewLeenkParticipantMapper;
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.entity.enums.TitlePosition;
+import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkParticipantDetail;
+import leets.leenk.domain.notification.domain.entity.leenkContent.NewLeenkParticipantNotificationContent;
+import leets.leenk.domain.notification.domain.service.NotificationGetService;
 import leets.leenk.domain.notification.domain.service.NotificationSaveService;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserSetting;
@@ -24,12 +28,15 @@ import java.util.List;
 @Service
 public class LeenkNotificationUsecase {
 
+    private final NotificationGetService notificationGetService;
     private final LeenkNotificationMapper leenkNotificationMapper;
     private final UserSettingGetService userSettingGetService;
     private final NotificationSaveService notificationSaveService;
     private final ApplicationEventPublisher eventPublisher;
     private final SqsMessageEventMapper sqsMessageEventMapper;
     private final LeenkParticipantsGetService leenkParticipantsGetService;
+
+    private final NewLeenkParticipantMapper newLeenkParticipantMapper;
 
     @Transactional
     public void saveNewLeenkNotification(Leenk leenk) {
@@ -59,11 +66,23 @@ public class LeenkNotificationUsecase {
             .filter(leenkParticipant -> !leenkParticipant.getParticipant().getId().equals(newUser.getId()))
             .toList();
 
+        NewLeenkParticipantDetail newLeenkParticipantDetail = newLeenkParticipantMapper
+                .toNewLeenkParticipantDetail(newUser);
+
         otherParticipants.forEach(participant -> {
             User existingUser = participant.getParticipant();
-            Notification notification = leenkNotificationMapper.toNewLeenkParticipantNotification(leenk,
-                    existingUser, newUser);
+            Notification notification = notificationGetService.findOrCreateNewLeenkParticipantNotification(leenk,
+                    existingUser);
+
+            if (!(notification.getContent() instanceof NewLeenkParticipantNotificationContent content)) {
+                return;
+            }
+
+            content.getNewLeenkParticipantDetails().add(newLeenkParticipantDetail);
+            notification.markUnread();
+
             notificationSaveService.save(notification);
+
             publishLeenkStatusNotificationIfEnabled(notification, existingUser, leenk, TitlePosition.PREFIX);
         });
     }

@@ -13,4 +13,6 @@ public interface NotificationRepositoryCustom {
     Optional<Notification> findByFeedId(NotificationType type, Long feedId);
 
     Optional<Notification> findByFeedIdAndReactionCount(NotificationType type, Long feedId, Long reactionCount);
+
+    Optional<Notification> findByUserIdAndNotificationTypeAndContentLeenkId(Long userId, NotificationType notificationType, Long leenkId);
 }
