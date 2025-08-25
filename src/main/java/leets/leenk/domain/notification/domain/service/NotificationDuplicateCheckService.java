@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.Reaction;
-import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import leets.leenk.domain.notification.domain.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 

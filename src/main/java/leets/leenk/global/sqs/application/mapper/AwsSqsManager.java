@@ -28,8 +28,10 @@ public class AwsSqsManager {
 			.delaySeconds(awsSqsProperties.getMessageDelaySecs())
 			.messageBody(event.getContent())
 			.messageAttributes(Map.of(
-				"title", convertToAttributeValue(event.getTitle()),
-				"fcmToken", convertToAttributeValue(event.getFcmToken())
+                    "title", convertToAttributeValue(event.getTitle()),
+                    "fcmToken", convertToAttributeValue(event.getFcmToken()),
+                    "path", convertToAttributeValue(event.getPath()),
+                    "pathId", convertToAttributeValue(event.getId())
 			))
 			.build();
 	}
@@ -41,4 +43,11 @@ public class AwsSqsManager {
 			.stringValue(value)
 			.build();
 	}
+
+    private MessageAttributeValue convertToAttributeValue(Long value) {
+        return MessageAttributeValue.builder()
+                .dataType("Number")
+                .stringValue(value.toString())
+                .build();
+    }
 }

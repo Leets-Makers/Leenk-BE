@@ -5,15 +5,15 @@ import org.springframework.stereotype.Component;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.NotificationType;
-import leets.leenk.domain.notification.domain.entity.content.FeedFirstReactionNotificationContent;
-import leets.leenk.domain.notification.domain.entity.content.FeedReactionCountNotificationContent;
-import leets.leenk.domain.notification.domain.entity.content.FeedTagNotificationContent;
-import leets.leenk.domain.notification.domain.entity.content.NewFeedNotificationContent;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.FeedTagNotificationContent;
+import leets.leenk.domain.notification.domain.entity.feedContent.NewFeedNotificationContent;
 import leets.leenk.domain.user.domain.entity.User;
 
 @Component
-public class NotificationMapper {
+public class FeedNotificationMapper {
 
     public Notification toFeedTagNotification(Feed feed, LinkedUser linkedUser) {
         return Notification.builder()
@@ -55,7 +55,7 @@ public class NotificationMapper {
                 .feedId(feed.getId())
                 .authorName(feed.getUser().getName())
                 .title(NotificationType.FEED_TAG.getTitle())
-                .body(NotificationType.FEED_TAG.getFormattedContent(feed.getUser().getName()))
+                .body(NotificationType.FEED_TAG.getContent())
                 .build();
     }
 

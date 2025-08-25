@@ -19,6 +19,10 @@ public class UserSettingGetService {
 		return userSettingRepository.findAllActiveUsersWithNewFeedNotifyTrueExcludingUserId(userId);
 	}
 
+	public List<User> getUsersToNotifyNewLeenk(Long authorId) {
+		return userSettingRepository.findAllActiveUsersWithNewLeenkNotifyTrueExcludingUserId(authorId);
+	}
+
     public UserSetting findByUser(User user) {
         return userSettingRepository.findByUser(user).orElseThrow(UserSettingNotFoundException::new);
     }

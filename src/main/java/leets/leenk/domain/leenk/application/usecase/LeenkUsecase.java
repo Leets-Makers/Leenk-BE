@@ -42,6 +42,7 @@ import leets.leenk.domain.media.domain.entity.Media;
 import leets.leenk.domain.media.domain.service.MediaDeleteService;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
+import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.service.NotionDatabaseService;
 import leets.leenk.domain.user.domain.service.SlackWebhookService;
@@ -84,6 +85,8 @@ public class LeenkUsecase {
     private final LocationMapper locationMapper;
     private final MediaMapper mediaMapper;
 
+    private final LeenkNotificationUsecase leenkNotificationUsecase;
+
     @Transactional
     public LeenkCreateResponse uploadLeenk(Long userId, LeenkUploadRequest request) {
         User author = userGetService.findById(userId);
@@ -103,6 +106,8 @@ public class LeenkUsecase {
                     Media media = mediaMapper.toMedia(leenk, url);
                     mediaSaveService.save(media);
                 });
+
+        leenkNotificationUsecase.saveNewLeenkNotification(leenk);
 
         return new LeenkCreateResponse(leenk.getId());
     }
@@ -243,6 +248,9 @@ public class LeenkUsecase {
 
         leenkParticipantsSaveService.save(participant);
         leenk.increaseCurrentParticipants();
+
+
+        leenkNotificationUsecase.saveNewLeenkParticipantNotification(leenk, user);
     }
 
     @Transactional
@@ -259,6 +267,8 @@ public class LeenkUsecase {
         }
 
         leenk.changeStatusToClosed();
+
+        leenkNotificationUsecase.saveLeenkClosedNotification(leenk);
     }
 
     @Transactional
@@ -274,6 +284,7 @@ public class LeenkUsecase {
         }
 
         leenk.changeStatusToFinished();
+
     }
 
     @Transactional
@@ -297,6 +308,8 @@ public class LeenkUsecase {
 
         leenkParticipantsDeleteService.delete(participant);
         leenk.decreaseCurrentParticipants();
+
+        leenkNotificationUsecase.saveKickedFromLeenkNotification(leenk, participant.getParticipant());
     }
 
     @Transactional

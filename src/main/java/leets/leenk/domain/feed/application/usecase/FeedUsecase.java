@@ -20,7 +20,7 @@ import leets.leenk.domain.media.domain.entity.Media;
 import leets.leenk.domain.media.domain.service.MediaDeleteService;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
-import leets.leenk.domain.notification.application.usecase.NotificationUsecase;
+import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserBlock;
 import leets.leenk.domain.user.domain.service.NotionDatabaseService;
@@ -65,7 +65,7 @@ public class FeedUsecase {
     private final ReactionGetService reactionGetService;
     private final ReactionSaveService reactionSaveService;
 
-    private final NotificationUsecase notificationUsecase;
+    private final FeedNotificationUsecase feedNotificationUsecase;
 
     private final FeedMapper feedMapper;
     private final MediaMapper mediaMapper;
@@ -112,8 +112,8 @@ public class FeedUsecase {
         List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userIds(), feed);
         linkedUserSaveService.saveAll(linkedUsers);
 
-        notificationUsecase.saveNewFeedNotification(feed);
-        notificationUsecase.saveTagNotification(feed, linkedUsers);
+        feedNotificationUsecase.saveNewFeedNotification(feed);
+        feedNotificationUsecase.saveTagNotification(feed, linkedUsers, author);
     }
 
     private List<LinkedUser> getLinkedUsers(User author, List<Long> userIds, Feed feed) {
@@ -141,7 +141,7 @@ public class FeedUsecase {
         long previousReactionCount = reaction.getReactionCount();
 
         feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
-        notificationUsecase.saveFirstReactionNotification(reaction);
+        feedNotificationUsecase.saveFirstReactionNotification(reaction);
 
         long updatedReactionCount = previousReactionCount + request.reactionCount();
         notifyIfReachedReactionMilestone(previousReactionCount, updatedReactionCount, feed);
@@ -267,7 +267,7 @@ public class FeedUsecase {
 
         for (long milestone : milestones) {
             if (previous < milestone && current >= milestone) {
-                notificationUsecase.saveReactionCountNotification(feed, milestone);
+                feedNotificationUsecase.saveReactionCountNotification(feed, milestone);
             }
         }
     }

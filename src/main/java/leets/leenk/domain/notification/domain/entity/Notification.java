@@ -1,5 +1,6 @@
 package leets.leenk.domain.notification.domain.entity;
 
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.persistence.EnumType;

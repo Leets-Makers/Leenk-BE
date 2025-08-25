@@ -30,6 +30,7 @@ public class NotificationResponseMapper {
                 .id(notification.getId())
                 .userId(notification.getUserId())
                 .notificationType(notification.getNotificationType())
+                .path(notification.getNotificationType().getPath())
                 .isRead(notification.getIsRead())
                 .content(notification.getContent())
                 .updateDate(notification.getUpdateDate())

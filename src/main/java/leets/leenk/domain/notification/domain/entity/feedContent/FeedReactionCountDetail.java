@@ -1,17 +1,15 @@
-package leets.leenk.domain.notification.domain.entity.content;
+package leets.leenk.domain.notification.domain.entity.feedContent;
 
 import leets.leenk.domain.notification.domain.entity.NotificationContent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @NoArgsConstructor
+@Getter
 @SuperBuilder
-public class FeedFirstReaction extends NotificationContent {
+public class FeedReactionCountDetail extends NotificationContent {
 
-    private Long userId;
-
-    private String name;
+    private Long reactionCount;
 
 }

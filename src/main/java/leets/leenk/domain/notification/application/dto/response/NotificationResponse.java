@@ -3,10 +3,9 @@ package leets.leenk.domain.notification.application.dto.response;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import leets.leenk.domain.notification.domain.entity.NotificationContent;
-import leets.leenk.domain.notification.domain.entity.NotificationType;
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import lombok.Builder;
 
 @Builder
@@ -15,6 +14,7 @@ public record NotificationResponse(
         String id,
         Long userId,
         NotificationType notificationType,
+        String path,
         Boolean isRead,
         NotificationContent content,
         LocalDateTime updateDate
