@@ -23,7 +23,7 @@ public class NotificationGetService {
 
     private final NotificationRepository notificationRepository;
     private final FeedNotificationMapper feedNotificationMapper;
-    private final LeenkNotificationMapper notificationMapper;
+    private final LeenkNotificationMapper leenkNotificationMapper;
 
     public Slice<Notification> findRecentNotifications(Long userId, Pageable pageable) {
         return notificationRepository.findPageByUserId(pageable, userId);
@@ -46,7 +46,7 @@ public class NotificationGetService {
                 .findByUserIdAndNotificationTypeAndContentLeenkId(
                         existingUser.getId(), NotificationType.NEW_LEENK_PARTICIPANT, leenk.getId());
 
-        return existingNotification.orElseGet(() -> notificationMapper.toNewLeenkParticipantNotification(leenk,
+        return existingNotification.orElseGet(() -> leenkNotificationMapper.toNewLeenkParticipantNotification(leenk,
                 existingUser));
     }
 }
