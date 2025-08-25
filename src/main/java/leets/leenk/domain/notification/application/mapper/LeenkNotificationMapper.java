@@ -117,6 +117,9 @@ public class LeenkNotificationMapper {
         return LeenkStartingSoonNotificationContent.builder()
                 .leenkId(leenk.getId())
                 .leenkTitle(leenk.getTitle())
+                .placeId(leenk.getLocation().getId())
+                .placeName(leenk.getLocation().getPlaceName())
+                .startTime(leenk.getStartTime())
                 .title(NotificationType.LEENK_STARTING_SOON.getTitle())
                 .body(NotificationType.LEENK_STARTING_SOON.getContent())
                 .build();
