@@ -1,14 +1,12 @@
 package leets.leenk.domain.notification.domain.entity.leenkContent;
 
-import leets.leenk.domain.notification.domain.entity.NotificationContent;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-@NoArgsConstructor
+
 @Getter
-@SuperBuilder
-public class NewLeenkParticipantDetail extends NotificationContent {
+@Builder
+public class NewLeenkParticipantDetail {
 
     private Long participantId;
 
