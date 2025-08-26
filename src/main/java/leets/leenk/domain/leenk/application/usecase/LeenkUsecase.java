@@ -350,5 +350,7 @@ public class LeenkUsecase {
         leenkParticipantsDeleteService.delete(participant);
 
         leenk.decreaseCurrentParticipants();
+
+        leenkNotificationUsecase.saveLeenkLeftNotification(leenk, user);
     }
 }
