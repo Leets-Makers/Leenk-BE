@@ -3,6 +3,7 @@ package leets.leenk.global.sqs.application.mapper;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import leets.leenk.domain.notification.domain.entity.enums.TitlePosition;
+import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.stereotype.Component;
 
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionDetail;
@@ -72,6 +73,16 @@ public class SqsMessageEventMapper {
         return SqsMessageEvent.builder()
                 .title(notification.getContent().getTitle())
                 .content(body)
+                .fcmToken(fcmToken)
+                .path(notification.getNotificationType().getPath())
+                .id(id)
+                .build();
+    }
+
+    public SqsMessageEvent fromLeenkLeft(Notification notification, String fcmToken, Long id, User leftUser) {
+        return SqsMessageEvent.builder()
+                .title(notification.getContent().getTitle())
+                .content("[" + leftUser.getName() + "]" + notification.getContent().getBody())
                 .fcmToken(fcmToken)
                 .path(notification.getNotificationType().getPath())
                 .id(id)

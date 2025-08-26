@@ -16,6 +16,7 @@ public enum NotificationType {
     LEENK_STARTING_SOON("Leenk", " 시작 30분 전이야", "leenks"),
     LEENK_FINISHED("Leenk", "모임이 끝났어. 후기 쓰러 가볼까?", "leenks"),
     LEENK_STARTED_HOST_REMINDER("Leenk", "모임이 시작됐어! 모집을 종료할까?", "leenks"),
+    LEENK_LEFT("Leenk", "이 모임에서 나갔어", "leenks"),
 
     // Feed
     FEED_TAG("Leenk", "이 나를 함께한 사람에 추가했어", "feeds"),

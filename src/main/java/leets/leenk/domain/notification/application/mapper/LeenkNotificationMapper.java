@@ -159,4 +159,24 @@ public class LeenkNotificationMapper {
                 .build();
     }
 
+    public Notification toLeenkLeftNotification(Leenk leenk, User leftUser) {
+        return Notification.builder()
+                .userId(leenk.getAuthor().getId())
+                .notificationType(NotificationType.LEENK_LEFT)
+                .isRead(Boolean.FALSE)
+                .content(toLeenkLeftNotificationContent(leenk, leftUser))
+                .build();
+    }
+
+    private LeenkLeftNotificationContent toLeenkLeftNotificationContent(Leenk leenk, User leftUser) {
+        return LeenkLeftNotificationContent.builder()
+                .leenkId(leenk.getId())
+                .leenkTitle(leenk.getTitle())
+                .title(NotificationType.LEENK_LEFT.getTitle())
+                .body(NotificationType.LEENK_LEFT.getContent())
+                .leftUserId(leftUser.getId())
+                .leftUserName(leftUser.getName())
+                .build();
+    }
+
 }

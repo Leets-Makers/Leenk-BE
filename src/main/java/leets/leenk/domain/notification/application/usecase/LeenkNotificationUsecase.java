@@ -142,6 +142,28 @@ public class LeenkNotificationUsecase {
         publishLeenkStatusNotificationIfEnabled(notification, author, leenk, TitlePosition.SUFFIX);
     }
 
+    @Transactional
+    public void saveLeenkLeftNotification(Leenk leenk, User leftUser) {
+        User author = leenk.getAuthor();
+
+        Notification notification = leenkNotificationMapper.toLeenkLeftNotification(leenk, leftUser);
+        notificationSaveService.save(notification);
+
+        if (author.getFcmToken() == null) {
+            return;
+        }
+        try {
+            UserSetting userSetting = userSettingGetService.findByUser(author);
+            if (userSetting.isLeenkStatusNotify()) {
+                eventPublisher.publishEvent(sqsMessageEventMapper.fromLeenkLeft(notification,
+                        author.getFcmToken(), leenk.getId(), leftUser));
+            }
+        } catch (Exception e) {
+            log.warn("Failed to publish Leenk notification for user: {}, leenk: {}",
+                    author.getId(), leenk.getId(), e);
+        }
+    }
+
     private void publishLeenkStatusNotificationIfEnabled(Notification notification, User user, Leenk leenk,
                                                          TitlePosition titlePosition) {
         if (user.getFcmToken() == null) {
