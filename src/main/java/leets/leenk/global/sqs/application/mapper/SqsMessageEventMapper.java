@@ -61,7 +61,12 @@ public class SqsMessageEventMapper {
 	public SqsMessageEvent fromNotificationWithLeenk(Notification notification, String fcmToken, Leenk leenk,
                                                      TitlePosition position, Long id) {
         String body;
-        String leenkTitleFormatted = "[" + leenk.getTitle() + "]";
+
+        int limit = 6;
+        String title = leenk.getTitle();
+        String leenkTitleFormatted = String.format("[%s]",
+                title.length() > limit ? title.substring(0, limit) + "..." : title);
+
         String notificationBody = notification.getContent().getBody();
 
         if (position == TitlePosition.PREFIX) {
