@@ -11,7 +11,7 @@ public enum NotificationType {
     NEW_LEENK("Leenk", "새로운 모임을 확인해 봐", "leenks"),
     LEENK_JOIN_COMPLETED("Leenk", "에 참여했어", "leenks"),
     NEW_LEENK_PARTICIPANT("Leenk", "에 새로운 참여자가 들어왔어", "leenks"),
-    KICKED_FROM_LEENK("Leenk", "모임에서 내보내졌어.", "leenks"),
+    KICKED_FROM_LEENK("Leenk", "모임에서 내보내졌어", "leenks"),
     LEENK_CLOSED("Leenk", "의 모집이 종료됐어\n모임원들을 확인해 봐!", "leenks"),
     LEENK_STARTING_SOON("Leenk", " 시작 30분 전이야", "leenks"),
     LEENK_FINISHED("Leenk", "모임이 끝났어. 후기 쓰러 가볼까?", "leenks"),
