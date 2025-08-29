@@ -64,15 +64,15 @@ public class SqsMessageEventMapper {
 
         int limit = 6;
         String title = leenk.getTitle();
-        String leenkTitleFormatted = String.format("[%s]",
+        String leenkTitle = String.format("[%s]",
                 title.length() > limit ? title.substring(0, limit) + "..." : title);
 
         String notificationBody = notification.getContent().getBody();
 
         if (position == TitlePosition.PREFIX) {
-            body = leenkTitleFormatted + notificationBody;
+            body = leenkTitle + notificationBody;
         } else {
-            body = notificationBody + "\n" + leenkTitleFormatted;
+            body = notificationBody + "\n" + leenkTitle;
         }
 
         return SqsMessageEvent.builder()
