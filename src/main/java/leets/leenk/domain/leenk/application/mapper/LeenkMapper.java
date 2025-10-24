@@ -79,7 +79,7 @@ public class LeenkMapper {
     }
 
     private LeenkResponse toLeenkResponse(Leenk leenk, Media representative) {
-        String imageUrl = (representative != null) ? representative.getMediaUrl() : null;
+        String imageUrl = (representative != null) ? representative.getDisplayUrl() : null;
 
         return LeenkResponse.builder()
                 .leenkId(leenk.getId())
