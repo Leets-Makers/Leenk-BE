@@ -46,6 +46,8 @@ public class Media {
     @Column(nullable = false)
     private String mediaUrl;
 
+    private String thumbnailUrl;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MediaType mediaType;
@@ -64,4 +66,5 @@ public class Media {
     public void updateMediaUrl(String mediaUrl) {
         this.mediaUrl = mediaUrl;
     }
+
 }
