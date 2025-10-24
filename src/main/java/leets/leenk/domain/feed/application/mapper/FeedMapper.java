@@ -48,11 +48,11 @@ public class FeedMapper {
                 .toList();
     }
 
-    public FeedResponse toFeedResponse(Feed feed, Media thumbNeil) {
+    public FeedResponse toFeedResponse(Feed feed, Media thumbNail) {
         return FeedResponse.builder()
                 .feedId(feed.getId())
                 .author(toFeedAuthorResponse(feed))
-                .thumbNail(thumbNeil.getMediaUrl())
+                .thumbNail(thumbNail.getDisplayUrl())
                 .totalReactionCount(feed.getTotalReactionCount())
                 .build();
     }

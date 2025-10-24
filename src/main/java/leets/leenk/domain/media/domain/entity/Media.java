@@ -67,4 +67,8 @@ public class Media {
         this.mediaUrl = mediaUrl;
     }
 
+    public String getDisplayUrl() {
+        return thumbnailUrl != null ? thumbnailUrl : mediaUrl;
+    }
+
 }
