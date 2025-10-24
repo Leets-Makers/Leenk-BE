@@ -1,6 +1,7 @@
 package leets.leenk.domain.media.domain.service;
 
 import leets.leenk.domain.media.application.dto.response.MediaUrlResponse;
+import leets.leenk.domain.media.domain.entity.enums.ContentType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,11 +24,17 @@ public class S3PresignedUrlService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+
+    public List<MediaUrlResponse> generateUrlList(ContentType contentType, List<String> fileNames) {
+        return fileNames.stream()
+                .map(fileName -> generateUrl(contentType, fileName, fileNames.indexOf(fileName)))
+                .toList();
+    }
     /*
     차후 CDN 캐싱도 고려
      */
-    public MediaUrlResponse generateUrl(String fileName) {
-        String key = generateKey(fileName);
+    private MediaUrlResponse generateUrl(ContentType contentType, String fileName, int index) {
+        String key = generateKey(contentType, fileName, index);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -44,10 +53,16 @@ public class S3PresignedUrlService {
         return new MediaUrlResponse(fileName, putUrl);
     }
 
-    private String generateKey(String fileName) {
+    private String generateKey(ContentType contentType, String fileName, int index) {
         String key = UUID.randomUUID().toString();
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        String filename = key + "." + extension;
 
-        return key + "." + extension;
+        String typePath = contentType.name().toLowerCase();
+        String prefix = (index == 0) ? "thumbnail_" : "";
+
+        return String.format("originals/%s/%s%s", typePath, prefix, filename);
     }
+
+
 }
