@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,8 @@ public class S3PresignedUrlService {
 
 
     public List<MediaUrlResponse> generateUrlList(ContentType contentType, List<String> fileNames) {
-        return fileNames.stream()
-                .map(fileName -> generateUrl(contentType, fileName, fileNames.indexOf(fileName)))
+        return IntStream.range(0, fileNames.size())
+                .mapToObj(i -> generateUrl(contentType, fileNames.get(i), i))
                 .toList();
     }
     /*
