@@ -21,4 +21,6 @@ public interface MediaRepository extends JpaRepository<Media, Long> {
     List<Media> findAllByLeenkInOrderByPosition(List<Leenk> leenks);
 
     void deleteAllByFeed(Feed feed);
+
+    Optional<Media> findByMediaUrl(String originalUrl);
 }

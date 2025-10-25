@@ -71,4 +71,8 @@ public class Media {
         return thumbnailUrl != null ? thumbnailUrl : mediaUrl;
     }
 
+    public void updateThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
 }
