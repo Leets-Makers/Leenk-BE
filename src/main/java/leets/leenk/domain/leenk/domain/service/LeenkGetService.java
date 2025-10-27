@@ -55,8 +55,8 @@ public class LeenkGetService {
     }
 
     public List<Leenk> findUnnotifiedFinishedLeenks(LocalDateTime now) {
-        return leenkRepository.findAllByStatusAndStartTimeLessThanEqual(
-                LeenkStatus.FINISHED, now.minusHours(1));
+        return leenkRepository.findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(
+                LeenkStatus.FINISHED, now.minusHours(25), now.minusHours(1));
     }
 
     public List<Leenk> findOverdueRecruitingLeenksToNotify(LocalDateTime now) {
