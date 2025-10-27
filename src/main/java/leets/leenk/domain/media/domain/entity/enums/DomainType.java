@@ -1,5 +1,5 @@
 package leets.leenk.domain.media.domain.entity.enums;
 
-public enum ContentType {
-    FEED, LEENK
+public enum DomainType {
+    FEED, LEENK, PROFILE
 }

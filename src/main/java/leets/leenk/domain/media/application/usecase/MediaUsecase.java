@@ -2,7 +2,7 @@ package leets.leenk.domain.media.application.usecase;
 
 import leets.leenk.domain.media.application.dto.response.MediaUrlResponse;
 import leets.leenk.domain.media.domain.entity.Media;
-import leets.leenk.domain.media.domain.entity.enums.ContentType;
+import leets.leenk.domain.media.domain.entity.enums.DomainType;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaUpdateService;
 import leets.leenk.domain.media.domain.service.S3PresignedUrlService;
@@ -20,9 +20,9 @@ public class MediaUsecase {
     private final MediaGetService mediaGetService;
     private final MediaUpdateService mediaUpdateService;
 
-    public List<MediaUrlResponse> getUrl(ContentType contentType, List<String> fileName) {
+    public List<MediaUrlResponse> getUrl(DomainType domainType, List<String> fileName) {
 
-        return s3PresignedUrlService.generateUrlList(contentType, fileName);
+        return s3PresignedUrlService.generateUrlList(domainType, fileName);
     }
 
     @Transactional

@@ -1,7 +1,7 @@
 package leets.leenk.domain.media.domain.service;
 
 import leets.leenk.domain.media.application.dto.response.MediaUrlResponse;
-import leets.leenk.domain.media.domain.entity.enums.ContentType;
+import leets.leenk.domain.media.domain.entity.enums.DomainType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -26,16 +25,16 @@ public class S3PresignedUrlService {
     private String bucket;
 
 
-    public List<MediaUrlResponse> generateUrlList(ContentType contentType, List<String> fileNames) {
+    public List<MediaUrlResponse> generateUrlList(DomainType domainType, List<String> fileNames) {
         return IntStream.range(0, fileNames.size())
-                .mapToObj(i -> generateUrl(contentType, fileNames.get(i), i))
+                .mapToObj(i -> generateUrl(domainType, fileNames.get(i), i))
                 .toList();
     }
     /*
     차후 CDN 캐싱도 고려
      */
-    private MediaUrlResponse generateUrl(ContentType contentType, String fileName, int index) {
-        String key = generateKey(contentType, fileName, index);
+    private MediaUrlResponse generateUrl(DomainType domainType, String fileName, int index) {
+        String key = generateKey(domainType, fileName, index);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -54,12 +53,12 @@ public class S3PresignedUrlService {
         return new MediaUrlResponse(fileName, putUrl);
     }
 
-    private String generateKey(ContentType contentType, String fileName, int index) {
+    private String generateKey(DomainType domainType, String fileName, int index) {
         String key = UUID.randomUUID().toString();
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
         String filename = key + "." + extension;
 
-        String typePath = contentType.name().toLowerCase();
+        String typePath = domainType.name().toLowerCase();
         String prefix = (index == 0) ? "thumbnail_" : "";
 
         return String.format("originals/%s/%s%s", typePath, prefix, filename);
