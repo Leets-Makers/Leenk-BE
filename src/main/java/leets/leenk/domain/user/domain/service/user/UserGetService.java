@@ -47,4 +47,9 @@ public class UserGetService {
         return userRepository.findByName("마스터")
                 .orElseThrow(UserNotFoundException::new);
     }
+
+    public User findByProfileImage(String profileImage){
+        return userRepository.findByProfileImage(profileImage)
+                .orElseThrow(UserNotFoundException::new);
+    }
 }
