@@ -11,6 +11,7 @@ public class UserBackupInfoMapper {
         return UserBackupInfo.builder()
                 .userId(user.getId())
                 .profileImage(user.getProfileImage())
+                .thumbnail(user.getThumbnail())
                 .name(user.getName())
                 .build();
     }

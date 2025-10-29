@@ -24,7 +24,7 @@ public class FeedUserMapper {
     public FeedUserResponse toFeedUserResponse(User user) {
         return FeedUserResponse.builder()
                 .userId(user.getId())
-                .profileImage(user.getProfileImage())
+                .profileImage(user.getThumbnail())
                 .name(user.getName())
                 .build();
     }

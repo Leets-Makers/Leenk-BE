@@ -32,7 +32,7 @@ public class LeenkMapper {
     public LeenkAuthorResponse toLeenkAuthorResponse(Leenk leenk) {
         return LeenkAuthorResponse.builder()
                 .userId(leenk.getAuthor().getId())
-                .profileImage(leenk.getAuthor().getProfileImage())
+                .profileImage(leenk.getAuthor().getThumbnail())
                 .name(leenk.getAuthor().getName())
                 .build();
     }
