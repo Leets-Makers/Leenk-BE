@@ -46,6 +46,7 @@ public class Media {
     @Column(nullable = false)
     private String mediaUrl;
 
+    @Column(nullable = false)
     private String thumbnailUrl;
 
     @Column(nullable = false)
@@ -65,10 +66,7 @@ public class Media {
 
     public void updateMediaUrl(String mediaUrl) {
         this.mediaUrl = mediaUrl;
-    }
-
-    public String getDisplayUrl() {
-        return thumbnailUrl != null ? thumbnailUrl : mediaUrl;
+        this.thumbnailUrl = mediaUrl;
     }
 
     public void updateThumbnailUrl(String thumbnailUrl) {
