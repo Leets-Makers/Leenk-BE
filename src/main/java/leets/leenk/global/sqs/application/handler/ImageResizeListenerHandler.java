@@ -1,7 +1,9 @@
 package leets.leenk.global.sqs.application.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.annotation.SqsListener;
+import leets.leenk.domain.media.application.exception.MediaNotFoundException;
 import leets.leenk.domain.media.application.usecase.MediaUsecase;
 import leets.leenk.global.sqs.application.dto.ImageResizeMessage;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,14 @@ public class ImageResizeListenerHandler {
             log.info("Successfully updated thumbnail originalUrl: {}, resizedUrl: {}",
                     imageResizeMessage.originalUrl(), imageResizeMessage.resizedUrl());
 
+        } catch (JsonProcessingException e) {
+
+            log.error("Failed to parse SQS message: {}", message, e);
+        } catch (MediaNotFoundException e) {
+
+            log.error("Media not found for message: {}", message, e);
         } catch (Exception e) {
+
             log.error("Failed update thumbnail message: {}", message, e);
         }
     }
