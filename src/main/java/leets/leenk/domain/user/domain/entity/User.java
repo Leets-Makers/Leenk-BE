@@ -38,6 +38,9 @@ public class User extends BaseEntity {
 
     private String profileImage;
 
+    @Column
+    private LocalDateTime birthDay;
+
     @Size(max = 4)
     @Column(length = 4)
     private String mbti;
