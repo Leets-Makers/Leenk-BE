@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import leets.leenk.domain.birthday.application.dto.BirthdayLetterRequest;
 import leets.leenk.domain.birthday.application.dto.response.BirthdayUserResponse;
+import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
 import leets.leenk.domain.birthday.application.usecase.BirthdayLetterUseCase;
 import leets.leenk.domain.birthday.application.usecase.BirthdayUsecase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
@@ -39,5 +40,14 @@ public class BirthdayController {
         birthdayLetterUseCase.writeBirthdayLetter(senderId, recipientId, request);
 
         return CommonResponse.success(ResponseCode.WRITE_BIRTHDAY_LETTER);
+    }
+
+    @GetMapping("letters/mine")
+    @Operation(summary = "내가 받은 생일 축하 편지 조회 API")
+    public CommonResponse<List<MyBirthdayLettersResponse>> getMyBirthdayLetters(
+            @Parameter(hidden = true) @CurrentUserId Long recipientId) {
+        List<MyBirthdayLettersResponse> response = birthdayLetterUseCase.getMyBirthdayLetters(recipientId);
+
+        return CommonResponse.success(ResponseCode.GET_MY_BIRTHDAY_LETTERS, response);
     }
 }
