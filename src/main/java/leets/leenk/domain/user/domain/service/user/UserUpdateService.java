@@ -25,6 +25,10 @@ public class UserUpdateService {
             user.updateProfileImage(request.profileImage());
         }
 
+        if(request.birthday() != null) {
+            user.updateBirthday(request.birthday());
+        }
+
         if (request.mbti() != null) {
             user.updateMbti(request.mbti());
         }
