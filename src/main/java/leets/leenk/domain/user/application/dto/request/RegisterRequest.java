@@ -15,6 +15,6 @@ public record RegisterRequest(
         @Size(max = 4)
         String mbti,
         @NotNull
-        LocalDate localdate
+        LocalDate birthDay
 ) {
 }
