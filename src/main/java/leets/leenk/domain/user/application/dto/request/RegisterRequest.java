@@ -12,9 +12,9 @@ public record RegisterRequest(
         @Size(max = 200)
         String introduction,
         String profileImage,
-        @Size(max = 4)
-        String mbti,
         @NotNull
-        LocalDate birthDay
+        LocalDate birthday,
+        @Size(max = 4)
+        String mbti
 ) {
 }

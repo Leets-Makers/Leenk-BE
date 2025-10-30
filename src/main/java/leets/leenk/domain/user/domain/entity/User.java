@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -39,7 +40,7 @@ public class User extends BaseEntity {
     private String profileImage;
 
     @Column
-    private LocalDateTime birthDay;
+    private LocalDate birthday;
 
     @Size(max = 4)
     @Column(length = 4)
@@ -78,6 +79,10 @@ public class User extends BaseEntity {
 
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public void updateBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 
     public void updateIntroduction(String introduction) {

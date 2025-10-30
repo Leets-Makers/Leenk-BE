@@ -5,6 +5,8 @@ import leets.leenk.domain.user.application.dto.request.RegisterRequest;
 import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class UserUpdateService {
 
@@ -34,6 +36,10 @@ public class UserUpdateService {
 
     public void updateProfileImage(User user, String profileImage) {
         user.updateProfileImage(profileImage);
+    }
+
+    public void updateBirthDay(User user, LocalDate birthday) {
+        user.updateBirthday(birthday);
     }
 
     public void updateIntroduction(User user, String introduction) {
