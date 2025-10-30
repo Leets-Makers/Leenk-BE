@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "leets.leenk.domain.user.domain.repository",
         "leets.leenk.domain.media.domain.repository",
         "leets.leenk.domain.leenk.domain.repository",
+        "leets.leenk.domain.birthday.domain.repository",
 })
 public class JpaConfig {
 }

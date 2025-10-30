@@ -1,0 +1,43 @@
+package leets.leenk.domain.birthday.application.usecase;
+
+import leets.leenk.domain.birthday.application.dto.BirthdayLetterRequest;
+import leets.leenk.domain.birthday.application.exception.NotBirthdayTodayException;
+import leets.leenk.domain.birthday.application.mapper.BirthdayLetterMapper;
+import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
+import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService;
+import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.domain.user.domain.service.user.UserGetService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+
+@Service
+@RequiredArgsConstructor
+public class BirthdayLetterUseCase {
+    private final UserGetService userGetService;
+    private final BirthdayLetterSaveService birthdayLetterSaveService;
+    private final BirthdayLetterMapper birthdayLetterMapper;
+
+    @Transactional
+    public void writeBirthdayLetter(long senderId, long recipientId, BirthdayLetterRequest request) {
+        User sender = userGetService.findById(senderId);
+        User recipient = userGetService.findById(recipientId);
+
+        LocalDate today = LocalDate.now();
+        LocalDate birthday = recipient.getBirthday();
+
+        boolean isBirthday = (birthday != null)
+                && (birthday.getMonthValue() == today.getMonthValue())
+                && (birthday.getDayOfMonth() == today.getDayOfMonth());
+
+        if (!isBirthday) {
+            throw new NotBirthdayTodayException();
+        }
+
+        BirthdayLetter birthdayLetter = birthdayLetterMapper.toBirthdayLetter(sender, recipient, request);
+
+        birthdayLetterSaveService.save(birthdayLetter);
+    }
+}
