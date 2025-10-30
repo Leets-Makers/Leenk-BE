@@ -14,6 +14,7 @@ public class UserMapper {
                 .name(user.getName())
                 .cardinal(user.getCardinal())
                 .profileImage(user.getProfileImage())
+                .birthday(user.getBirthday())
                 .introduction(user.getIntroduction())
                 .kakaoTalkId(user.getKakaoTalkId())
                 .introduction(user.getIntroduction())
