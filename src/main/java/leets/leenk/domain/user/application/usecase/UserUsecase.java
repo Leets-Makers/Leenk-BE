@@ -1,7 +1,6 @@
 package leets.leenk.domain.user.application.usecase;
 
 import leets.leenk.domain.user.application.dto.request.*;
-import leets.leenk.domain.user.application.dto.response.BirthdayUserResponse;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
 import leets.leenk.domain.user.application.exception.SelfBlockNotAllowedException;
 import leets.leenk.domain.user.application.exception.UserAlreadyBlockedException;
@@ -21,9 +20,6 @@ import leets.leenk.domain.user.domain.service.userbackup.UserBackupInfoSaveServi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,16 +56,6 @@ public class UserUsecase {
         User findUser = userGetService.findById(userId);
 
         return userMapper.toUserInfoResponse(findUser);
-    }
-
-    @Transactional(readOnly = true)
-    public List<BirthdayUserResponse> getTodayBirthdayUsers() {
-        LocalDate today = LocalDate.now();
-
-        return userGetService.findTodayBirthdayUsers(today)
-                .stream()
-                .map(userMapper::toBirthdayUserResponse)
-                .toList();
     }
 
     @Transactional

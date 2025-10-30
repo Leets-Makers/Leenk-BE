@@ -1,4 +1,4 @@
-package leets.leenk.domain.user.application.dto.response;
+package leets.leenk.domain.birthday.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

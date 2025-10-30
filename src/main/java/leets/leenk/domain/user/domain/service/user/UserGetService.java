@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -47,9 +46,5 @@ public class UserGetService {
     public User findByEmail(String email) {
         return userRepository.findByName("마스터")
                 .orElseThrow(UserNotFoundException::new);
-    }
-
-    public List<User> findTodayBirthdayUsers(LocalDate today) {
-        return userRepository.findAllUsersInBirthday(today.getMonthValue(), today.getDayOfMonth());
     }
 }
