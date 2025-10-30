@@ -24,8 +24,7 @@ public enum ResponseCode implements ResponseCodeInterface {
     UPDATE_NOTIFICATION_SETTING(1111, HttpStatus.OK, "알림 설정 수정에 성공했습니다."),
     SEND_FEEDBACK(1112, HttpStatus.OK, "의견 남기기에 성공했습니다."),
     UPDATE_FCM_TOKEN(1113, HttpStatus.OK, "fcm 토큰 수정에 성공했습니다."),
-    UPDATE_BIRTHDAY(1114, HttpStatus.OK, "생일 수정에 성공했습니다."),
-    GET_BIRTHDAY_USERS(1115, HttpStatus.OK, "생일인 유저들 조회에 성공했습니다.");
+    UPDATE_BIRTHDAY(1114, HttpStatus.OK, "생일 수정에 성공했습니다.");
 
     private final int code;
     private final HttpStatus status;

@@ -1,4 +1,4 @@
-package leets.leenk.domain.birthday.service;
+package leets.leenk.domain.birthday.domain.service;
 
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.repository.UserRepository;

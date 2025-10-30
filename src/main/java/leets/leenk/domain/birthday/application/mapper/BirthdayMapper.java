@@ -1,6 +1,6 @@
-package leets.leenk.domain.birthday.mapper;
+package leets.leenk.domain.birthday.application.mapper;
 
-import leets.leenk.domain.birthday.dto.response.BirthdayUserResponse;
+import leets.leenk.domain.birthday.application.dto.response.BirthdayUserResponse;
 import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.stereotype.Component;
 
