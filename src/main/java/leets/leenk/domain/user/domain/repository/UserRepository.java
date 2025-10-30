@@ -4,6 +4,8 @@ import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,4 +24,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByDeleteDateIsNullAndLeaveDateBefore(LocalDateTime threshold);
 
     Optional<User> findByName(String name);
+
+    @Query("""
+                SELECT u
+                FROM User u
+                WHERE u.leaveDate IS NULL
+                  AND u.deleteDate IS NULL
+                  AND u.birthday IS NOT NULL
+                  AND month(u.birthday) = :month
+                  AND day(u.birthday) = :day
+                ORDER BY u.name
+            """)
+    List<User> findAllUsersInBirthday(@Param("month") int month, @Param("day") int day);
 }

@@ -5,12 +5,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import leets.leenk.domain.user.application.dto.request.*;
+import leets.leenk.domain.user.application.dto.response.BirthdayUserResponse;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
 import leets.leenk.domain.user.application.usecase.UserUsecase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static leets.leenk.domain.user.presentation.ResponseCode.*;
 
@@ -54,6 +57,14 @@ public class UserController {
         UserInfoResponse response = userUsecase.getUserInfo(userId);
 
         return CommonResponse.success(GET_USER_INFO, response);
+    }
+
+    @GetMapping("/birthday")
+    @Operation(summary = "생일인 사람들 조회 API")
+    public CommonResponse<List<BirthdayUserResponse>> getBirthdayUser() {
+        List<BirthdayUserResponse> response = userUsecase.getTodayBirthdayUsers();
+
+        return CommonResponse.success(GET_BIRTHDAY_USERS, response);
     }
 
     @PatchMapping("/me/kakao-talk-id")
