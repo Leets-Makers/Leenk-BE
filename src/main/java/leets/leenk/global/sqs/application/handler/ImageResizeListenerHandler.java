@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import leets.leenk.domain.media.application.exception.MediaNotFoundException;
+import leets.leenk.domain.media.application.exception.MediaUpdateFailedException;
 import leets.leenk.domain.media.application.usecase.MediaUsecase;
 import leets.leenk.domain.media.domain.entity.enums.DomainType;
 import leets.leenk.domain.user.application.usecase.UserUsecase;
@@ -49,7 +50,7 @@ public class ImageResizeListenerHandler {
             log.error("Media not found for message: {}", message, e);
         } catch (Exception e) {
 
-            log.error("Failed update thumbnail message: {}", message, e);
+            throw new MediaUpdateFailedException();
         }
     }
 }
