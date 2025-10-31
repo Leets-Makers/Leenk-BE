@@ -14,6 +14,9 @@ public record LeenkAuthorResponse(
         String profileImage,
 
         @Schema(description = "작성자 이름", example = "이지훈")
-        String name
+        String name,
+
+        @Schema(description = "작성자 오늘 생일 여부", example = "true")
+        Boolean isAuthorBirthdayToday
 ) {
 }
