@@ -1,5 +1,6 @@
 package leets.leenk.domain.feed.application.mapper;
 
+import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.feed.application.dto.response.*;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
@@ -7,6 +8,7 @@ import leets.leenk.domain.media.application.dto.response.FeedMediaResponse;
 import leets.leenk.domain.media.domain.entity.Media;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.common.dto.PageableMapperUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +18,9 @@ import java.util.Map;
 import static leets.leenk.domain.feed.application.util.FeedDescriptionUtil.normalizeDescription;
 
 @Component
+@RequiredArgsConstructor
 public class FeedMapper {
+    private final BirthdayChecker birthdayChecker;
 
     public FeedListResponse toFeedListResponse(Slice<Feed> slice, Map<Long, List<Media>> mediaMap) {
         List<FeedResponse> responses = toFeedListResponse(slice.getContent(), mediaMap);
@@ -61,6 +65,7 @@ public class FeedMapper {
         return FeedAuthorResponse.builder()
                 .userId(feed.getUser().getId())
                 .profileImage(feed.getUser().getThumbnail())
+                .isBirthdayToday(birthdayChecker.isUserBirthdayToday(feed.getUser()))
                 .name(feed.getUser().getName())
                 .build();
     }
