@@ -1,6 +1,6 @@
 package leets.leenk.domain.birthday.application.mapper;
 
-import leets.leenk.domain.birthday.application.dto.BirthdayLetterRequest;
+import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest;
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
 import leets.leenk.domain.user.domain.entity.User;

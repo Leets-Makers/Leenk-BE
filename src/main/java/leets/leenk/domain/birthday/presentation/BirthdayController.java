@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import leets.leenk.domain.birthday.application.dto.BirthdayLetterRequest;
+import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest;
 import leets.leenk.domain.birthday.application.dto.response.BirthdayUsersResponse;
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
 import leets.leenk.domain.birthday.application.usecase.BirthdayLetterUseCase;
