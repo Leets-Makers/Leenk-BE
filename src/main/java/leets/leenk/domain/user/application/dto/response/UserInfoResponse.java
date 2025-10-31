@@ -13,6 +13,7 @@ public record UserInfoResponse(
         int cardinal,
         String profileImage,
         LocalDate birthday,
+        Boolean isUserBirthdayToday,
         String kakaoTalkId,
         String introduction,
         String mbti
