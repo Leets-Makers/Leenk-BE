@@ -12,6 +12,9 @@ public record BirthdayUserResponse(
         String name,
 
         @Schema(description = "사용자 프로필 이미지", example = "https://www.image.com/me.jpg")
-        String profileImage
+        String profileImage,
+
+        @Schema(description = "오늘 생일 여부", example = "true")
+        Boolean isBirthdayToday
 ) {
 }

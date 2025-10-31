@@ -4,6 +4,7 @@ import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
 import leets.leenk.domain.birthday.application.exception.NotBirthdayTodayException;
 import leets.leenk.domain.birthday.application.mapper.BirthdayLetterMapper;
+import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
 import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService;
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService;
@@ -24,20 +25,17 @@ public class BirthdayLetterUseCase {
     private final BirthdayLetterSaveService birthdayLetterSaveService;
     private final BirthdayLettersGetService birthdayLettersGetService;
     private final BirthdayLetterMapper birthdayLetterMapper;
+    private final BirthdayChecker birthdayChecker;
 
     @Transactional
     public void writeBirthdayLetter(long senderId, long recipientId, BirthdayLetterRequest request) {
         User sender = userGetService.findById(senderId);
         User recipient = userGetService.findById(recipientId);
 
-        LocalDate today = LocalDate.now();
         LocalDate birthday = recipient.getBirthday();
 
-        boolean isBirthday = (birthday != null)
-                && (birthday.getMonthValue() == today.getMonthValue())
-                && (birthday.getDayOfMonth() == today.getDayOfMonth());
-
-        if (!isBirthday) {
+        boolean isBirthdayToday = birthdayChecker.validateIsBirthdayToday(birthday);
+        if (!isBirthdayToday) {
             throw new NotBirthdayTodayException();
         }
 
