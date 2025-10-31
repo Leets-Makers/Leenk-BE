@@ -17,6 +17,6 @@ public record FeedUserResponse(
         String name,
 
         @Schema(description = "작성자 오늘 생일 여부", example = "true")
-        Boolean isBirthdayToday
+        Boolean isUserBirthdayToday
 ) {
 }

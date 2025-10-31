@@ -30,7 +30,7 @@ public class FeedUserMapper {
                 .userId(user.getId())
                 .profileImage(user.getThumbnail())
                 .name(user.getName())
-                .isBirthdayToday(birthdayChecker.isUserBirthdayToday(user))
+                .isUserBirthdayToday(birthdayChecker.isUserBirthdayToday(user))
                 .build();
     }
 

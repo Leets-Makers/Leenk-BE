@@ -66,7 +66,7 @@ public class FeedMapper {
                 .userId(feed.getUser().getId())
                 .profileImage(feed.getUser().getThumbnail())
                 .name(feed.getUser().getName())
-                .isBirthdayToday(birthdayChecker.isUserBirthdayToday(feed.getUser()))
+                .isAuthorBirthdayToday(birthdayChecker.isUserBirthdayToday(feed.getUser()))
                 .build();
     }
 
