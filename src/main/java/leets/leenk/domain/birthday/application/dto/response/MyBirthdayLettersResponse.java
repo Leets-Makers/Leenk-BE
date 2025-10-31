@@ -14,6 +14,9 @@ public record MyBirthdayLettersResponse(
         @Schema(description = "사용자의 프로필 이미지", example = "www.image.com/me.jpg")
         String profileImage,
 
+        @Schema(description = "편지 보낸 유저 오늘 생일 여부", example = "true")
+        Boolean isSenderBirthdayToday,
+
         @Schema(description = "편지 내용", example = "생일 축하한데이")
         String message
 ) {

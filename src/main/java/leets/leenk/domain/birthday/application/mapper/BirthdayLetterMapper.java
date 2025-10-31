@@ -2,12 +2,17 @@ package leets.leenk.domain.birthday.application.mapper;
 
 import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest;
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
+import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
 import leets.leenk.domain.user.domain.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class BirthdayLetterMapper {
+    private final BirthdayChecker birthdayChecker;
+
     public BirthdayLetter toBirthdayLetter(User sender, User recipient, BirthdayLetterRequest request) {
         return BirthdayLetter.builder()
                 .sender(sender)
@@ -21,6 +26,7 @@ public class BirthdayLetterMapper {
                 .letterId(birthdayLetter.getId())
                 .name(birthdayLetter.getSender().getName())
                 .profileImage(birthdayLetter.getSender().getProfileImage())
+                .isSenderBirthdayToday(birthdayChecker.isUserBirthdayToday(birthdayLetter.getSender()))
                 .message(birthdayLetter.getMessage())
                 .build();
     }
