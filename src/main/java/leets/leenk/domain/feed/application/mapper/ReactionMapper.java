@@ -12,7 +12,7 @@ public class ReactionMapper {
     public ReactionUserResponse toResponse(Reaction reaction) {
         return ReactionUserResponse.builder()
                 .userId(reaction.getUser().getId())
-                .profileImage(reaction.getUser().getProfileImage())
+                .profileImage(reaction.getUser().getThumbnail())
                 .name(reaction.getUser().getName())
                 .reactionCount(reaction.getReactionCount())
                 .build();

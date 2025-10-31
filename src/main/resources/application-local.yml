@@ -50,4 +50,5 @@ myapp:
   sqs:
     queue_name: ${LOCAL_AWS_SQS_QUEUE_NAME}
     queue_url: ${LOCAL_AWS_SQS_QUEUE_URL}
+    resize_queue_url: ${RESIZE_SQS_QUEUE_URL}
     messageDelaySecs : 0

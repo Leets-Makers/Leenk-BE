@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leets.leenk.domain.media.application.dto.response.MediaUrlResponse;
 import leets.leenk.domain.media.application.usecase.MediaUsecase;
+import leets.leenk.domain.media.domain.entity.enums.DomainType;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +24,9 @@ public class MediaController {
 
     @GetMapping
     @Operation(summary = "파일 업로드를 위한 presigned url을 요청하는 API 입니다.")
-    public CommonResponse<List<MediaUrlResponse>> getUrl(@RequestParam List<String> fileName) {
-        List<MediaUrlResponse> response = mediaUsecase.getUrl(fileName);
+    public CommonResponse<List<MediaUrlResponse>> getUrl(@RequestParam DomainType domainType,
+                                                         @RequestParam List<String> fileName) {
+        List<MediaUrlResponse> response = mediaUsecase.getUrl(domainType, fileName);
 
         return CommonResponse.success(ResponseCode.GET_MEDIA_URL, response);
     }

@@ -16,6 +16,7 @@ public class MediaMapper {
                 .feed(feed)
                 .position(request.position())
                 .mediaUrl(request.mediaUrl())
+                .thumbnailUrl(request.mediaUrl())
                 .mediaType(request.mediaType())
                 .build();
     }
@@ -24,6 +25,7 @@ public class MediaMapper {
         return Media.builder()
                 .leenk(leenk)
                 .mediaUrl(url)
+                .thumbnailUrl(url)
                 .mediaType(MediaType.IMAGE)
                 .position(DEFAULT_POSITION)
                 .build();

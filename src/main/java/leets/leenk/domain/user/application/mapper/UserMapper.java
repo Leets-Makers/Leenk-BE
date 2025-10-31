@@ -13,7 +13,7 @@ public class UserMapper {
                 .id(user.getId())
                 .name(user.getName())
                 .cardinal(user.getCardinal())
-                .profileImage(user.getProfileImage())
+                .profileImage(user.getThumbnail())
                 .introduction(user.getIntroduction())
                 .kakaoTalkId(user.getKakaoTalkId())
                 .introduction(user.getIntroduction())

@@ -36,6 +36,10 @@ public class UserUpdateService {
         user.updateProfileImage(profileImage);
     }
 
+    public void updateThumbnailUrl(User user, String thumbnail) {
+        user.updateThumbnail(thumbnail);
+    }
+
     public void updateIntroduction(User user, String introduction) {
         user.updateIntroduction(introduction);
     }
