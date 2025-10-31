@@ -24,7 +24,7 @@ public class LeenkParticipantsMapper {
     public LeenkAuthorResponse toLeenkAuthorResponse(User user) {
         return LeenkAuthorResponse.builder()
                 .userId(user.getId())
-                .profileImage(user.getProfileImage())
+                .profileImage(user.getThumbnail())
                 .name(user.getName())
                 .build();
     }

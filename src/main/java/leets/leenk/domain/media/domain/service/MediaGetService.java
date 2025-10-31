@@ -43,4 +43,9 @@ public class MediaGetService {
     public List<Media> findByLeenks(List<Leenk> leenks) {
         return mediaRepository.findAllByLeenkInOrderByPosition(leenks);
     }
+
+    public Media findByMediaUrl(String originalUrl){
+        return mediaRepository.findByMediaUrl(originalUrl)
+                .orElseThrow(MediaNotFoundException::new);
+    }
 }

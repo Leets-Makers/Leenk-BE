@@ -32,7 +32,7 @@ public class LeenkMapper {
     public LeenkAuthorResponse toLeenkAuthorResponse(Leenk leenk) {
         return LeenkAuthorResponse.builder()
                 .userId(leenk.getAuthor().getId())
-                .profileImage(leenk.getAuthor().getProfileImage())
+                .profileImage(leenk.getAuthor().getThumbnail())
                 .name(leenk.getAuthor().getName())
                 .build();
     }
@@ -79,7 +79,7 @@ public class LeenkMapper {
     }
 
     private LeenkResponse toLeenkResponse(Leenk leenk, Media representative) {
-        String imageUrl = (representative != null) ? representative.getMediaUrl() : null;
+        String imageUrl = (representative != null) ? representative.getThumbnailUrl() : null;
 
         return LeenkResponse.builder()
                 .leenkId(leenk.getId())

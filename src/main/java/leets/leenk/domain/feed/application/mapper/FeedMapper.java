@@ -48,11 +48,11 @@ public class FeedMapper {
                 .toList();
     }
 
-    public FeedResponse toFeedResponse(Feed feed, Media thumbNeil) {
+    public FeedResponse toFeedResponse(Feed feed, Media thumbNail) {
         return FeedResponse.builder()
                 .feedId(feed.getId())
                 .author(toFeedAuthorResponse(feed))
-                .thumbNail(thumbNeil.getMediaUrl())
+                .thumbNail(thumbNail.getThumbnailUrl())
                 .totalReactionCount(feed.getTotalReactionCount())
                 .build();
     }
@@ -60,7 +60,7 @@ public class FeedMapper {
     public FeedAuthorResponse toFeedAuthorResponse(Feed feed) {
         return FeedAuthorResponse.builder()
                 .userId(feed.getUser().getId())
-                .profileImage(feed.getUser().getProfileImage())
+                .profileImage(feed.getUser().getThumbnail())
                 .name(feed.getUser().getName())
                 .build();
     }
@@ -102,7 +102,7 @@ public class FeedMapper {
                 .map(linkedUser -> LinkedUserResponse.builder()
                         .userId(linkedUser.getUser().getId())
                         .isAuthor(linkedUser.getUser().getId().equals(feed.getUser().getId()))
-                        .profileImage(linkedUser.getUser().getProfileImage())
+                        .profileImage(linkedUser.getUser().getThumbnail())
                         .name(linkedUser.getUser().getName())
                         .build())
                 .toList();

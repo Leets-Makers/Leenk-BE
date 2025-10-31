@@ -42,6 +42,10 @@ public class UserUpdateService {
         user.updateProfileImage(profileImage);
     }
 
+    public void updateThumbnailUrl(User user, String thumbnail) {
+        user.updateThumbnail(thumbnail);
+    }
+
     public void updateBirthDay(User user, LocalDate birthday) {
         user.updateBirthday(birthday);
     }

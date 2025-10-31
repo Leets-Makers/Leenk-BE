@@ -73,6 +73,13 @@ public class UserUsecase {
     }
 
     @Transactional
+    public void updateThumbnailUrl(String profileImage, String thumbnail){
+        User user = userGetService.findByProfileImage(profileImage);
+
+        userUpdateService.updateThumbnailUrl(user, thumbnail);
+    }
+
+    @Transactional
     public void updateBirthday(long userId, BirthdayRequest request) {
         User user = userGetService.findById(userId);
 
