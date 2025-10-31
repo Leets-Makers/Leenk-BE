@@ -109,6 +109,7 @@ public class FeedMapper {
                         .isAuthor(linkedUser.getUser().getId().equals(feed.getUser().getId()))
                         .profileImage(linkedUser.getUser().getThumbnail())
                         .name(linkedUser.getUser().getName())
+                        .isUserBirthdayToday(birthdayChecker.isUserBirthdayToday(linkedUser.getUser()))
                         .build())
                 .toList();
     }
