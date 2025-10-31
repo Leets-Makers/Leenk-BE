@@ -1,18 +1,22 @@
 package leets.leenk.domain.feed.application.mapper;
 
+import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.feed.application.dto.response.FeedUserListResponse;
 import leets.leenk.domain.feed.application.dto.response.FeedUserResponse;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.common.dto.PageableMapperUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class FeedUserMapper {
+    private final BirthdayChecker birthdayChecker;
 
     public LinkedUser toLinkedUser(User user, Feed feed) {
         return LinkedUser.builder()
@@ -26,6 +30,7 @@ public class FeedUserMapper {
                 .userId(user.getId())
                 .profileImage(user.getThumbnail())
                 .name(user.getName())
+                .isBirthdayToday(birthdayChecker.isUserBirthdayToday(user))
                 .build();
     }
 
