@@ -83,7 +83,7 @@ public class UserUsecase {
     public void updateBirthday(long userId, BirthdayRequest request) {
         User user = userGetService.findById(userId);
 
-        userUpdateService.updateBirthDay(user, request.birthday());
+        userUpdateService.updateBirthday(user, request.birthday());
     }
 
     @Transactional

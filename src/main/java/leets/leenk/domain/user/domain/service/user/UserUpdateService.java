@@ -46,7 +46,7 @@ public class UserUpdateService {
         user.updateThumbnail(thumbnail);
     }
 
-    public void updateBirthDay(User user, LocalDate birthday) {
+    public void updateBirthday(User user, LocalDate birthday) {
         user.updateBirthday(birthday);
     }
 
