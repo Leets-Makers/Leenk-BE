@@ -13,6 +13,9 @@ public record NotificationSettingUpdateRequest(
         Boolean newFeedNotify,
 
         @Schema(description = "새로운 공감 알림 여부 수정", example = "false")
-        Boolean newReactionNotify
+        Boolean newReactionNotify,
+
+        @Schema(description = "생일 알림 여부 수정", example = "false")
+        Boolean birthdayNotify
 ) {
 }
