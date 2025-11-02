@@ -48,7 +48,7 @@ public class BirthdayNotificationUsecase {
 
                 if (receiver.getFcmToken() != null) {
                     eventPublisher.publishEvent(
-                            sqsMessageEventMapper.fromBirthdayAnnouncement(
+                            sqsMessageEventMapper.toBirthdaySqsMessageEvent(
                                     notification,
                                     receiver.getFcmToken(),
                                     birthdayUser

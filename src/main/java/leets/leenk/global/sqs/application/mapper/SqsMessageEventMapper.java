@@ -94,7 +94,7 @@ public class SqsMessageEventMapper {
                 .build();
     }
 
-    public SqsMessageEvent fromBirthdayAnnouncement(Notification notification, String fcmToken, User birthdayUser) {
+    public SqsMessageEvent toBirthdaySqsMessageEvent(Notification notification, String fcmToken, User birthdayUser) {
         return SqsMessageEvent.builder()
                 .title(notification.getContent().getTitle())
                 .content(notification.getContent().getBody().replace("{name}",
