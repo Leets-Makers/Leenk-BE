@@ -21,5 +21,7 @@ public class BirthdayNotifyScheduler {
             LocalDate today = LocalDate.now(KST);
             birthdayNotificationUsecase.announceUserBirthday(today);
 
+            birthdayNotificationUsecase.celebrateBirthday(today);
+
         }
 }

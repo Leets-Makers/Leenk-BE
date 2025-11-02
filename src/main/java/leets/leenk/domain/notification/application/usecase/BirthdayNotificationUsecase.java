@@ -59,4 +59,26 @@ public class BirthdayNotificationUsecase {
         }
 
     }
+
+    @Transactional
+    public void celebrateBirthday(LocalDate today){
+        List<User> birthdayUsers = userGetService.findAllByBirthday(today);
+
+        for (User birthdayUser : birthdayUsers){
+            Notification notification = birthdayNotificationMapper
+                    .toBirthdayCelebrateNotification(birthdayUser);
+            notificationSaveService.save(notification);
+
+            if(birthdayUser.getFcmToken() != null) {
+                eventPublisher.publishEvent(
+                        sqsMessageEventMapper.toBirthdaySqsMessageEvent(
+                                notification,
+                                birthdayUser.getFcmToken(),
+                                birthdayUser
+                        )
+                );
+            }
+        }
+    }
+
 }

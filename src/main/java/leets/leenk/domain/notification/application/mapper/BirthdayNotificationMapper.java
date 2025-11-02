@@ -2,6 +2,7 @@ package leets.leenk.domain.notification.application.mapper;
 
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.entity.birthdayContent.BirthdayAnnouncementContent;
+import leets.leenk.domain.notification.domain.entity.birthdayContent.BirthdayCelebrateContent;
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.stereotype.Component;
@@ -17,11 +18,28 @@ public class BirthdayNotificationMapper {
                 .build();
     }
 
+    public Notification toBirthdayCelebrateNotification(User birthdayUser) {
+        return Notification.builder()
+                .userId(birthdayUser.getId())
+                .notificationType(NotificationType.BIRTHDAY_CELEBRATE)
+                .content(toBirthdayCelebrateContent(birthdayUser))
+                .isRead(Boolean.FALSE)
+                .build();
+    }
+
     private BirthdayAnnouncementContent toBirthdayAnnouncementContent(User birthdayUser) {
         return BirthdayAnnouncementContent.builder()
                 .birthdayUserName(birthdayUser.getName())
                 .title(NotificationType.BIRTHDAY_ANNOUNCEMENT.getTitle())
                 .body(NotificationType.BIRTHDAY_ANNOUNCEMENT.getContent())
+                .build();
+    }
+
+    private BirthdayCelebrateContent toBirthdayCelebrateContent(User birthdayUser){
+        return BirthdayCelebrateContent.builder()
+                .birthdayUserName(birthdayUser.getName())
+                .title(NotificationType.BIRTHDAY_CELEBRATE.getTitle())
+                .body(NotificationType.BIRTHDAY_CELEBRATE.getContent())
                 .build();
     }
 }
