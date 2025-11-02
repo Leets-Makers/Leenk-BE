@@ -22,7 +22,10 @@ public enum NotificationType {
     FEED_TAG("Leenk", "이 나를 함께한 사람에 추가했어", "feeds"),
     NEW_FEED("Leenk", "새로운 게시글을 확인해 봐", "feeds"),
     FEED_FIRST_REACTION("Leenk", "내가 쓴 피드에 좋아요를 받았어", "feeds"),
-    FEED_REACTION_COUNT("Leenk", "내가 쓴 피드에 좋아요를 %d개 받았어", "feeds");
+    FEED_REACTION_COUNT("Leenk", "내가 쓴 피드에 좋아요를 %d개 받았어", "feeds"),
+
+    // Birthday
+    BIRTHDAY_ANNOUNCEMENT("Leenk", "오늘은 {name}의 생일이야\n축하해주러 가볼까?", "birthday");
 
 
     private final String title;
