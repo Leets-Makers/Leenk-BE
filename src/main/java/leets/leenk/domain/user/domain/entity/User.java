@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -37,6 +38,9 @@ public class User extends BaseEntity {
     private int cardinal;
 
     private String profileImage;
+
+    @Column
+    private LocalDate birthday;
 
     @Size(max = 4)
     @Column(length = 4)
