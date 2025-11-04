@@ -3,6 +3,8 @@ package leets.leenk.domain.birthday.application.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
+
 @Builder
 public record MyBirthdayLettersResponse(
         @Schema(description = "편지 id", example = "1")
@@ -18,6 +20,9 @@ public record MyBirthdayLettersResponse(
         Boolean isSenderBirthdayToday,
 
         @Schema(description = "편지 내용", example = "생일 축하한데이")
-        String message
+        String message,
+
+        @Schema(description = "편지 작성 일자", example = "2025-11-30T00:00:00")
+        LocalDateTime createdAt
 ) {
 }

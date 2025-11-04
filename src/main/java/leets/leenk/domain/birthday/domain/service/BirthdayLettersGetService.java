@@ -13,6 +13,6 @@ public class BirthdayLettersGetService {
     private final BirthdayLetterRepository birthdayLetterRepository;
 
     public List<BirthdayLetter> getMyBirthdayLetters(long recipientId) {
-        return birthdayLetterRepository.findAllByRecipientId(recipientId);
+        return birthdayLetterRepository.findAllByRecipientIdOrderByCreateDateDesc(recipientId);
     }
 }

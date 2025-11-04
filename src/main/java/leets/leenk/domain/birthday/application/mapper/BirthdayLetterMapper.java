@@ -28,6 +28,7 @@ public class BirthdayLetterMapper {
                 .profileImage(birthdayLetter.getSender().getProfileImage())
                 .isSenderBirthdayToday(birthdayChecker.isUserBirthdayToday(birthdayLetter.getSender()))
                 .message(birthdayLetter.getMessage())
+                .createdAt(birthdayLetter.getCreateDate())
                 .build();
     }
 }
