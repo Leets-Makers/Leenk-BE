@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -38,4 +39,27 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 ORDER BY u.name
             """)
     List<User> findAllUsersInBirthday(@Param("month") int month, @Param("day") int day);
+
+    @Query(value = """
+            SELECT u.*
+            FROM users u
+            WHERE u.birthday IS NOT NULL
+              AND DATEDIFF(
+                    CASE
+                        WHEN DATE_FORMAT(u.birthday, '%m-%d') > DATE_FORMAT(:today, '%m-%d')
+                            THEN STR_TO_DATE(CONCAT(YEAR(:today), '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
+                        ELSE STR_TO_DATE(CONCAT(YEAR(:today) + 1, '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
+                    END,
+                    :today
+                  ) BETWEEN 1 AND :days
+            ORDER BY DATEDIFF(
+                      CASE
+                          WHEN DATE_FORMAT(u.birthday, '%m-%d') > DATE_FORMAT(:today, '%m-%d')
+                              THEN STR_TO_DATE(CONCAT(YEAR(:today), '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
+                          ELSE STR_TO_DATE(CONCAT(YEAR(:today) + 1, '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
+                      END,
+                      :today
+                    ) ASC
+            """, nativeQuery = true)
+    List<User> findUpcomingBirthdays(@Param("today") LocalDate today, @Param("days") int days);
 }

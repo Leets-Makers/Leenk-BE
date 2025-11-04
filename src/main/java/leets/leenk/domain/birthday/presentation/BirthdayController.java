@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest;
 import leets.leenk.domain.birthday.application.dto.response.BirthdayUsersResponse;
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
+import leets.leenk.domain.birthday.application.dto.response.UpcomingBirthdayUserResponse;
+import leets.leenk.domain.birthday.application.dto.response.UpcomingBirthdayUsersResponse;
 import leets.leenk.domain.birthday.application.usecase.BirthdayLetterUseCase;
 import leets.leenk.domain.birthday.application.usecase.BirthdayUsecase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
@@ -33,6 +35,14 @@ public class BirthdayController {
         return CommonResponse.success(ResponseCode.GET_BIRTHDAY_USERS, response);
     }
 
+    @GetMapping("/users/upcoming")
+    @Operation(summary = "7일 이내 생일일 사람들 조회 API")
+    public CommonResponse<UpcomingBirthdayUsersResponse> getBirthdayUser() {
+        UpcomingBirthdayUsersResponse response = birthdayUsecase.getUpcomingBirthdayUsers();
+
+        return CommonResponse.success(ResponseCode.GET_UPCOMING_BIRTHDAY_USERS, response);
+    }
+
     @PostMapping("/letters/{receiverId}")
     @Operation(summary = "생일 축하 전송(편지 전송) API")
     public CommonResponse<Void> writeBirthdayLetter(@Parameter(hidden = true) @CurrentUserId Long senderId,
@@ -51,6 +61,8 @@ public class BirthdayController {
 
         return CommonResponse.success(ResponseCode.GET_MY_BIRTHDAY_LETTERS, response);
     }
+
+
 
     @PostMapping("/letters/me/mark")
     @Operation(summary = "편지 읽음 처리 API")

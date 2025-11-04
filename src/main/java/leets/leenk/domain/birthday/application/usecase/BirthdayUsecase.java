@@ -1,6 +1,8 @@
 package leets.leenk.domain.birthday.application.usecase;
 
 import leets.leenk.domain.birthday.application.dto.response.BirthdayUsersResponse;
+import leets.leenk.domain.birthday.application.dto.response.UpcomingBirthdayUserResponse;
+import leets.leenk.domain.birthday.application.dto.response.UpcomingBirthdayUsersResponse;
 import leets.leenk.domain.birthday.application.mapper.BirthdayMapper;
 import leets.leenk.domain.birthday.domain.service.BirthdayGetService;
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService;
@@ -50,5 +52,24 @@ public class BirthdayUsecase {
         }
 
         return birthdayMapper.toBirthdayUsersResponse(response, myBirthdayCounts, hasNewBirthdayLetters);
+    }
+
+    @Transactional(readOnly = true)
+    public UpcomingBirthdayUsersResponse getUpcomingBirthdayUsers() {
+        LocalDate today = LocalDate.now();
+
+        List<UpcomingBirthdayUserResponse> users = birthdayGetService.findUpcomingBirthdayUsers(today, 7)
+                .stream()
+                .map(user -> {
+                    LocalDate next = user.getBirthday().withYear(today.getYear());
+                    if (!next.isAfter(today)) {
+                        next = next.plusDays(1);
+                    }
+
+                    return birthdayMapper.toUpcomingBirthdayUserResponse(user);
+                })
+                .toList();
+
+        return birthdayMapper.toUpcomingBirthdayUsersResponse(users);
     }
 }

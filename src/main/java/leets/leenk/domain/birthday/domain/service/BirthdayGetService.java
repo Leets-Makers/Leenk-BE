@@ -16,4 +16,8 @@ public class BirthdayGetService {
     public List<User> findTodayBirthdayUsers(LocalDate today) {
         return userRepository.findAllUsersInBirthday(today.getMonthValue(), today.getDayOfMonth());
     }
+
+    public List<User> findUpcomingBirthdayUsers(LocalDate today, int days) {
+        return userRepository.findUpcomingBirthdays(today, days);
+    }
 }
