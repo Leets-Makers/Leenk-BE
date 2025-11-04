@@ -14,7 +14,7 @@ public class BirthdayMapper {
     public BirthdayUsersResponse toBirthdayUsersResponse(List<UserProfileResponse> users, Long counts) {
         return BirthdayUsersResponse.builder()
                 .users(users)
-                .myBirthdayLettersCount(counts)
+                .myBirthdayLettersCounts(counts)
                 .build();
     }
 }

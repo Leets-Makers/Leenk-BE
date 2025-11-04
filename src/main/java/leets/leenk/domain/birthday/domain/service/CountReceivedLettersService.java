@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 public class CountReceivedLettersService {
     private final BirthdayLetterRepository birthdayLetterRepository;
 
-    public long countMyReceivedLetters(long recipientId, LocalDate date) {
+    public long countMyReceivedLetters(long receiverId, LocalDate date) {
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = start.plusDays(1);
 
-        return birthdayLetterRepository.countByRecipientIdAndCreateDateBetween(recipientId, start, end);
+        return birthdayLetterRepository.countByReceiverIdAndCreateDateBetween(receiverId, start, end);
     }
 
 }

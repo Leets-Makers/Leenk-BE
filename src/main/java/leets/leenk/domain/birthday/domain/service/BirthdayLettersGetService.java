@@ -12,7 +12,7 @@ import java.util.List;
 public class BirthdayLettersGetService {
     private final BirthdayLetterRepository birthdayLetterRepository;
 
-    public List<BirthdayLetter> getMyBirthdayLetters(long recipientId) {
-        return birthdayLetterRepository.findAllByRecipientIdOrderByCreateDateDesc(recipientId);
+    public List<BirthdayLetter> getMyBirthdayLetters(long receiverId) {
+        return birthdayLetterRepository.findAllByReceiverIdOrderByCreateDateDesc(receiverId);
     }
 }

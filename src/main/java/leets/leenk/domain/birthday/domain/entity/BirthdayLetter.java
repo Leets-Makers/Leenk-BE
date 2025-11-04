@@ -27,6 +27,6 @@ public class BirthdayLetter extends BaseEntity {
     private User sender;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "recipient_id", nullable = false, updatable = false)
-    private User recipient;
+    @JoinColumn(name = "receiver_id", nullable = false, updatable = false)
+    private User receiver;
 }

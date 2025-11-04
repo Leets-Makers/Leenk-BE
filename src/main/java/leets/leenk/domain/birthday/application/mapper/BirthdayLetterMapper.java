@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 public class BirthdayLetterMapper {
     private final UserProfileMapper userProfileMapper;
 
-    public BirthdayLetter toBirthdayLetter(User sender, User recipient, BirthdayLetterRequest request) {
+    public BirthdayLetter toBirthdayLetter(User sender, User receiver, BirthdayLetterRequest request) {
         return BirthdayLetter.builder()
                 .sender(sender)
-                .recipient(recipient)
+                .receiver(receiver)
                 .message(request.message())
                 .build();
     }

@@ -28,25 +28,25 @@ public class BirthdayLetterUseCase {
     private final BirthdayChecker birthdayChecker;
 
     @Transactional
-    public void writeBirthdayLetter(long senderId, long recipientId, BirthdayLetterRequest request) {
+    public void writeBirthdayLetter(long senderId, long receiverId, BirthdayLetterRequest request) {
         User sender = userGetService.findById(senderId);
-        User recipient = userGetService.findById(recipientId);
+        User receiver = userGetService.findById(receiverId);
 
-        LocalDate birthday = recipient.getBirthday();
+        LocalDate birthday = receiver.getBirthday();
 
         boolean isBirthdayToday = birthdayChecker.validateIsBirthdayToday(birthday);
         if (!isBirthdayToday) {
             throw new NotBirthdayTodayException();
         }
 
-        BirthdayLetter birthdayLetter = birthdayLetterMapper.toBirthdayLetter(sender, recipient, request);
+        BirthdayLetter birthdayLetter = birthdayLetterMapper.toBirthdayLetter(sender, receiver, request);
 
         birthdayLetterSaveService.save(birthdayLetter);
     }
 
-    public List<MyBirthdayLettersResponse> getMyBirthdayLetters(long recipientId) {
+    public List<MyBirthdayLettersResponse> getMyBirthdayLetters(long receiverId) {
 
-        return birthdayLettersGetService.getMyBirthdayLetters(recipientId)
+        return birthdayLettersGetService.getMyBirthdayLetters(receiverId)
                 .stream()
                 .map(birthdayLetterMapper::toMyBirthdayLettersResponse)
                 .toList();

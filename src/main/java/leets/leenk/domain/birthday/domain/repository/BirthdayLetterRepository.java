@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface BirthdayLetterRepository extends JpaRepository<BirthdayLetter, Long> {
-    List<BirthdayLetter> findAllByRecipientIdOrderByCreateDateDesc(long recipientId);
+    List<BirthdayLetter> findAllByReceiverIdOrderByCreateDateDesc(long receiverId);
 
-    long countByRecipientIdAndCreateDateBetween(long recipientId, LocalDateTime startInclusive, LocalDateTime endExclusive);
+    long countByReceiverIdAndCreateDateBetween(long receiverId, LocalDateTime startInclusive, LocalDateTime endExclusive);
 }

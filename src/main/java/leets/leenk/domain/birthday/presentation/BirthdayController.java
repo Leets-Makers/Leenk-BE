@@ -33,12 +33,12 @@ public class BirthdayController {
         return CommonResponse.success(ResponseCode.GET_BIRTHDAY_USERS, response);
     }
 
-    @PostMapping("/letters/{recipientId}")
+    @PostMapping("/letters/{receiverId}")
     @Operation(summary = "생일 축하 전송(편지 전송) API")
     public CommonResponse<Void> writeBirthdayLetter(@Parameter(hidden = true) @CurrentUserId Long senderId,
-                                                    @PathVariable long recipientId,
+                                                    @PathVariable long receiverId,
                                                     @Valid @RequestBody BirthdayLetterRequest request) {
-        birthdayLetterUseCase.writeBirthdayLetter(senderId, recipientId, request);
+        birthdayLetterUseCase.writeBirthdayLetter(senderId, receiverId, request);
 
         return CommonResponse.success(ResponseCode.WRITE_BIRTHDAY_LETTER);
     }
@@ -46,8 +46,8 @@ public class BirthdayController {
     @GetMapping("/letters/me")
     @Operation(summary = "내가 받은 생일 축하 편지 조회 API")
     public CommonResponse<List<MyBirthdayLettersResponse>> getMyBirthdayLetters(
-            @Parameter(hidden = true) @CurrentUserId Long recipientId) {
-        List<MyBirthdayLettersResponse> response = birthdayLetterUseCase.getMyBirthdayLetters(recipientId);
+            @Parameter(hidden = true) @CurrentUserId Long receiverId) {
+        List<MyBirthdayLettersResponse> response = birthdayLetterUseCase.getMyBirthdayLetters(receiverId);
 
         return CommonResponse.success(ResponseCode.GET_MY_BIRTHDAY_LETTERS, response);
     }
