@@ -6,6 +6,7 @@ import leets.leenk.domain.birthday.application.exception.NotBirthdayTodayExcepti
 import leets.leenk.domain.birthday.application.mapper.BirthdayLetterMapper;
 import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
+import leets.leenk.domain.birthday.domain.entity.BirthdayLetterReadMark;
 import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService;
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService;
 import leets.leenk.domain.user.domain.entity.User;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +53,21 @@ public class BirthdayLetterUseCase {
                 .stream()
                 .map(birthdayLetterMapper::toMyBirthdayLettersResponse)
                 .toList();
+    }
+
+    @Transactional
+    public void markBirthdayLetterRead(long receiverId) {
+        LocalDateTime now = LocalDateTime.now();
+
+        BirthdayLetterReadMark birthdayLetterReadMark = birthdayLettersGetService.getBirthdayLetterReadMark(receiverId)
+                .orElseGet(() -> birthdayLetterMapper.toBirthdayLetterReadMark(receiverId, now));
+
+        birthdayLetterReadMark.markRead(now);
+        birthdayLetterSaveService.saveBirthdayLetterReadMark(birthdayLetterReadMark);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<LocalDateTime> getLastReadAt(long receiverId) {
+        return birthdayLettersGetService.getBirthdayLetterReadMark(receiverId).map(BirthdayLetterReadMark::getLastReadAt);
     }
 }

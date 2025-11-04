@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +22,8 @@ public class BirthdayUsecase {
     private final UserProfileMapper userProfileMapper;
     private final BirthdayGetService birthdayGetService;
     private final BirthdayLettersGetService birthdayLettersGetService;
+
+    private final BirthdayLetterUseCase birthdayLetterUseCase;
 
     @Transactional(readOnly = true)
     public BirthdayUsersResponse getTodayBirthdayUsers(long loginUserId) {
@@ -35,10 +38,17 @@ public class BirthdayUsecase {
                 .anyMatch(user -> user.getId() != null && user.getId() == loginUserId);
 
         Long myBirthdayCounts = null;
+        Boolean hasNewBirthdayLetters = null;
         if (amIInBirthday) {
-            myBirthdayCounts = birthdayLettersGetService.countMyReceivedLetters(loginUserId, today);
+            LocalDateTime start = today.atStartOfDay();
+            LocalDateTime end = start.plusDays(1);
+
+            myBirthdayCounts = birthdayLettersGetService.countMyReceivedLetters(loginUserId, start, end);
+
+            LocalDateTime lastReadAt = birthdayLetterUseCase.getLastReadAt(loginUserId).orElse(null);
+            hasNewBirthdayLetters = birthdayLettersGetService.hasNewLetters(loginUserId, start, end, lastReadAt);
         }
 
-        return birthdayMapper.toBirthdayUsersResponse(response, myBirthdayCounts);
+        return birthdayMapper.toBirthdayUsersResponse(response, myBirthdayCounts, hasNewBirthdayLetters);
     }
 }

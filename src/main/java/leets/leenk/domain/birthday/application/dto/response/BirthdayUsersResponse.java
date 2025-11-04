@@ -14,6 +14,9 @@ public record BirthdayUsersResponse(
         List<UserProfileResponse> users,
 
         @Schema(description = "받은 편지 개수", example = "100")
-        Long myBirthdayLettersCounts
+        Long myBirthdayLettersCounts,
+
+        @Schema(description = "새로온 편지가 왔는지 여부", example = "true")
+        Boolean hasNewLetters
 ) {
 }

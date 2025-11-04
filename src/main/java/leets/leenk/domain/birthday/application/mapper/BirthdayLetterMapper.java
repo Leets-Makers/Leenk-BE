@@ -3,10 +3,13 @@ package leets.leenk.domain.birthday.application.mapper;
 import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest;
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
+import leets.leenk.domain.birthday.domain.entity.BirthdayLetterReadMark;
 import leets.leenk.domain.user.application.mapper.UserProfileMapper;
 import leets.leenk.domain.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -27,6 +30,13 @@ public class BirthdayLetterMapper {
                 .author(userProfileMapper.toProfile(birthdayLetter.getSender()))
                 .message(birthdayLetter.getMessage())
                 .createdAt(birthdayLetter.getCreateDate())
+                .build();
+    }
+
+    public BirthdayLetterReadMark toBirthdayLetterReadMark(long receiverId, LocalDateTime now) {
+        return BirthdayLetterReadMark.builder()
+                .receiverId(receiverId)
+                .lastReadAt(now)
                 .build();
     }
 }

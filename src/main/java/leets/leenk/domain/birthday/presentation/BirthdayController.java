@@ -51,4 +51,12 @@ public class BirthdayController {
 
         return CommonResponse.success(ResponseCode.GET_MY_BIRTHDAY_LETTERS, response);
     }
+
+    @PostMapping("/letters/me/mark")
+    @Operation(summary = "편지 읽음 처리 API")
+    public CommonResponse<Void> markMyBirthdayLetters(@Parameter(hidden = true) @CurrentUserId Long loginUserId) {
+        birthdayLetterUseCase.markBirthdayLetterRead(loginUserId);
+
+        return CommonResponse.success(ResponseCode.MARK_LETTERS_READ);
+    }
 }

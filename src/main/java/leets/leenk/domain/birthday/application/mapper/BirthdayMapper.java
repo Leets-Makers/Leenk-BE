@@ -11,10 +11,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BirthdayMapper {
 
-    public BirthdayUsersResponse toBirthdayUsersResponse(List<UserProfileResponse> users, Long counts) {
+    public BirthdayUsersResponse toBirthdayUsersResponse(List<UserProfileResponse> users, Long counts, Boolean hasNewLetters) {
         return BirthdayUsersResponse.builder()
                 .users(users)
                 .myBirthdayLettersCounts(counts)
+                .hasNewLetters(hasNewLetters)
                 .build();
     }
 }
