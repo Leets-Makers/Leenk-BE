@@ -1,10 +1,11 @@
 package leets.leenk.domain.birthday.application.usecase;
 
-import leets.leenk.domain.birthday.application.dto.response.BirthdayUserResponse;
 import leets.leenk.domain.birthday.application.dto.response.BirthdayUsersResponse;
 import leets.leenk.domain.birthday.application.mapper.BirthdayMapper;
 import leets.leenk.domain.birthday.domain.service.BirthdayGetService;
 import leets.leenk.domain.birthday.domain.service.CountReceivedLettersService;
+import leets.leenk.domain.user.application.dto.response.UserProfileResponse;
+import leets.leenk.domain.user.application.mapper.UserProfileMapper;
 import leets.leenk.domain.user.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BirthdayUsecase {
     private final BirthdayMapper birthdayMapper;
+    private final UserProfileMapper userProfileMapper;
     private final BirthdayGetService birthdayGetService;
     private final CountReceivedLettersService countReceivedLettersService;
 
@@ -25,8 +27,8 @@ public class BirthdayUsecase {
         LocalDate today = LocalDate.now();
 
         List<User> birthdayUsers = birthdayGetService.findTodayBirthdayUsers(today);
-        List<BirthdayUserResponse> response = birthdayUsers.stream()
-                .map(birthdayMapper::toBirthdayUserResponse)
+        List<UserProfileResponse> response = birthdayUsers.stream()
+                .map(userProfileMapper::toProfile)
                 .toList();
 
         boolean amIInBirthday = birthdayUsers.stream()
