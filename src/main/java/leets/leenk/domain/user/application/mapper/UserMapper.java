@@ -1,6 +1,5 @@
 package leets.leenk.domain.user.application.mapper;
 
-import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.auth.application.dto.response.OauthUserInfoResponse;
@@ -10,17 +9,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
-    private final BirthdayChecker birthdayChecker;
+    private final UserProfileMapper userProfileMapper;
 
     public UserInfoResponse toUserInfoResponse(User user) {
         return UserInfoResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
+                .user(userProfileMapper.toProfile(user))
                 .cardinal(user.getCardinal())
-                .profileImage(user.getProfileImage())
                 .birthday(user.getBirthday())
-                .isUserBirthdayToday(birthdayChecker.isUserBirthdayToday(user))
-                .profileImage(user.getThumbnail())
                 .introduction(user.getIntroduction())
                 .kakaoTalkId(user.getKakaoTalkId())
                 .introduction(user.getIntroduction())
