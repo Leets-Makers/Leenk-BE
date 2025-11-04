@@ -3,7 +3,6 @@ package leets.leenk.domain.leenk.application.mapper;
 import java.util.List;
 import java.util.Map;
 
-import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
 import leets.leenk.domain.leenk.application.dto.response.LeenkAuthorResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
@@ -12,6 +11,7 @@ import leets.leenk.domain.leenk.application.dto.response.LeenkResponse;
 import leets.leenk.domain.leenk.domain.entity.Leenk;
 import leets.leenk.domain.leenk.domain.entity.Location;
 import leets.leenk.domain.media.domain.entity.Media;
+import leets.leenk.domain.user.application.mapper.UserProfileMapper;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.common.dto.PageableMapperUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class LeenkMapper {
-    private final BirthdayChecker birthdayChecker;
+    private final UserProfileMapper userProfileMapper;
 
     public Leenk toLeenk(User author, Location location, LeenkUploadRequest request) {
         return Leenk.builder()
@@ -36,10 +36,7 @@ public class LeenkMapper {
 
     public LeenkAuthorResponse toLeenkAuthorResponse(Leenk leenk) {
         return LeenkAuthorResponse.builder()
-                .userId(leenk.getAuthor().getId())
-                .profileImage(leenk.getAuthor().getThumbnail())
-                .name(leenk.getAuthor().getName())
-                .isAuthorBirthdayToday(birthdayChecker.isUserBirthdayToday(leenk.getAuthor()))
+                .user(userProfileMapper.toProfile(leenk.getAuthor()))
                 .build();
     }
 
