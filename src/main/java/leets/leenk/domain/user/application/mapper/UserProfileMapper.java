@@ -15,7 +15,7 @@ public class UserProfileMapper {
         return UserProfileResponse.builder()
                 .userId(user.getId())
                 .name(user.getName())
-                .profileImage(user.getProfileImage())
+                .thumbnail(user.getThumbnail())
                 .isUserBirthdayToday(birthdayChecker.isUserBirthdayToday(user))
                 .build();
     }

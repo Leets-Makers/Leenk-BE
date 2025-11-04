@@ -8,8 +8,8 @@ public record UserProfileResponse(
         @Schema(description = "사용자 id", example = "1")
         long userId,
 
-        @Schema(description = "프로필 이미지", example = "https://s3.example.com/profile_image.jpg")
-        String profileImage,
+        @Schema(description = "썸네일", example = "https://s3.example.com/profile_image.jpg")
+        String thumbnail,
 
         @Schema(description = "사용자 이름", example = "이지훈")
         String name,
