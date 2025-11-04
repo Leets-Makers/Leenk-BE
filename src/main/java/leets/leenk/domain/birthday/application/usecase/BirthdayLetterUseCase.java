@@ -19,7 +19,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class BirthdayLetterUseCase {
     private final UserGetService userGetService;
     private final BirthdayLetterSaveService birthdayLetterSaveService;
@@ -44,6 +43,7 @@ public class BirthdayLetterUseCase {
         birthdayLetterSaveService.save(birthdayLetter);
     }
 
+    @Transactional(readOnly = true)
     public List<MyBirthdayLettersResponse> getMyBirthdayLetters(long receiverId) {
 
         return birthdayLettersGetService.getMyBirthdayLetters(receiverId)
