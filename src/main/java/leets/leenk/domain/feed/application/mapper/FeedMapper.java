@@ -1,11 +1,11 @@
 package leets.leenk.domain.feed.application.mapper;
 
-import leets.leenk.domain.birthday.application.util.BirthdayChecker;
 import leets.leenk.domain.feed.application.dto.response.*;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.media.application.dto.response.FeedMediaResponse;
 import leets.leenk.domain.media.domain.entity.Media;
+import leets.leenk.domain.user.application.mapper.UserProfileMapper;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.common.dto.PageableMapperUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import static leets.leenk.domain.feed.application.util.FeedDescriptionUtil.norma
 @Component
 @RequiredArgsConstructor
 public class FeedMapper {
-    private final BirthdayChecker birthdayChecker;
+    private final UserProfileMapper userProfileMapper;
 
     public FeedListResponse toFeedListResponse(Slice<Feed> slice, Map<Long, List<Media>> mediaMap) {
         List<FeedResponse> responses = toFeedListResponse(slice.getContent(), mediaMap);
@@ -63,10 +63,7 @@ public class FeedMapper {
 
     public FeedAuthorResponse toFeedAuthorResponse(Feed feed) {
         return FeedAuthorResponse.builder()
-                .userId(feed.getUser().getId())
-                .profileImage(feed.getUser().getThumbnail())
-                .name(feed.getUser().getName())
-                .isAuthorBirthdayToday(birthdayChecker.isUserBirthdayToday(feed.getUser()))
+                .author(userProfileMapper.toProfile(feed.getUser()))
                 .build();
     }
 
@@ -103,13 +100,12 @@ public class FeedMapper {
     }
 
     private List<LinkedUserResponse> toLinkedUserResponses(List<LinkedUser> linkedUsers, Feed feed) {
+        Long authorId = feed.getUser().getId();
+
         return linkedUsers.stream()
                 .map(linkedUser -> LinkedUserResponse.builder()
-                        .userId(linkedUser.getUser().getId())
+                        .user(userProfileMapper.toProfile(linkedUser.getUser()))
                         .isAuthor(linkedUser.getUser().getId().equals(feed.getUser().getId()))
-                        .profileImage(linkedUser.getUser().getThumbnail())
-                        .name(linkedUser.getUser().getName())
-                        .isUserBirthdayToday(birthdayChecker.isUserBirthdayToday(linkedUser.getUser()))
                         .build())
                 .toList();
     }
