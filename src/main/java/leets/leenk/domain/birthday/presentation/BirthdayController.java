@@ -43,7 +43,7 @@ public class BirthdayController {
         return CommonResponse.success(ResponseCode.WRITE_BIRTHDAY_LETTER);
     }
 
-    @GetMapping("letters/mine")
+    @GetMapping("/letters/me")
     @Operation(summary = "내가 받은 생일 축하 편지 조회 API")
     public CommonResponse<List<MyBirthdayLettersResponse>> getMyBirthdayLetters(
             @Parameter(hidden = true) @CurrentUserId Long recipientId) {
