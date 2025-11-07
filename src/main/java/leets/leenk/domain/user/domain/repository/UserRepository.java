@@ -41,25 +41,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllUsersInBirthday(@Param("month") int month, @Param("day") int day);
 
     @Query(value = """
-            SELECT u.*
-            FROM users u
-            WHERE u.birthday IS NOT NULL
-              AND DATEDIFF(
-                    CASE
-                        WHEN DATE_FORMAT(u.birthday, '%m-%d') > DATE_FORMAT(:today, '%m-%d')
-                            THEN STR_TO_DATE(CONCAT(YEAR(:today), '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
-                        ELSE STR_TO_DATE(CONCAT(YEAR(:today) + 1, '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
-                    END,
-                    :today
-                  ) BETWEEN 1 AND :days
-            ORDER BY DATEDIFF(
-                      CASE
-                          WHEN DATE_FORMAT(u.birthday, '%m-%d') > DATE_FORMAT(:today, '%m-%d')
-                              THEN STR_TO_DATE(CONCAT(YEAR(:today), '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
-                          ELSE STR_TO_DATE(CONCAT(YEAR(:today) + 1, '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
-                      END,
-                      :today
-                    ) ASC
+            WITH t AS (
+              SELECT
+                u.*,
+                CASE
+                  WHEN DATE_FORMAT(u.birthday, '%m-%d') > DATE_FORMAT(:today, '%m-%d')
+                    THEN STR_TO_DATE(CONCAT(YEAR(:today), '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
+                  ELSE STR_TO_DATE(CONCAT(YEAR(:today) + 1, '-', DATE_FORMAT(u.birthday, '%m-%d')), '%Y-%m-%d')
+                END AS next_birthday FROM users u WHERE u.birthday IS NOT NULL
+            )
+            SELECT t.* FROM t WHERE DATEDIFF(t.next_birthday, :today) BETWEEN 1 AND :days ORDER BY DATEDIFF(t.next_birthday, :today) ASC
             """, nativeQuery = true)
     List<User> findUpcomingBirthdays(@Param("today") LocalDate today, @Param("days") int days);
 }

@@ -58,7 +58,7 @@ public class BirthdayUsecase {
     public UpcomingBirthdayUsersResponse getUpcomingBirthdayUsers() {
         LocalDate today = LocalDate.now();
 
-        List<UpcomingBirthdayUserResponse> users = birthdayGetService.findUpcomingBirthdayUsers(today, 7)
+        List<UpcomingBirthdayUserResponse> users = birthdayGetService.findUpcomingBirthdayUsers(today, 30)
                 .stream()
                 .map(user -> {
                     LocalDate next = user.getBirthday().withYear(today.getYear());
