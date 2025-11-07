@@ -16,11 +16,7 @@ public class UserUpdateServiceTest {
     @Test
     @DisplayName("회원가입 시 생일이 정상적으로 반영되는지 테스트")
     void 회원가입_생일_정상반영_테스트() {
-        User user = User.builder()
-                .id(1L)
-                .name("김가천")
-                .cardinal(25)
-                .build();
+        User user = userFixture();
 
         LocalDate birthday = LocalDate.of(2001, 6, 15);
 
@@ -31,5 +27,13 @@ public class UserUpdateServiceTest {
         userUpdateService.completeProfile(user, request);
 
         assertThat(user.getBirthday()).isEqualTo(birthday);
+    }
+
+    private User userFixture() {
+        return User.builder()
+                .id(1L)
+                .name("김가천")
+                .cardinal(25)
+                .build();
     }
 }
