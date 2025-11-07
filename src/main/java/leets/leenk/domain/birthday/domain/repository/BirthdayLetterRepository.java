@@ -22,7 +22,7 @@ public interface BirthdayLetterRepository extends JpaRepository<BirthdayLetter, 
               and b.createDate < :endExclusive
               and (:lastReadAt is null or b.createDate > :lastReadAt)
             """)
-    boolean existsNewSince(@Param("receiverId") long receiverId,
+    boolean checkNewBirthdayLetter(@Param("receiverId") long receiverId,
                            @Param("startInclusive") LocalDateTime startInclusive,
                            @Param("endExclusive") LocalDateTime endExclusive,
                            @Param("lastReadAt") LocalDateTime lastReadAt);

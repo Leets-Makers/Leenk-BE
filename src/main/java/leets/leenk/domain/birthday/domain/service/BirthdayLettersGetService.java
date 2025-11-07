@@ -31,6 +31,6 @@ public class BirthdayLettersGetService {
     }
 
     public Boolean hasNewLetters(long loginUserId, LocalDateTime start, LocalDateTime end, LocalDateTime lastReadAt) {
-        return birthdayLetterRepository.existsNewSince(loginUserId, start, end, lastReadAt);
+        return birthdayLetterRepository.checkNewBirthdayLetter(loginUserId, start, end, lastReadAt);
     }
 }
