@@ -74,6 +74,15 @@ public class UserController {
         return CommonResponse.success(UPDATE_PROFILE_IMAGE);
     }
 
+    @PatchMapping("/me/birthday")
+    @Operation(summary = "내 정보 수정 - 생일")
+    public CommonResponse<Void> updateBirthday(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                               @Valid @RequestBody BirthdayRequest request) {
+        userUsecase.updateBirthday(userId, request);
+
+        return CommonResponse.success(UPDATE_BIRTHDAY);
+    }
+
     @PatchMapping("/me/introduction")
     @Operation(summary = "내 정보 수정 - 자기소개")
     public CommonResponse<Void> updateIntroduction(@Parameter(hidden = true) @CurrentUserId Long userId,
@@ -95,7 +104,7 @@ public class UserController {
     @PatchMapping("/me/fcm-token")
     @Operation(summary = "내 정보 수정 - FCM 토큰")
     public CommonResponse<Void> updateFcmToken(@Parameter(hidden = true) @CurrentUserId Long userId,
-                                           @Valid @RequestBody FcmTokenRequest request) {
+                                               @Valid @RequestBody FcmTokenRequest request) {
         userUsecase.updateFcmToken(userId, request);
 
         return CommonResponse.success(UPDATE_FCM_TOKEN);

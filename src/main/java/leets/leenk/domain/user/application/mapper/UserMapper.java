@@ -3,17 +3,19 @@ package leets.leenk.domain.user.application.mapper;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.auth.application.dto.response.OauthUserInfoResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
+    private final UserProfileMapper userProfileMapper;
 
     public UserInfoResponse toUserInfoResponse(User user) {
         return UserInfoResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
+                .user(userProfileMapper.toProfile(user))
                 .cardinal(user.getCardinal())
-                .profileImage(user.getThumbnail())
+                .birthday(user.getBirthday())
                 .introduction(user.getIntroduction())
                 .kakaoTalkId(user.getKakaoTalkId())
                 .introduction(user.getIntroduction())
