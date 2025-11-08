@@ -73,6 +73,20 @@ public class UserUsecase {
     }
 
     @Transactional
+    public void updateThumbnailUrl(String profileImage, String thumbnail){
+        User user = userGetService.findByProfileImage(profileImage);
+
+        userUpdateService.updateThumbnailUrl(user, thumbnail);
+    }
+
+    @Transactional
+    public void updateBirthday(long userId, BirthdayRequest request) {
+        User user = userGetService.findById(userId);
+
+        userUpdateService.updateBirthday(user, request.birthday());
+    }
+
+    @Transactional
     public void updateIntroduction(long userId, IntroductionRequest request) {
         User user = userGetService.findById(userId);
 
@@ -87,7 +101,7 @@ public class UserUsecase {
     }
 
     @Transactional
-    public void updateFcmToken(long userId, FcmTokenRequest request){
+    public void updateFcmToken(long userId, FcmTokenRequest request) {
         User user = userGetService.findById(userId);
 
         userUpdateService.updateFcmToken(user, request.fcmToken());

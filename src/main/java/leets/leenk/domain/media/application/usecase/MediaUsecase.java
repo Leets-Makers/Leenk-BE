@@ -1,9 +1,14 @@
 package leets.leenk.domain.media.application.usecase;
 
 import leets.leenk.domain.media.application.dto.response.MediaUrlResponse;
+import leets.leenk.domain.media.domain.entity.Media;
+import leets.leenk.domain.media.domain.entity.enums.DomainType;
+import leets.leenk.domain.media.domain.service.MediaGetService;
+import leets.leenk.domain.media.domain.service.MediaUpdateService;
 import leets.leenk.domain.media.domain.service.S3PresignedUrlService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,10 +17,18 @@ import java.util.List;
 public class MediaUsecase {
 
     private final S3PresignedUrlService s3PresignedUrlService;
+    private final MediaGetService mediaGetService;
+    private final MediaUpdateService mediaUpdateService;
 
-    public List<MediaUrlResponse> getUrl(List<String> fileName) {
-        return fileName.stream()
-                .map(s3PresignedUrlService::generateUrl)
-                .toList();
+    public List<MediaUrlResponse> getUrl(DomainType domainType, List<String> fileName) {
+
+        return s3PresignedUrlService.generateUrlList(domainType, fileName);
+    }
+
+    @Transactional
+    public void updateThumbnailUrl(String originalUrl, String thumbnailUrl){
+        Media media = mediaGetService.findByMediaUrl(originalUrl);
+
+        mediaUpdateService.update(media, thumbnailUrl);
     }
 }

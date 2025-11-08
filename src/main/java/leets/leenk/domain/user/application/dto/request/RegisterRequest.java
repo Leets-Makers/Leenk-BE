@@ -1,7 +1,10 @@
 package leets.leenk.domain.user.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
 
 public record RegisterRequest(
         @NotBlank
@@ -9,6 +12,8 @@ public record RegisterRequest(
         @Size(max = 200)
         String introduction,
         String profileImage,
+        @NotNull
+        LocalDate birthday,
         @Size(max = 4)
         String mbti
 ) {

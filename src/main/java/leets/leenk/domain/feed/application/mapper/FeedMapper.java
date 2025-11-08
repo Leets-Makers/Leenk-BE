@@ -5,8 +5,10 @@ import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.media.application.dto.response.FeedMediaResponse;
 import leets.leenk.domain.media.domain.entity.Media;
+import leets.leenk.domain.user.application.mapper.UserProfileMapper;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.global.common.dto.PageableMapperUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +18,9 @@ import java.util.Map;
 import static leets.leenk.domain.feed.application.util.FeedDescriptionUtil.normalizeDescription;
 
 @Component
+@RequiredArgsConstructor
 public class FeedMapper {
+    private final UserProfileMapper userProfileMapper;
 
     public FeedListResponse toFeedListResponse(Slice<Feed> slice, Map<Long, List<Media>> mediaMap) {
         List<FeedResponse> responses = toFeedListResponse(slice.getContent(), mediaMap);
@@ -48,20 +52,18 @@ public class FeedMapper {
                 .toList();
     }
 
-    public FeedResponse toFeedResponse(Feed feed, Media thumbNeil) {
+    public FeedResponse toFeedResponse(Feed feed, Media thumbNail) {
         return FeedResponse.builder()
                 .feedId(feed.getId())
                 .author(toFeedAuthorResponse(feed))
-                .thumbNail(thumbNeil.getMediaUrl())
+                .thumbNail(thumbNail.getThumbnailUrl())
                 .totalReactionCount(feed.getTotalReactionCount())
                 .build();
     }
 
     public FeedAuthorResponse toFeedAuthorResponse(Feed feed) {
         return FeedAuthorResponse.builder()
-                .userId(feed.getUser().getId())
-                .profileImage(feed.getUser().getProfileImage())
-                .name(feed.getUser().getName())
+                .author(userProfileMapper.toProfile(feed.getUser()))
                 .build();
     }
 
@@ -98,12 +100,12 @@ public class FeedMapper {
     }
 
     private List<LinkedUserResponse> toLinkedUserResponses(List<LinkedUser> linkedUsers, Feed feed) {
+        Long authorId = feed.getUser().getId();
+
         return linkedUsers.stream()
                 .map(linkedUser -> LinkedUserResponse.builder()
-                        .userId(linkedUser.getUser().getId())
+                        .user(userProfileMapper.toProfile(linkedUser.getUser()))
                         .isAuthor(linkedUser.getUser().getId().equals(feed.getUser().getId()))
-                        .profileImage(linkedUser.getUser().getProfileImage())
-                        .name(linkedUser.getUser().getName())
                         .build())
                 .toList();
     }

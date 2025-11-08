@@ -42,6 +42,8 @@ public class User extends BaseEntity {
     @Column
     private LocalDate birthday;
 
+    private String thumbnail;
+
     @Size(max = 4)
     @Column(length = 4)
     private String mbti;
@@ -79,6 +81,15 @@ public class User extends BaseEntity {
 
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
+        this.thumbnail = profileImage;
+    }
+
+    public void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void updateBirthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 
     public void updateIntroduction(String introduction) {
@@ -122,6 +133,7 @@ public class User extends BaseEntity {
         this.leaveDate = LocalDateTime.now();
         this.name = LEAVE_USER_NAME;
         this.profileImage = null;
+        this.thumbnail = null;
         this.fcmToken = null;
     }
 
@@ -129,6 +141,7 @@ public class User extends BaseEntity {
         this.deleteDate = LocalDateTime.now();
         this.name = LEAVE_USER_NAME;
         this.profileImage = null;
+        this.thumbnail = null;
         this.cardinal = 0;
         this.mbti = null;
         this.introduction = null;
@@ -149,6 +162,7 @@ public class User extends BaseEntity {
         this.leaveDate = null;
         this.name = userBackupInfo.getName();
         this.profileImage = userBackupInfo.getProfileImage();
+        this.thumbnail = userBackupInfo.getThumbnail();
     }
 
     public void reRegister(OauthUserInfoResponse userInfo) {
