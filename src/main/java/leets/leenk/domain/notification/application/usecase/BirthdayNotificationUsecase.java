@@ -1,5 +1,6 @@
 package leets.leenk.domain.notification.application.usecase;
 
+import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
 import leets.leenk.domain.notification.application.mapper.BirthdayNotificationMapper;
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.service.NotificationSaveService;
@@ -79,6 +80,25 @@ public class BirthdayNotificationUsecase {
                 );
             }
         }
+    }
+
+    @Transactional
+    public void saveBirthdayLetterNotification(BirthdayLetter birthdayLetter){
+        User birthdayUser = birthdayLetter.getReceiver();
+
+        Notification notification = birthdayNotificationMapper.toBirthdayLetterNotification(birthdayLetter);
+        notificationSaveService.save(notification);
+
+        if(birthdayUser.getFcmToken() != null){
+            eventPublisher.publishEvent(
+                    sqsMessageEventMapper.toBirthdaySqsMessageEvent(
+                            notification,
+                            birthdayUser.getFcmToken(),
+                            birthdayLetter.getSender()
+                    )
+            );
+        }
+
     }
 
 }
