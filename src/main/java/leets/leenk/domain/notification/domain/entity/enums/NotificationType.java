@@ -26,7 +26,8 @@ public enum NotificationType {
 
     // Birthday
     BIRTHDAY_ANNOUNCEMENT("Leenk", "오늘은 {name}의 생일이야\n축하해주러 가볼까?", "birthday"),
-    BIRTHDAY_CELEBRATE("Leenk", "생일 축하해, 멋쟁이 {name}!", "birthday");
+    BIRTHDAY_CELEBRATE("Leenk", "생일 축하해, 멋쟁이 {name}!", "birthday"),
+    BIRTHDAY_LETTER("Leenk", "{name}에게 생일 편지를 받았어!", "birthday");
 
     private final String title;
     private final String content;
