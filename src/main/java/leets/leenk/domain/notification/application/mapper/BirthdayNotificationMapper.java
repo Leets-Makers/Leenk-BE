@@ -40,6 +40,7 @@ public class BirthdayNotificationMapper {
 
     private BirthdayAnnouncementContent toBirthdayAnnouncementContent(User birthdayUser) {
         return BirthdayAnnouncementContent.builder()
+                .birthdayUserId(birthdayUser.getId())
                 .birthdayUserName(birthdayUser.getName())
                 .title(NotificationType.BIRTHDAY_ANNOUNCEMENT.getTitle())
                 .body(NotificationType.BIRTHDAY_ANNOUNCEMENT.getContent())
@@ -48,6 +49,7 @@ public class BirthdayNotificationMapper {
 
     private BirthdayCelebrateContent toBirthdayCelebrateContent(User birthdayUser){
         return BirthdayCelebrateContent.builder()
+                .birthdayUserId(birthdayUser.getId())
                 .birthdayUserName(birthdayUser.getName())
                 .title(NotificationType.BIRTHDAY_CELEBRATE.getTitle())
                 .body(NotificationType.BIRTHDAY_CELEBRATE.getContent())

@@ -9,5 +9,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Getter
 public class BirthdayCelebrateContent extends NotificationContent {
+    private Long birthdayUserId;
     private String birthdayUserName;
 }
