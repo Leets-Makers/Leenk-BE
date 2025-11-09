@@ -15,6 +15,7 @@ import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.domain.entity.Reaction;
 import leets.leenk.domain.feed.domain.service.*;
+import leets.leenk.domain.feed.domain.service.dto.FeedNavigationResult;
 import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
 import leets.leenk.domain.media.domain.service.MediaDeleteService;
@@ -34,15 +35,15 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FeedUsecase {
+
+    private static final int MAX_NAVIGATION_SIZE = 3;
+    private static final int DEFAULT_NAVIGATION_SIZE = 1;
 
     private final UserGetService userGetService;
     private final UserBlockService userBlockService;
@@ -96,6 +97,78 @@ public class FeedUsecase {
         List<LinkedUser> linkedUsers = linkedUserGetService.findAll(feed);
 
         return feedMapper.toFeedDetailResponse(feed, medias, linkedUsers);
+    }
+
+    @Transactional(readOnly = true)
+    public FeedNavigationResponse getFeedNavigation(
+            Long feedId,
+            Long currentUserId,
+            Integer prevSize,
+            Integer nextSize
+    ) {
+        // 파라미터 검증 및 기본값 설정
+        int validatedPrevSize = validateSize(prevSize, DEFAULT_NAVIGATION_SIZE, MAX_NAVIGATION_SIZE);
+        int validatedNextSize = validateSize(nextSize, DEFAULT_NAVIGATION_SIZE, MAX_NAVIGATION_SIZE);
+
+        // 현재 피드 조회
+        Feed currentFeed = feedGetService.findById(feedId);
+
+        // 차단 사용자 목록 조회
+        User currentUser = userGetService.findById(currentUserId);
+        List<UserBlock> blockedUsers = userBlockService.findAllByBlocker(currentUser);
+
+        // 이전/다음 피드 조회 (hasMore 정보 포함) - 쿼리 최적화: 4개 → 2개
+        FeedNavigationResult prevResult = feedGetService.findPrevFeedsWithHasMore(
+                currentFeed, blockedUsers, validatedPrevSize
+        );
+        FeedNavigationResult nextResult = feedGetService.findNextFeedsWithHasMore(
+                currentFeed, blockedUsers, validatedNextSize
+        );
+
+        List<Feed> prevFeeds = prevResult.feeds();
+        List<Feed> nextFeeds = nextResult.feeds();
+        boolean hasMorePrev = prevResult.hasMore();
+        boolean hasMoreNext = nextResult.hasMore();
+
+        // 모든 피드의 미디어와 링크된 사용자 조회
+        List<Feed> allFeeds = new ArrayList<>();
+        allFeeds.add(currentFeed);
+        allFeeds.addAll(prevFeeds);
+        allFeeds.addAll(nextFeeds);
+
+        List<Media> allMedias = mediaGetService.findAllByFeeds(allFeeds);
+        Map<Long, List<Media>> mediaMap = allMedias.stream()
+                .collect(Collectors.groupingBy(media -> media.getFeed().getId()));
+
+        Map<Long, List<LinkedUser>> linkedUserMap = new HashMap<>();
+        for (Feed feed : allFeeds) {
+            List<LinkedUser> linkedUsers = linkedUserGetService.findAll(feed);
+            linkedUserMap.put(feed.getId(), linkedUsers);
+        }
+
+        // DTO 변환
+        return feedMapper.toFeedNavigationResponse(
+                currentFeed,
+                prevFeeds,
+                nextFeeds,
+                mediaMap,
+                linkedUserMap,
+                hasMorePrev,
+                hasMoreNext
+        );
+    }
+
+    private int validateSize(Integer size, int defaultValue, int maxValue) {
+        if (size == null) {
+            return defaultValue;
+        }
+        if (size < 0) {
+            return 0;
+        }
+        if (size > maxValue) {
+            return maxValue;
+        }
+        return size;
     }
 
     @Transactional
