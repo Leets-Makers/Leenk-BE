@@ -54,10 +54,10 @@ public class FeedController {
             @PathVariable @Positive long feedId,
             @Parameter(hidden = true) @CurrentUserId Long userId,
             @RequestParam(required = false)
-            @Parameter(description = "이전 피드 개수 (0~10)", example = "1")
+            @Parameter(description = "이전 피드 개수 (0~3)", example = "1")
             Integer prevSize,
             @RequestParam(required = false)
-            @Parameter(description = "다음 피드 개수 (0~10)", example = "1")
+            @Parameter(description = "다음 피드 개수 (0~3)", example = "1")
             Integer nextSize
     ) {
         FeedNavigationResponse response = feedUsecase.getFeedNavigation(

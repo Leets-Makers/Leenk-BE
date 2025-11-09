@@ -117,7 +117,7 @@ public class FeedUsecase {
         User currentUser = userGetService.findById(currentUserId);
         List<UserBlock> blockedUsers = userBlockService.findAllByBlocker(currentUser);
 
-        // 이전/다음 피드 조회 (hasMore 정보 포함) - 쿼리 최적화: 4개 → 2개
+        // 이전/다음 피드 조회 (hasMore 정보 포함)
         FeedNavigationResult prevResult = feedGetService.findPrevFeedsWithHasMore(
                 currentFeed, blockedUsers, validatedPrevSize
         );
@@ -146,7 +146,6 @@ public class FeedUsecase {
             linkedUserMap.put(feed.getId(), linkedUsers);
         }
 
-        // DTO 변환
         return feedMapper.toFeedNavigationResponse(
                 currentFeed,
                 prevFeeds,
