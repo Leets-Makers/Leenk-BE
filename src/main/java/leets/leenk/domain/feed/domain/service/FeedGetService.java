@@ -45,10 +45,7 @@ public class FeedGetService {
      * 한 번의 쿼리로 피드 목록과 추가 피드 존재 여부를 함께 반환
      */
     public FeedNavigationResult findPrevFeedsWithHasMore(Feed currentFeed, List<UserBlock> blockedUsers, int size) {
-        List<Long> blockedUserIds = blockedUsers.stream()
-                .map(UserBlock::getBlocked)
-                .map(User::getId)
-                .toList();
+        List<Long> blockedUserIds = extractBlockedUserIds(blockedUsers);
 
         // size+1 개를 조회하여 hasMore 판단
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -78,10 +75,7 @@ public class FeedGetService {
      * 한 번의 쿼리로 피드 목록과 추가 피드 존재 여부를 함께 반환
      */
     public FeedNavigationResult findNextFeedsWithHasMore(Feed currentFeed, List<UserBlock> blockedUsers, int size) {
-        List<Long> blockedUserIds = blockedUsers.stream()
-                .map(UserBlock::getBlocked)
-                .map(User::getId)
-                .toList();
+        List<Long> blockedUserIds = extractBlockedUserIds(blockedUsers);
 
         // size+1 개를 조회하여 hasMore 판단
         Pageable pageable = PageRequest.of(0, size + 1);
@@ -100,5 +94,12 @@ public class FeedGetService {
         }
 
         return new FeedNavigationResult(feeds, hasMore);
+    }
+
+    private List<Long> extractBlockedUserIds(List<UserBlock> blockedUsers) {
+        return blockedUsers.stream()
+                .map(UserBlock::getBlocked)
+                .map(User::getId)
+                .toList();
     }
 }
