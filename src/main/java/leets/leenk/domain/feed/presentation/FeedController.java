@@ -44,6 +44,29 @@ public class FeedController {
         return CommonResponse.success(ResponseCode.GET_FEED_DETAIL, response);
     }
 
+    @GetMapping("/{feedId}/navigation")
+    @Operation(
+            summary = "피드 네비게이션 조회 API (커서 기반 페이지네이션)",
+            description = "현재 피드를 중심으로 이전/다음 피드의 상세 정보를 함께 조회합니다. " +
+                    "인스타그램/유튜브 쇼츠와 같은 무한 스크롤 구현에 사용됩니다."
+    )
+    public CommonResponse<FeedNavigationResponse> getFeedNavigation(
+            @PathVariable @Positive long feedId,
+            @Parameter(hidden = true) @CurrentUserId Long userId,
+            @RequestParam(required = false)
+            @Parameter(description = "이전 피드 개수 (0~10)", example = "1")
+            Integer prevSize,
+            @RequestParam(required = false)
+            @Parameter(description = "다음 피드 개수 (0~10)", example = "1")
+            Integer nextSize
+    ) {
+        FeedNavigationResponse response = feedUsecase.getFeedNavigation(
+                feedId, userId, prevSize, nextSize
+        );
+
+        return CommonResponse.success(ResponseCode.GET_FEED_NAVIGATION, response);
+    }
+
     @PostMapping
     @Operation(summary = "피드 업로드 API")
     public CommonResponse<Void> uploadFeed(@Parameter(hidden = true) @CurrentUserId Long userId,

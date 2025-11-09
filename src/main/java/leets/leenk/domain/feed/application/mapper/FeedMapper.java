@@ -109,4 +109,44 @@ public class FeedMapper {
                         .build())
                 .toList();
     }
+
+    public FeedNavigationResponse toFeedNavigationResponse(
+            Feed currentFeed,
+            List<Feed> prevFeeds,
+            List<Feed> nextFeeds,
+            Map<Long, List<Media>> mediaMap,
+            Map<Long, List<LinkedUser>> linkedUserMap,
+            boolean hasMorePrev,
+            boolean hasMoreNext
+    ) {
+        FeedDetailResponse current = toFeedDetailResponse(
+                currentFeed,
+                mediaMap.getOrDefault(currentFeed.getId(), List.of()),
+                linkedUserMap.getOrDefault(currentFeed.getId(), List.of())
+        );
+
+        List<FeedDetailResponse> prevFeedResponses = prevFeeds.stream()
+                .map(feed -> toFeedDetailResponse(
+                        feed,
+                        mediaMap.getOrDefault(feed.getId(), List.of()),
+                        linkedUserMap.getOrDefault(feed.getId(), List.of())
+                ))
+                .toList();
+
+        List<FeedDetailResponse> nextFeedResponses = nextFeeds.stream()
+                .map(feed -> toFeedDetailResponse(
+                        feed,
+                        mediaMap.getOrDefault(feed.getId(), List.of()),
+                        linkedUserMap.getOrDefault(feed.getId(), List.of())
+                ))
+                .toList();
+
+        return FeedNavigationResponse.builder()
+                .current(current)
+                .prevFeeds(prevFeedResponses)
+                .nextFeeds(nextFeedResponses)
+                .hasMorePrev(hasMorePrev)
+                .hasMoreNext(hasMoreNext)
+                .build();
+    }
 }
