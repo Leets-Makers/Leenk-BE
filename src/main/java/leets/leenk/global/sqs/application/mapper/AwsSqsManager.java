@@ -47,7 +47,7 @@ public class AwsSqsManager {
     private MessageAttributeValue convertToAttributeValue(Long value) {
         return MessageAttributeValue.builder()
                 .dataType("Number")
-                .stringValue(value == null ? "0" : value.toString())
+                .stringValue(value == null ? "-1" : value.toString())
                 .build();
     }
 }
