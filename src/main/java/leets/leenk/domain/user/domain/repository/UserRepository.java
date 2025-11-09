@@ -26,8 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByName(String name);
 
-    List<User> findAllByBirthday(LocalDate today);
-
     Optional<User> findByProfileImage(String profileImage);
 
     @Query("""

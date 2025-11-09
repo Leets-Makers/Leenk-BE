@@ -49,10 +49,6 @@ public class UserGetService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    public List<User> findAllByBirthday(LocalDate today){
-        return userRepository.findAllByBirthday(today);
-    }
-
     public User findByProfileImage(String profileImage){
         return userRepository.findByProfileImage(profileImage)
                 .orElseThrow(UserNotFoundException::new);

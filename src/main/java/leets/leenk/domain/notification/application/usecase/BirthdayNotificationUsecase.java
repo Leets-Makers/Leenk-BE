@@ -1,6 +1,7 @@
 package leets.leenk.domain.notification.application.usecase;
 
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
+import leets.leenk.domain.birthday.domain.service.BirthdayGetService;
 import leets.leenk.domain.notification.application.mapper.BirthdayNotificationMapper;
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.service.NotificationSaveService;
@@ -23,6 +24,7 @@ public class BirthdayNotificationUsecase {
 
     private final UserGetService userGetService;
     private final UserSettingGetService userSettingGetService;
+    private final BirthdayGetService birthdayGetService;
 
     private final BirthdayNotificationMapper birthdayNotificationMapper;
     private final SqsMessageEventMapper sqsMessageEventMapper;
@@ -32,7 +34,7 @@ public class BirthdayNotificationUsecase {
 
     @Transactional
     public void announceUserBirthday(LocalDate today) {
-        List<User> birthdayUsers = userGetService.findAllByBirthday(today);
+        List<User> birthdayUsers = birthdayGetService.findTodayBirthdayUsers(today);
         if (birthdayUsers.isEmpty()) {
             return;
         }
@@ -64,7 +66,7 @@ public class BirthdayNotificationUsecase {
 
     @Transactional
     public void celebrateBirthday(LocalDate today){
-        List<User> birthdayUsers = userGetService.findAllByBirthday(today);
+        List<User> birthdayUsers = birthdayGetService.findTodayBirthdayUsers(today);
 
         for (User birthdayUser : birthdayUsers){
             Notification notification = birthdayNotificationMapper
