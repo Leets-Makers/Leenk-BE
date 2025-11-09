@@ -5,6 +5,7 @@ import leets.leenk.domain.notification.application.mapper.BirthdayNotificationMa
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.service.NotificationSaveService;
 import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.domain.user.domain.entity.UserSetting;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService;
 import leets.leenk.global.sqs.application.mapper.SqsMessageEventMapper;
@@ -70,7 +71,14 @@ public class BirthdayNotificationUsecase {
                     .toBirthdayCelebrateNotification(birthdayUser);
             notificationSaveService.save(notification);
 
-            if(birthdayUser.getFcmToken() != null) {
+            UserSetting userSetting;
+            try{
+                userSetting = userSettingGetService.findByUser(birthdayUser);
+            } catch (Exception e){
+                return;
+            }
+
+            if(userSetting != null && userSetting.isBirthdayNotify() && birthdayUser.getFcmToken() != null) {
                 eventPublisher.publishEvent(
                         sqsMessageEventMapper.toBirthdaySqsMessageEvent(
                                 notification,
@@ -89,7 +97,14 @@ public class BirthdayNotificationUsecase {
         Notification notification = birthdayNotificationMapper.toBirthdayLetterNotification(birthdayLetter);
         notificationSaveService.save(notification);
 
-        if(birthdayUser.getFcmToken() != null){
+        UserSetting userSetting;
+        try{
+            userSetting = userSettingGetService.findByUser(birthdayUser);
+        } catch (Exception e){
+            return;
+        }
+
+        if(userSetting != null && userSetting.isBirthdayNotify() && birthdayUser.getFcmToken() != null){
             eventPublisher.publishEvent(
                     sqsMessageEventMapper.toBirthdaySqsMessageEvent(
                             notification,
