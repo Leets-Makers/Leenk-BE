@@ -1,4 +1,4 @@
-package leets.leenk.domain.notification.domain.service.scheduler;
+package leets.leenk.domain.birthday.domain.service.scheduler;
 
 import leets.leenk.domain.notification.application.usecase.BirthdayNotificationUsecase;
 import lombok.RequiredArgsConstructor;
