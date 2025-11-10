@@ -32,6 +32,18 @@ public class AuthController {
         return CommonResponse.success(ResponseCode.INITIAL_LOGIN_SUCCESS, response);
     }
 
+    @PostMapping("/apple/login")
+    @Operation(summary = "애플 login api [for mobile]")
+    public CommonResponse<LoginResponse> appleLogin(@RequestHeader("Apple-Identity-Token") String appleIdToken) {
+        LoginResponse response = authUsecase.appleLogin(appleIdToken);
+
+        if (response.userId() == null) {
+            return CommonResponse.success(ResponseCode.LOGIN_SUCCESS, response);
+        }
+
+        return CommonResponse.success(ResponseCode.INITIAL_LOGIN_SUCCESS, response);
+    }
+
     @PostMapping("/refresh")
     @Operation(summary = "토큰 재발급 API")
     public CommonResponse<LoginResponse> reissueToken(@RequestBody @Valid RefreshTokenRequest request) {
