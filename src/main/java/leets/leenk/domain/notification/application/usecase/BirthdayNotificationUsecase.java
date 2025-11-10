@@ -69,18 +69,20 @@ public class BirthdayNotificationUsecase {
         List<User> birthdayUsers = birthdayGetService.findTodayBirthdayUsers(today);
 
         for (User birthdayUser : birthdayUsers){
-            Notification notification = birthdayNotificationMapper
-                    .toBirthdayCelebrateNotification(birthdayUser);
-            notificationSaveService.save(notification);
-
             UserSetting userSetting;
             try{
                 userSetting = userSettingGetService.findByUser(birthdayUser);
             } catch (Exception e){
-                return;
+                continue;
             }
+            if(userSetting == null || !userSetting.isBirthdayNotify()) continue;
 
-            if(userSetting != null && userSetting.isBirthdayNotify() && birthdayUser.getFcmToken() != null) {
+            Notification notification = birthdayNotificationMapper
+                    .toBirthdayCelebrateNotification(birthdayUser);
+            notificationSaveService.save(notification);
+
+
+            if(birthdayUser.getFcmToken() != null) {
                 eventPublisher.publishEvent(
                         sqsMessageEventMapper.toBirthdaySqsMessageEvent(
                                 notification,
@@ -96,17 +98,18 @@ public class BirthdayNotificationUsecase {
     public void saveBirthdayLetterNotification(BirthdayLetter birthdayLetter){
         User birthdayUser = birthdayLetter.getReceiver();
 
-        Notification notification = birthdayNotificationMapper.toBirthdayLetterNotification(birthdayLetter);
-        notificationSaveService.save(notification);
-
         UserSetting userSetting;
         try{
             userSetting = userSettingGetService.findByUser(birthdayUser);
         } catch (Exception e){
             return;
         }
+        if(userSetting == null || !userSetting.isBirthdayNotify()) return;
 
-        if(userSetting != null && userSetting.isBirthdayNotify() && birthdayUser.getFcmToken() != null){
+        Notification notification = birthdayNotificationMapper.toBirthdayLetterNotification(birthdayLetter);
+        notificationSaveService.save(notification);
+
+        if(birthdayUser.getFcmToken() != null){
             eventPublisher.publishEvent(
                     sqsMessageEventMapper.toBirthdaySqsMessageEvent(
                             notification,
