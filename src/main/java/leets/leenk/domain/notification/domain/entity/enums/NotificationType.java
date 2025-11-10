@@ -25,9 +25,9 @@ public enum NotificationType {
     FEED_REACTION_COUNT("Leenk", "내가 쓴 피드에 좋아요를 %d개 받았어", "feeds"),
 
     // Birthday
-    BIRTHDAY_ANNOUNCEMENT("Leenk", "오늘은 {name}의 생일이야\n축하해주러 가볼까?", "birthday"),
-    BIRTHDAY_CELEBRATE("Leenk", "생일 축하해, 멋쟁이 {name}!", "birthday"),
-    BIRTHDAY_LETTER("Leenk", "{name}에게 생일 편지를 받았어!", "birthday");
+    BIRTHDAY_ANNOUNCEMENT("Leenk", "오늘은 {name}의 생일이야\n축하해주러 가볼까?", "birthday/users"),
+    BIRTHDAY_CELEBRATE("Leenk", "생일 축하해, 멋쟁이 {name}!", "birthday/users"),
+    BIRTHDAY_LETTER("Leenk", "{name}에게 생일 편지를 받았어!", "birthday/letters/me");
 
     private final String title;
     private final String content;
