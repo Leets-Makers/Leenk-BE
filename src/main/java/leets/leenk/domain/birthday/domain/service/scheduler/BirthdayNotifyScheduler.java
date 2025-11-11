@@ -6,19 +6,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
 public class BirthdayNotifyScheduler {
 
-        private static final ZoneId KST = ZoneId.of("Asia/Seoul");
-
         private final BirthdayNotificationUsecase birthdayNotificationUsecase;
 
-        @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+        @Scheduled(cron = "0 0 0 * * *")
         public void sendBirthdayNotifications() {
-            LocalDate today = LocalDate.now(KST);
+            LocalDate today = LocalDate.now();
             birthdayNotificationUsecase.announceUserBirthday(today);
 
             birthdayNotificationUsecase.celebrateBirthday(today);
