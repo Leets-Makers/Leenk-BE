@@ -69,13 +69,7 @@ public class BirthdayNotificationUsecase {
         List<User> birthdayUsers = birthdayGetService.findTodayBirthdayUsers(today);
 
         for (User birthdayUser : birthdayUsers){
-            UserSetting userSetting;
-            try{
-                userSetting = userSettingGetService.findByUser(birthdayUser);
-            } catch (Exception e){
-                continue;
-            }
-            if(userSetting == null || !userSetting.isBirthdayNotify()) continue;
+            if (!isBirthdayNotificationEnabled(birthdayUser)) continue;
 
             Notification notification = birthdayNotificationMapper
                     .toBirthdayCelebrateNotification(birthdayUser);
@@ -98,13 +92,7 @@ public class BirthdayNotificationUsecase {
     public void saveBirthdayLetterNotification(BirthdayLetter birthdayLetter){
         User birthdayUser = birthdayLetter.getReceiver();
 
-        UserSetting userSetting;
-        try{
-            userSetting = userSettingGetService.findByUser(birthdayUser);
-        } catch (Exception e){
-            return;
-        }
-        if(userSetting == null || !userSetting.isBirthdayNotify()) return;
+        if (!isBirthdayNotificationEnabled(birthdayUser)) return;
 
         Notification notification = birthdayNotificationMapper.toBirthdayLetterNotification(birthdayLetter);
         notificationSaveService.save(notification);
@@ -119,6 +107,15 @@ public class BirthdayNotificationUsecase {
             );
         }
 
+    }
+
+    private boolean isBirthdayNotificationEnabled(User birthdayUser) {
+        try {
+            UserSetting userSetting = userSettingGetService.findByUser(birthdayUser);
+            return userSetting != null && userSetting.isBirthdayNotify();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
