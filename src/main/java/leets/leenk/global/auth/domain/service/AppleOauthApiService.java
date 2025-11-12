@@ -1,30 +1,30 @@
 package leets.leenk.global.auth.domain.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import leets.leenk.global.auth.application.property.KakaoOauthProperty;
+import leets.leenk.global.auth.application.property.AppleOauthProperty;
 import leets.leenk.global.auth.application.property.OauthProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class KakaoOauthApiService extends AbstractOauthApiService {
-    private final KakaoOauthProperty kakaoOauthProperty;
+public class AppleOauthApiService extends AbstractOauthApiService {
+    private final AppleOauthProperty appleOauthProperty;
 
-    public KakaoOauthApiService(OauthProperty oauthProperty,
-                                KakaoOauthProperty kakaoOauthProperty,
+    public AppleOauthApiService(OauthProperty oauthProperty,
+                                AppleOauthProperty appleOauthProperty,
                                 RestClient authRestClient,
                                 ObjectMapper objectMapper) {
         super(oauthProperty, authRestClient, objectMapper);
-        this.kakaoOauthProperty = kakaoOauthProperty;
+        this.appleOauthProperty = appleOauthProperty;
     }
 
     @Override
     protected String getGrantType() {
-        return kakaoOauthProperty.getKakaoGrantType();
+        return appleOauthProperty.getAppleGrantType();
     }
 
     @Override
     protected String getGrantTypeName() {
-        return kakaoOauthProperty.getKakaoGrantTypeName();
+        return appleOauthProperty.getAppleGrantTypeName();
     }
 }

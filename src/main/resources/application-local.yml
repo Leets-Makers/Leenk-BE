@@ -35,6 +35,9 @@ auth:
     kakao:
       kakao_grant_type: ${KAKAO_GRANT_TYPE}
       kakao_grant_type_name: ${KAKAO_GRANT_TYPE_NAME}
+    apple:
+      apple_grant_type: ${APPLE_GRANT_TYPE}
+      apple_grant_type_name: ${APPLE_GRANT_TYPE_NAME}
 
 cloud:
   aws:

@@ -17,6 +17,7 @@ import leets.leenk.global.auth.application.dto.response.LoginResponse;
 import leets.leenk.global.auth.application.dto.response.OauthTokenResponse;
 import leets.leenk.global.auth.application.dto.response.OauthUserInfoResponse;
 import leets.leenk.global.auth.application.mapper.LoginMapper;
+import leets.leenk.global.auth.domain.service.AppleOauthApiService;
 import leets.leenk.global.auth.domain.service.KakaoOauthApiService;
 import leets.leenk.global.auth.domain.service.OauthApiService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class AuthUsecase {
     private final UserSaveService userSaveService;
     private final UserSettingSaveService userSettingSaveService;
     private final KakaoOauthApiService kakaoOauthApiService;
+    private final AppleOauthApiService appleOauthApiService;
     private final OauthApiService oauthApiService;
     private final UserBackupInfoGetService userBackupInfoGetService;
     private final UserBackupInfoDeleteService userBackupInfoDeleteService;
@@ -65,6 +67,16 @@ public class AuthUsecase {
 
         return getUserLoginResponse(optionalUser, response);
 
+    }
+
+    @Transactional
+    public LoginResponse appleLogin(String appleIdToken) {
+        OauthTokenResponse response = appleOauthApiService.getOauthToken(appleIdToken);
+
+        long userId = parseUserId(response);
+        Optional<User> optionalUser = userGetService.existById(userId);
+
+        return getUserLoginResponse(optionalUser, response);
     }
 
     private LoginResponse getUserLoginResponse(Optional<User> optionalUser, OauthTokenResponse response) {
