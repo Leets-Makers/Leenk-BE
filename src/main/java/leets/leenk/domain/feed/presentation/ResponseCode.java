@@ -23,7 +23,10 @@ public enum ResponseCode implements ResponseCodeInterface {
     GET_ALL_USERS(1210, HttpStatus.OK, "함께한 유저 추가를 위한 사용자 조회에 성공했습니다."),
 
     DELETE_FEED(1211, HttpStatus.OK, "피드 삭제에 성공했습니다."),
-    REPORT_FEED(1212, HttpStatus.OK, "피드 신고에 성공했습니다.");
+    REPORT_FEED(1212, HttpStatus.OK, "피드 신고에 성공했습니다."),
+
+    GET_FEED_NAVIGATION(1213, HttpStatus.OK, "피드 네비게이션 조회에 성공했습니다.");
+
 
     private final int code;
     private final HttpStatus status;
