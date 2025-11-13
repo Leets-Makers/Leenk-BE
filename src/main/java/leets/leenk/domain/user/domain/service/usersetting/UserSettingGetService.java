@@ -26,4 +26,8 @@ public class UserSettingGetService {
     public UserSetting findByUser(User user) {
         return userSettingRepository.findByUser(user).orElseThrow(UserSettingNotFoundException::new);
     }
+
+    public List<User> getUsersToNotifyBirthday() {
+        return userSettingRepository.findAllActiveUsersWithBirthdayNotifyTrue();
+    }
 }

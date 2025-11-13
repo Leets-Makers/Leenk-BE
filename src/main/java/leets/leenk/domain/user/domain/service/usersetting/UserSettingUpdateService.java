@@ -23,5 +23,9 @@ public class UserSettingUpdateService {
         if (request.newReactionNotify() != null) {
             userSetting.updateIsNewReactionNotify(request.newReactionNotify());
         }
+
+        if (request.birthdayNotify() != null) {
+            userSetting.updateIsBirthdayNotify(request.birthdayNotify());
+        }
     }
 }

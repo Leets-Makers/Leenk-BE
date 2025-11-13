@@ -9,6 +9,7 @@ import leets.leenk.domain.birthday.domain.entity.BirthdayLetter;
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetterReadMark;
 import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService;
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService;
+import leets.leenk.domain.notification.application.usecase.BirthdayNotificationUsecase;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class BirthdayLetterUseCase {
     private final BirthdayLettersGetService birthdayLettersGetService;
     private final BirthdayLetterMapper birthdayLetterMapper;
     private final BirthdayChecker birthdayChecker;
+    private final BirthdayNotificationUsecase birthdayNotificationUsecase;
 
     @Transactional
     public void writeBirthdayLetter(long senderId, long receiverId, BirthdayLetterRequest request) {
@@ -44,6 +46,8 @@ public class BirthdayLetterUseCase {
         BirthdayLetter birthdayLetter = birthdayLetterMapper.toBirthdayLetter(sender, receiver, request);
 
         birthdayLetterSaveService.save(birthdayLetter);
+
+        birthdayNotificationUsecase.saveBirthdayLetterNotification(birthdayLetter);
     }
 
     @Transactional(readOnly = true)

@@ -22,4 +22,9 @@ public interface UserSettingRepository extends JpaRepository<UserSetting, Long> 
             "AND us.user.leaveDate IS NULL " +
             "AND us.user.id <> :authorUserId")
     List<User> findAllActiveUsersWithNewLeenkNotifyTrueExcludingUserId(@Param("authorUserId") Long authorUserId);
+
+    @Query("SELECT us.user FROM UserSetting us WHERE us.isBirthdayNotify = true " +
+            "AND us.user.leaveDate IS NULL " +
+            "AND us.user.deleteDate IS NULL")
+    List<User> findAllActiveUsersWithBirthdayNotifyTrue();
 }

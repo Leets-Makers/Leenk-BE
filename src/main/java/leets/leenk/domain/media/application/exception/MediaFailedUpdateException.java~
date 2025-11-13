@@ -1,2 +1,0 @@
-package leets.leenk.domain.media.application.exception;public class MediaFailedUpdateException {
-}

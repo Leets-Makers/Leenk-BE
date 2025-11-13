@@ -31,6 +31,10 @@ public class UserSetting extends BaseEntity {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean isNewReactionNotify;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean isBirthdayNotify;
+
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -50,5 +54,9 @@ public class UserSetting extends BaseEntity {
 
     public void updateIsNewReactionNotify(boolean isNewReactionNotify) {
         this.isNewReactionNotify = isNewReactionNotify;
+    }
+
+    public void updateIsBirthdayNotify(boolean isBirthdayNotify) {
+        this.isBirthdayNotify = isBirthdayNotify;
     }
 }

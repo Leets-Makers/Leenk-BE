@@ -40,14 +40,14 @@ public class AwsSqsManager {
 	private MessageAttributeValue convertToAttributeValue(String value) {
 		return MessageAttributeValue.builder()
 			.dataType("String")
-			.stringValue(value)
+			.stringValue(value == null ? " " : value)
 			.build();
 	}
 
     private MessageAttributeValue convertToAttributeValue(Long value) {
         return MessageAttributeValue.builder()
                 .dataType("Number")
-                .stringValue(value.toString())
+                .stringValue(value == null ? "-1" : value.toString())
                 .build();
     }
 }

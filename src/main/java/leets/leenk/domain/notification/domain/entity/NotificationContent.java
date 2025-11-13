@@ -2,6 +2,9 @@ package leets.leenk.domain.notification.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
+import leets.leenk.domain.notification.domain.entity.birthdayContent.BirthdayAnnouncementContent;
+import leets.leenk.domain.notification.domain.entity.birthdayContent.BirthdayCelebrateContent;
+import leets.leenk.domain.notification.domain.entity.birthdayContent.BirthdayLetterContent;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedFirstReactionNotificationContent;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedReactionCountNotificationContent;
 import leets.leenk.domain.notification.domain.entity.feedContent.FeedTagNotificationContent;
@@ -28,7 +31,10 @@ import lombok.experimental.SuperBuilder;
         @JsonSubTypes.Type(value = LeenkStartingSoonNotificationContent.class, name = "LEENK_STARTING_SOON"),
         @JsonSubTypes.Type(value = LeenkFinishedNotificationContent.class, name = "LEENK_FINISHED"),
         @JsonSubTypes.Type(value = LeenkStartedHostReminderNotificationContent.class, name = "LEENK_STARTED_HOST_REMINDER"),
-        @JsonSubTypes.Type(value = LeenkLeftNotificationContent.class, name = "LEENK_LEFT")
+        @JsonSubTypes.Type(value = LeenkLeftNotificationContent.class, name = "LEENK_LEFT"),
+        @JsonSubTypes.Type(value = BirthdayAnnouncementContent.class, name = "BIRTHDAY_ANNOUNCEMENT"),
+        @JsonSubTypes.Type(value = BirthdayCelebrateContent.class, name = "BIRTHDAY_CELEBRATE"),
+        @JsonSubTypes.Type(value = BirthdayLetterContent.class, name = "BIRTHDAY_LETTER")
 })
 public class NotificationContent {
 
