@@ -121,6 +121,7 @@ public class BirthdayNotificationUsecase {
             UserSetting userSetting = userSettingGetService.findByUser(birthdayUser);
             return userSetting != null && userSetting.isBirthdayNotify();
         } catch (Exception e) {
+            log.error("사용자 설정 조회 실패 - userId: {}", birthdayUser.getId(), e);
             return false;
         }
     }
