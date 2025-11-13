@@ -7,10 +7,10 @@ import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.service.NotificationSaveService;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserSetting;
-import leets.leenk.domain.user.domain.service.user.UserGetService;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService;
 import leets.leenk.global.sqs.application.mapper.SqsMessageEventMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BirthdayNotificationUsecase {
 
-    private final UserGetService userGetService;
     private final UserSettingGetService userSettingGetService;
     private final BirthdayGetService birthdayGetService;
 
@@ -41,23 +41,26 @@ public class BirthdayNotificationUsecase {
 
         List<User> users = userSettingGetService.getUsersToNotifyBirthday();
 
-
         for (User receiver : users) {
             for (User birthdayUser : birthdayUsers) {
                 if (receiver.equals(birthdayUser)) continue;
 
-                Notification notification = birthdayNotificationMapper
-                        .toBirthdayAnnouncementNotification(birthdayUser, receiver);
-                notificationSaveService.save(notification);
+                try {
+                    Notification notification = birthdayNotificationMapper
+                            .toBirthdayAnnouncementNotification(birthdayUser, receiver);
+                    notificationSaveService.save(notification);
 
-                if (receiver.getFcmToken() != null) {
-                    eventPublisher.publishEvent(
-                            sqsMessageEventMapper.toBirthdaySqsMessageEvent(
-                                    notification,
-                                    receiver.getFcmToken(),
-                                    birthdayUser
-                            )
-                    );
+                    if (receiver.getFcmToken() != null) {
+                        eventPublisher.publishEvent(
+                                sqsMessageEventMapper.toBirthdaySqsMessageEvent(
+                                        notification,
+                                        receiver.getFcmToken(),
+                                        birthdayUser
+                                )
+                        );
+                    }
+                } catch (Exception e){
+                    log.error("알림 전송 실패", e);
                 }
             }
         }
@@ -71,19 +74,23 @@ public class BirthdayNotificationUsecase {
         for (User birthdayUser : birthdayUsers){
             if (!isBirthdayNotificationEnabled(birthdayUser)) continue;
 
-            Notification notification = birthdayNotificationMapper
-                    .toBirthdayCelebrateNotification(birthdayUser);
-            notificationSaveService.save(notification);
+            try {
+                Notification notification = birthdayNotificationMapper
+                        .toBirthdayCelebrateNotification(birthdayUser);
+                notificationSaveService.save(notification);
 
 
-            if(birthdayUser.getFcmToken() != null) {
-                eventPublisher.publishEvent(
-                        sqsMessageEventMapper.toBirthdaySqsMessageEvent(
-                                notification,
-                                birthdayUser.getFcmToken(),
-                                birthdayUser
-                        )
-                );
+                if (birthdayUser.getFcmToken() != null) {
+                    eventPublisher.publishEvent(
+                            sqsMessageEventMapper.toBirthdaySqsMessageEvent(
+                                    notification,
+                                    birthdayUser.getFcmToken(),
+                                    birthdayUser
+                            )
+                    );
+                }
+            } catch (Exception e){
+                log.error("알림 전송 실패", e);
             }
         }
     }
