@@ -17,6 +17,9 @@ public record NotificationSettingResponse(
         boolean isNewFeedNotify,
 
         @Schema(description = "공감 알림", example = "true")
-        boolean isNewReactionNotify
+        boolean isNewReactionNotify,
+
+        @Schema(description = "생일 알림", example = "true")
+        boolean isBirthdayNotify
 ) {
 }
