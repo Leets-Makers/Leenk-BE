@@ -5,6 +5,9 @@ import leets.leenk.domain.media.domain.entity.enums.DomainType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -21,8 +24,13 @@ public class S3PresignedUrlService {
 
     private final S3Presigner s3Presigner;
 
+    private final S3Client s3Client;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
 
     public List<MediaUrlResponse> generateUrlList(DomainType domainType, List<String> fileNames) {
@@ -61,8 +69,32 @@ public class S3PresignedUrlService {
         String typePath = domainType.name().toLowerCase();
         String prefix = (index == 0) ? "thumbnail_" : "";
 
-        return String.format("originals/%s/%s%s", typePath, prefix, filename);
+        return String.format("temp/%s/%s%s", typePath, prefix, filename);
     }
 
+    public void copyObject(String sourceKey, String destinationKey) {
+        CopyObjectRequest copyRequest = CopyObjectRequest.builder()
+                .sourceBucket(bucket)
+                .sourceKey(sourceKey)
+                .destinationBucket(bucket)
+                .destinationKey(destinationKey)
+                .build();
+
+        s3Client.copyObject(copyRequest);
+    }
+
+    public void deleteObject(String key) {
+        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+
+        s3Client.deleteObject(deleteRequest);
+    }
+
+    public String getUrl(String key) {
+        return String.format("https://%s.s3.%s.amazonaws.com/%s",
+                bucket, region, key);
+    }
 
 }
