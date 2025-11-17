@@ -1,5 +1,6 @@
 package leets.leenk.domain.user.application.usecase;
 
+import leets.leenk.domain.media.domain.service.MediaS3Service;
 import leets.leenk.domain.user.application.dto.request.*;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
 import leets.leenk.domain.user.application.exception.SelfBlockNotAllowedException;
@@ -37,6 +38,8 @@ public class UserUsecase {
     private final UserBlockMapper userBlockMapper;
     private final UserBlockService userBlockService;
 
+    private final MediaS3Service mediaS3Service;
+
     @Transactional
     public void initialAgreement(long userId, AgreementRequest request) {
         User user = userGetService.findById(userId);
@@ -69,7 +72,8 @@ public class UserUsecase {
     public void updateProfileImage(long userId, ProfileImageRequest request) {
         User user = userGetService.findById(userId);
 
-        userUpdateService.updateProfileImage(user, request.profileImage());
+        String originalsUrl = mediaS3Service.moveToOriginals(request.profileImage());
+        userUpdateService.updateProfileImage(user, originalsUrl);
     }
 
     @Transactional
