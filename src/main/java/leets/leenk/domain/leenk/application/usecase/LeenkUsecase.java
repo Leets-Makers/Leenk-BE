@@ -39,9 +39,7 @@ import leets.leenk.domain.leenk.domain.service.LeenkUpdateService;
 import leets.leenk.domain.leenk.domain.service.LocationSaveService;
 import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
-import leets.leenk.domain.media.domain.service.MediaDeleteService;
-import leets.leenk.domain.media.domain.service.MediaGetService;
-import leets.leenk.domain.media.domain.service.MediaSaveService;
+import leets.leenk.domain.media.domain.service.*;
 import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.service.NotionDatabaseService;
@@ -75,6 +73,8 @@ public class LeenkUsecase {
     private final MediaSaveService mediaSaveService;
     private final MediaGetService mediaGetService;
     private final MediaDeleteService mediaDeleteService;
+    private final MediaUpdateService mediaUpdateService;
+    private final MediaS3Service mediaS3Service;
 
     private final UserGetService userGetService;
     private final SlackWebhookService slackWebhookService;
@@ -105,6 +105,9 @@ public class LeenkUsecase {
                 .ifPresent(url -> {
                     Media media = mediaMapper.toMedia(leenk, url);
                     mediaSaveService.save(media);
+
+                    String originalsUrl = mediaS3Service.moveToOriginals(media.getMediaUrl());
+                    mediaUpdateService.updateMediaUrl(media, originalsUrl);
                 });
 
         leenkNotificationUsecase.saveNewLeenkNotification(leenk);
@@ -137,10 +140,14 @@ public class LeenkUsecase {
             }
         } else {
             if (media != null) {
-                media.updateMediaUrl(newUrl);
+                String originalsUrl = mediaS3Service.moveToOriginals(newUrl);
+                media.updateMediaUrl(originalsUrl);
             } else {
                 Media newMedia = mediaMapper.toMedia(leenk, newUrl);
                 mediaSaveService.save(newMedia);
+
+                String originalsUrl = mediaS3Service.moveToOriginals(newMedia.getMediaUrl());
+                newMedia.updateMediaUrl(originalsUrl);
             }
         }
     }
