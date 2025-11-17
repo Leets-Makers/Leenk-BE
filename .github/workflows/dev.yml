@@ -100,6 +100,9 @@ jobs:
             if [ $cnt -eq 10 ]; then
               echo "===== 서버 실행 실패 ====="
             
+              echo "===== 실패 컨테이너 로그 ====="
+              docker logs spring-${AFTER_COLOR} || true
+
               docker-compose stop spring-${AFTER_COLOR}
               docker-compose rm -f spring-${AFTER_COLOR}
             
