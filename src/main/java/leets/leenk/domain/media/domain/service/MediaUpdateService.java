@@ -11,4 +11,8 @@ public class MediaUpdateService {
     public void update(Media media, String thumbnailUrl){
         media.updateThumbnailUrl(thumbnailUrl);
     }
+
+    public void updateMediaUrl(Media media, String mediaUrl){
+        media.updateMediaUrl(mediaUrl);
+    }
 }

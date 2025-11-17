@@ -16,11 +16,10 @@ import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.domain.entity.Reaction;
 import leets.leenk.domain.feed.domain.service.*;
 import leets.leenk.domain.feed.domain.service.dto.FeedNavigationResult;
+import leets.leenk.domain.media.application.dto.request.FeedMediaRequest;
 import leets.leenk.domain.media.application.mapper.MediaMapper;
 import leets.leenk.domain.media.domain.entity.Media;
-import leets.leenk.domain.media.domain.service.MediaDeleteService;
-import leets.leenk.domain.media.domain.service.MediaGetService;
-import leets.leenk.domain.media.domain.service.MediaSaveService;
+import leets.leenk.domain.media.domain.service.*;
 import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserBlock;
@@ -58,6 +57,8 @@ public class FeedUsecase {
     private final MediaGetService mediaGetService;
     private final MediaSaveService mediaSaveService;
     private final MediaDeleteService mediaDeleteService;
+    private final MediaUpdateService mediaUpdateService;
+    private final MediaS3Service mediaS3Service;
 
     private final LinkedUserGetService linkedUserGetService;
     private final LinkedUserSaveService linkedUserSaveService;
@@ -181,6 +182,11 @@ public class FeedUsecase {
                 .toList();
         mediaSaveService.saveAll(medias);
 
+        medias.forEach(media -> {
+            String newMediaUrl = mediaS3Service.moveToOriginals(media.getMediaUrl());
+            mediaUpdateService.updateMediaUrl(media, newMediaUrl);
+        });
+
         List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userIds(), feed);
         linkedUserSaveService.saveAll(linkedUsers);
 
@@ -247,7 +253,15 @@ public class FeedUsecase {
         if (request.media() != null) {
             mediaDeleteService.deleteAllByFeed(feed);
             List<Media> newMedias = request.media().stream()
-                    .map(mediaRequest -> mediaMapper.toMedia(feed, mediaRequest))
+                    .map(mediaRequest -> {
+                        String originalsUrl = mediaS3Service.moveToOriginals(mediaRequest.mediaUrl());
+                        FeedMediaRequest updatedRequest = new FeedMediaRequest(
+                                mediaRequest.position(),
+                                originalsUrl,
+                                mediaRequest.mediaType()
+                        );
+                        return mediaMapper.toMedia(feed, updatedRequest);
+                    })
                     .toList();
             mediaSaveService.saveAll(newMedias);
         }
