@@ -1,14 +1,19 @@
 package leets.leenk.domain.user.domain.service.user;
 
+import leets.leenk.domain.media.domain.service.MediaS3Service;
 import leets.leenk.domain.user.application.dto.request.AgreementRequest;
 import leets.leenk.domain.user.application.dto.request.RegisterRequest;
 import leets.leenk.domain.user.domain.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 @Service
+@RequiredArgsConstructor
 public class UserUpdateService {
+
+    private final MediaS3Service mediaS3Service;
 
     public void updateAgreement(User user, AgreementRequest request) {
         user.updateAgreement(request.termsService(), request.privacyPolicy());
@@ -22,7 +27,8 @@ public class UserUpdateService {
         }
 
         if (request.profileImage() != null) {
-            user.updateProfileImage(request.profileImage());
+            String originalsUrl = mediaS3Service.moveToOriginals(request.profileImage());
+            user.updateProfileImage(originalsUrl);
         }
 
         if(request.birthday() != null) {
