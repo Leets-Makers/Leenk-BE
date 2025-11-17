@@ -99,6 +99,11 @@ jobs:
             
             if [ $cnt -eq 10 ]; then
               echo "===== 서버 실행 실패 ====="
+            
+              docker-compose stop spring-${AFTER_COLOR}
+              docker-compose rm -f spring-${AFTER_COLOR}
+            
+              echo "===== 롤백 완료: 기존 컨테이너 유지 ====="            
               exit 1
             fi
             
