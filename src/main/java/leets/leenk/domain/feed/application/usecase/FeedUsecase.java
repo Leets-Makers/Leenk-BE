@@ -253,17 +253,14 @@ public class FeedUsecase {
         if (request.media() != null) {
             mediaDeleteService.deleteAllByFeed(feed);
             List<Media> newMedias = request.media().stream()
-                    .map(mediaRequest -> {
-                        String originalsUrl = mediaS3Service.moveToOriginals(mediaRequest.mediaUrl());
-                        FeedMediaRequest updatedRequest = new FeedMediaRequest(
-                                mediaRequest.position(),
-                                originalsUrl,
-                                mediaRequest.mediaType()
-                        );
-                        return mediaMapper.toMedia(feed, updatedRequest);
-                    })
+                    .map(mediaRequest -> mediaMapper.toMedia(feed, mediaRequest))
                     .toList();
             mediaSaveService.saveAll(newMedias);
+
+            newMedias.forEach(media -> {
+                String originalsUrl = mediaS3Service.moveToOriginals(media.getMediaUrl());
+                mediaUpdateService.updateMediaUrl(media, originalsUrl);
+            });
         }
 
         if (request.userIds() != null) {
