@@ -24,6 +24,7 @@ public class UserSettingMapper {
                 .isLeenkStatusNotify(userSetting.isLeenkStatusNotify())
                 .isNewFeedNotify(userSetting.isNewFeedNotify())
                 .isNewReactionNotify(userSetting.isNewReactionNotify())
+                .isBirthdayNotify(userSetting.isBirthdayNotify())
                 .build();
     }
 }
