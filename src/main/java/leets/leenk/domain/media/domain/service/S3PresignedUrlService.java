@@ -1,10 +1,12 @@
 package leets.leenk.domain.media.domain.service;
 
 import leets.leenk.domain.media.application.dto.response.MediaUrlResponse;
+import leets.leenk.domain.media.application.exception.S3CopyException;
 import leets.leenk.domain.media.domain.entity.enums.DomainType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
@@ -73,14 +75,19 @@ public class S3PresignedUrlService {
     }
 
     public void copyObject(String sourceKey, String destinationKey) {
-        CopyObjectRequest copyRequest = CopyObjectRequest.builder()
-                .sourceBucket(bucket)
-                .sourceKey(sourceKey)
-                .destinationBucket(bucket)
-                .destinationKey(destinationKey)
-                .build();
+        try {
+            CopyObjectRequest copyRequest = CopyObjectRequest.builder()
+                    .sourceBucket(bucket)
+                    .sourceKey(sourceKey)
+                    .destinationBucket(bucket)
+                    .destinationKey(destinationKey)
+                    .build();
 
-        s3Client.copyObject(copyRequest);
+            s3Client.copyObject(copyRequest);
+
+        } catch (SdkException e) {
+            throw new S3CopyException();
+        }
     }
 
     public void deleteObject(String key) {
