@@ -14,6 +14,6 @@ public class CommentGetService {
     private final CommentRepository commentRepository;
 
     public List<Comment> findAllByFeed(Feed feed) {
-        return commentRepository.findAllByFeed(feed);
+        return commentRepository.findAllByFeedAndDeletedAtIsNullOrderByCreateDateDesc(feed);
     }
 }
