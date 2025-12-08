@@ -1,6 +1,7 @@
 package leets.leenk.domain.feed.application.mapper;
 
 import leets.leenk.domain.feed.application.dto.response.*;
+import leets.leenk.domain.feed.domain.entity.Comment;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.media.application.dto.response.FeedMediaResponse;
@@ -76,7 +77,7 @@ public class FeedMapper {
                 .build();
     }
 
-    public FeedDetailResponse toFeedDetailResponse(Feed feed, List<Media> medias, List<LinkedUser> linkedUsers) {
+    public FeedDetailResponse toFeedDetailResponse(Feed feed, List<Media> medias, List<LinkedUser> linkedUsers, List<Comment> comments) {
         return FeedDetailResponse.builder()
                 .feedId(feed.getId())
                 .author(toFeedAuthorResponse(feed))
@@ -86,6 +87,7 @@ public class FeedMapper {
                 .media(toFeedMediaResponses(medias))
                 .linkedUserCount(linkedUsers.size())
                 .linkedUser(toLinkedUserResponses(linkedUsers, feed))
+                .comments(toGetCommentsResponses(comments))
                 .build();
     }
 
@@ -110,26 +112,40 @@ public class FeedMapper {
                 .toList();
     }
 
+    private List<GetCommentsResponse> toGetCommentsResponses(List<Comment> comments) {
+        return comments.stream()
+                .map(comment -> GetCommentsResponse.builder()
+                        .commentId(comment.getCommentId())
+                        .authorId(comment.getUser().getId())
+                        .authorName(comment.getUser().getName())
+                        .comment(comment.getComment())
+                        .build())
+                .toList();
+    }
+
     public FeedNavigationResponse toFeedNavigationResponse(
             Feed currentFeed,
             List<Feed> prevFeeds,
             List<Feed> nextFeeds,
             Map<Long, List<Media>> mediaMap,
             Map<Long, List<LinkedUser>> linkedUserMap,
+            Map<Long, List<Comment>> commentsMap,
             boolean hasMorePrev,
             boolean hasMoreNext
     ) {
         FeedDetailResponse current = toFeedDetailResponse(
                 currentFeed,
                 mediaMap.getOrDefault(currentFeed.getId(), List.of()),
-                linkedUserMap.getOrDefault(currentFeed.getId(), List.of())
+                linkedUserMap.getOrDefault(currentFeed.getId(), List.of()),
+                commentsMap.getOrDefault(currentFeed.getId(), List.of())
         );
 
         List<FeedDetailResponse> prevFeedResponses = prevFeeds.stream()
                 .map(feed -> toFeedDetailResponse(
                         feed,
                         mediaMap.getOrDefault(feed.getId(), List.of()),
-                        linkedUserMap.getOrDefault(feed.getId(), List.of())
+                        linkedUserMap.getOrDefault(feed.getId(), List.of()),
+                        commentsMap.getOrDefault(feed.getId(), List.of())
                 ))
                 .toList();
 
@@ -137,7 +153,8 @@ public class FeedMapper {
                 .map(feed -> toFeedDetailResponse(
                         feed,
                         mediaMap.getOrDefault(feed.getId(), List.of()),
-                        linkedUserMap.getOrDefault(feed.getId(), List.of())
+                        linkedUserMap.getOrDefault(feed.getId(), List.of()),
+                        commentsMap.getOrDefault(feed.getId(), List.of())
                 ))
                 .toList();
 

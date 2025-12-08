@@ -66,6 +66,7 @@ public class FeedUsecase {
     private final ReactionSaveService reactionSaveService;
 
     private final CommentSaveService commentSaveService;
+    private final CommentGetService commentGetService;
 
     private final FeedNotificationUsecase feedNotificationUsecase;
 
@@ -97,8 +98,9 @@ public class FeedUsecase {
         Feed feed = feedGetService.findById(feedId);
         List<Media> medias = mediaGetService.findAllByFeed(feed);
         List<LinkedUser> linkedUsers = linkedUserGetService.findAll(feed);
+        List<Comment> comments = commentGetService.findAllByFeed(feed);
 
-        return feedMapper.toFeedDetailResponse(feed, medias, linkedUsers);
+        return feedMapper.toFeedDetailResponse(feed, medias, linkedUsers, comments);
     }
 
     @Transactional(readOnly = true)
@@ -148,12 +150,19 @@ public class FeedUsecase {
             linkedUserMap.put(feed.getId(), linkedUsers);
         }
 
+        Map<Long, List<Comment>> commentsMap = new HashMap<>();
+        for (Feed feed : allFeeds) {
+            List<Comment> comments = commentGetService.findAllByFeed(feed);
+            commentsMap.put(feed.getId(), comments);
+        }
+
         return feedMapper.toFeedNavigationResponse(
                 currentFeed,
                 prevFeeds,
                 nextFeeds,
                 mediaMap,
                 linkedUserMap,
+                commentsMap,
                 hasMorePrev,
                 hasMoreNext
         );
