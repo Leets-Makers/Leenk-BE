@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import leets.leenk.domain.feed.application.dto.request.FeedReportRequest;
-import leets.leenk.domain.feed.application.dto.request.FeedUpdateRequest;
-import leets.leenk.domain.feed.application.dto.request.FeedUploadRequest;
-import leets.leenk.domain.feed.application.dto.request.ReactionRequest;
+import leets.leenk.domain.feed.application.dto.request.*;
 import leets.leenk.domain.feed.application.dto.response.*;
 import leets.leenk.domain.feed.application.usecase.FeedUsecase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
@@ -84,6 +81,16 @@ public class FeedController {
         feedUsecase.reactToFeed(userId, feedId, request);
 
         return CommonResponse.success(ResponseCode.CREATE_REACTION);
+    }
+
+    @PostMapping("/{feedId}/comments")
+    @Operation(summary = "댓글 작성 API")
+    public CommonResponse<Void> writeComment(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                             @PathVariable @Positive long feedId,
+                                             @RequestBody @Valid CommentWriteRequest request) {
+        feedUsecase.writeComment(userId, feedId, request);
+
+        return CommonResponse.success(ResponseCode.WRITE_COMMENT);
     }
 
     @GetMapping("/{feedId}/reactions")
