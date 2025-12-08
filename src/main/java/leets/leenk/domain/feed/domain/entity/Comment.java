@@ -2,6 +2,7 @@ package leets.leenk.domain.feed.domain.entity;
 
 import jakarta.persistence.*;
 import leets.leenk.domain.user.domain.entity.User;
+import leets.leenk.global.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @Table(name = "comments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
+public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
