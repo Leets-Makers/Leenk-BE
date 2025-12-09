@@ -194,4 +194,13 @@ public class FeedController {
 
         return CommonResponse.success(ResponseCode.DELETE_FEED);
     }
+
+    @DeleteMapping("/comments/{commentId}")
+    @Operation(summary = "댓글 삭제 API")
+    public CommonResponse<Void> deleteComment(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                              @PathVariable @Positive long commentId) {
+        feedUsecase.deleteComment(userId, commentId);
+
+        return CommonResponse.success(ResponseCode.DELETE_COMMENT);
+    }
 }
