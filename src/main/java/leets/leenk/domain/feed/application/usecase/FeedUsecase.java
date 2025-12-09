@@ -2,6 +2,7 @@ package leets.leenk.domain.feed.application.usecase;
 
 import leets.leenk.domain.feed.application.dto.request.*;
 import leets.leenk.domain.feed.application.dto.response.*;
+import leets.leenk.domain.feed.application.exception.CommentDeleteNotAllowedException;
 import leets.leenk.domain.feed.application.exception.FeedDeleteNotAllowedException;
 import leets.leenk.domain.feed.application.exception.FeedUpdateNotAllowedException;
 import leets.leenk.domain.feed.application.exception.SelfReactionNotAllowedException;
@@ -67,6 +68,7 @@ public class FeedUsecase {
 
     private final CommentSaveService commentSaveService;
     private final CommentGetService commentGetService;
+    private final CommentDeleteService commentDeleteService;
 
     private final FeedNotificationUsecase feedNotificationUsecase;
 
@@ -344,6 +346,18 @@ public class FeedUsecase {
         }
 
         feedDeleteService.delete(feed);
+    }
+
+    @Transactional
+    public void deleteComment(long userId, long commentId) {
+        User user = userGetService.findById(userId);
+        Comment comment = commentGetService.findCommentById(commentId);
+
+        if (!comment.getUser().equals(user)) {
+            throw new CommentDeleteNotAllowedException();
+        }
+
+        commentDeleteService.deleteComment(comment);
     }
 
     @Transactional(readOnly = true)
