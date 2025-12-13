@@ -118,7 +118,7 @@ public class FeedMapper {
                         .commentId(comment.getCommentId())
                         .user(userProfileMapper.toProfile(comment.getUser()))
                         .comment(comment.getComment())
-                        .createDate(comment.getCreateDate())
+                        .createdAt(comment.getCreateDate())
                         .build())
                 .toList();
     }

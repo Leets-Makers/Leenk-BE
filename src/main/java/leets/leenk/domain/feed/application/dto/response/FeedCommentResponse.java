@@ -22,6 +22,6 @@ public record FeedCommentResponse(
         String comment,
 
         @Schema(description = "댓글 작성 시간", example = "2025-06-30T00:00:00")
-        LocalDateTime createDate
+        LocalDateTime createdAt
 ) {
 }
