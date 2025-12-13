@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record GetCommentsResponse(
+public record FeedCommentResponse(
         @Schema(description = "댓글 id", example = "1")
         long commentId,
 

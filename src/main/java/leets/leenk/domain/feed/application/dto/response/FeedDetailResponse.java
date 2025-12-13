@@ -36,6 +36,6 @@ public record FeedDetailResponse(
         List<LinkedUserResponse> linkedUser,
 
         @Schema(description = "피드에 작성된 댓글 목록")
-        List<GetCommentsResponse> comments
+        List<FeedCommentResponse> comments
 ) {
 }

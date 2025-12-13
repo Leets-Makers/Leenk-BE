@@ -112,9 +112,9 @@ public class FeedMapper {
                 .toList();
     }
 
-    private List<GetCommentsResponse> toGetCommentsResponses(List<Comment> comments) {
+    private List<FeedCommentResponse> toGetCommentsResponses(List<Comment> comments) {
         return comments.stream()
-                .map(comment -> GetCommentsResponse.builder()
+                .map(comment -> FeedCommentResponse.builder()
                         .commentId(comment.getCommentId())
                         .user(userProfileMapper.toProfile(comment.getUser()))
                         .comment(comment.getComment())
