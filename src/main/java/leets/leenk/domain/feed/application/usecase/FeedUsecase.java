@@ -351,7 +351,7 @@ public class FeedUsecase {
     @Transactional
     public void deleteComment(long userId, long commentId) {
         User user = userGetService.findById(userId);
-        Comment comment = commentGetService.findCommentById(commentId);
+        Comment comment = commentGetService.findCommentByIdNotDeleted(commentId);
 
         if (!comment.getUser().equals(user)) {
             throw new CommentDeleteNotAllowedException();

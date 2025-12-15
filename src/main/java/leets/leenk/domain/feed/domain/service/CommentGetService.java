@@ -14,8 +14,8 @@ import java.util.List;
 public class CommentGetService {
     private final CommentRepository commentRepository;
 
-    public Comment findCommentById(long commentId) {
-        return commentRepository.findById(commentId)
+    public Comment findCommentByIdNotDeleted(long commentId) {
+        return commentRepository.findByCommentIdAndDeletedAtIsNull(commentId)
                 .orElseThrow(CommentNotFoundException::new);
     }
 
