@@ -31,5 +31,22 @@ class LeenkTestFixture {
                 .status(status)
                 .build()
         }
+
+        fun createClosedLeenk(
+            id: Long? = null,
+            author: User,
+            location: Location,
+            currentParticipants: Long = 5L,
+            maxParticipants: Long = 10L
+        ): Leenk {
+            return createLeenk(
+                id = id,
+                author = author,
+                location = location,
+                status = LeenkStatus.CLOSED,
+                currentParticipants = currentParticipants,
+                maxParticipants = maxParticipants
+            )
+        }
     }
 }
