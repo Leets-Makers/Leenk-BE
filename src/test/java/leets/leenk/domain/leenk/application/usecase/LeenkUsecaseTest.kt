@@ -3,6 +3,7 @@ package leets.leenk.domain.leenk.application.usecase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
 import leets.leenk.domain.leenk.domain.entity.Leenk
@@ -129,4 +130,21 @@ class LeenkUsecaseTest {
         verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
         verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
     }
+
+    @Test
+    @DisplayName("이미 참여한 사용자가 다시 참여 시 예외가 발생한다")
+    fun participateLeenkAlreadyParticipatedThrowsException() {
+        // given
+        every { userGetService.findById(1L) } returns user
+        every { leenkGetService.findById(1L) } returns recruitingLeenk
+        every { leenkParticipantsGetService.existsByLeenkAndParticipant(recruitingLeenk, user) } returns true
+
+        // when & then
+        assertThatThrownBy { leenkUsecase.participateLeenk(1L, 1L) }
+            .isInstanceOf(AlreadyParticipatedException::class.java)
+
+        verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
+        verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
+    }
+
 }
