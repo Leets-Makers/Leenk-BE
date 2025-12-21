@@ -114,7 +114,6 @@ class LeenkUsecaseTest {
         @DisplayName("모집 중이 아닌 링크에 참여 시 예외가 발생한다")
         fun participateLeenkNotRecruitingThrowsException() {
             // given
-            val location = LocationTestFixture.createLocation(id = 2L)
             val closedLeenk = LeenkTestFixture.createClosedLeenk(
                 id = 1L,
                 author = user,
@@ -151,7 +150,6 @@ class LeenkUsecaseTest {
         @DisplayName("최대 참여 인원을 초과하면 예외가 발생한다")
         fun participateLeenkMaxParticipantsExceededThrowsException() {
             // given
-            val location = LocationTestFixture.createLocation(id = 3L)
             val fullLeenk = LeenkTestFixture.createFullLeenk(
                 id = 1L,
                 author = user,
@@ -173,7 +171,6 @@ class LeenkUsecaseTest {
         @DisplayName("최대 참여 인원 직전에 참여하면 정상적으로 처리된다")
         fun participateLeenkLastSlotSuccess() {
             // given
-            val location = LocationTestFixture.createLocation(id = 4L)
             val almostFullLeenk = LeenkTestFixture.createAlmostFullLeenk(
                 id = 1L,
                 author = user,
