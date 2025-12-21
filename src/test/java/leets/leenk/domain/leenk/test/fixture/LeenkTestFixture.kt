@@ -80,5 +80,22 @@ class LeenkTestFixture {
                 maxParticipants = maxParticipants
             )
         }
+
+        fun createFinishedLeenk(
+            id: Long? = null,
+            author: User,
+            location: Location,
+            currentParticipants: Long = 10L,
+            maxParticipants: Long = 10L
+        ): Leenk {
+            return createLeenk(
+                id = id,
+                author = author,
+                location = location,
+                status = LeenkStatus.FINISHED,
+                currentParticipants = currentParticipants,
+                maxParticipants = maxParticipants
+            )
+        }
     }
 }
