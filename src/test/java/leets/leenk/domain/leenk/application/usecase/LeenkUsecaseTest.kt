@@ -152,13 +152,10 @@ class LeenkUsecaseTest {
         fun participateLeenkMaxParticipantsExceededThrowsException() {
             // given
             val location = LocationTestFixture.createLocation(id = 3L)
-            val fullLeenk = LeenkTestFixture.createLeenk(
+            val fullLeenk = LeenkTestFixture.createFullLeenk(
                 id = 1L,
                 author = user,
-                location = location,
-                status = LeenkStatus.RECRUITING,
-                currentParticipants = 10L,
-                maxParticipants = 10L
+                location = location
             )
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns fullLeenk
