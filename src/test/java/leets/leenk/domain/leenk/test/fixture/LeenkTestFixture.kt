@@ -1,0 +1,35 @@
+package leets.leenk.domain.leenk.test.fixture
+
+import leets.leenk.domain.leenk.domain.entity.Leenk
+import leets.leenk.domain.leenk.domain.entity.Location
+import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
+import leets.leenk.domain.user.domain.entity.User
+import java.time.LocalDateTime
+
+class LeenkTestFixture {
+    companion object {
+        fun createLeenk(
+            id: Long? = null,
+            author: User,
+            location: Location,
+            title: String = "테스트 링크",
+            content: String? = "테스트 내용",
+            startTime: LocalDateTime = LocalDateTime.now().plusDays(1),
+            maxParticipants: Long = 10L,
+            currentParticipants: Long = 1L,
+            status: LeenkStatus = LeenkStatus.RECRUITING
+        ): Leenk {
+            return Leenk.builder()
+                .apply { id?.let { id(it) } }
+                .author(author)
+                .location(location)
+                .title(title)
+                .content(content)
+                .startTime(startTime)
+                .maxParticipants(maxParticipants)
+                .currentParticipants(currentParticipants)
+                .status(status)
+                .build()
+        }
+    }
+}
