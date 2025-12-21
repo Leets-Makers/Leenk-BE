@@ -172,4 +172,37 @@ class LeenkUsecaseTest {
         verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
         verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
     }
+
+    @Test
+    @DisplayName("최대 참여 인원 직전에 참여하면 정상적으로 처리된다")
+    fun participateLeenkLastSlotSuccess() {
+        // given
+        val location = LocationTestFixture.createLocation(id = 4L)
+        val almostFullLeenk = LeenkTestFixture.createLeenk(
+            id = 1L,
+            author = user,
+            location = location,
+            status = LeenkStatus.RECRUITING,
+            currentParticipants = 9L,
+            maxParticipants = 10L
+        )
+        val lastParticipant = LeenkParticipantsTestFixture.createParticipant(
+            leenk = almostFullLeenk,
+            participant = user
+        )
+
+        every { userGetService.findById(1L) } returns user
+        every { leenkGetService.findById(1L) } returns almostFullLeenk
+        every { leenkParticipantsGetService.existsByLeenkAndParticipant(almostFullLeenk, user) } returns false
+        every { participantsMapper.toParticipants(almostFullLeenk, user, any()) } returns lastParticipant
+        every { leenkParticipantsSaveService.save(any()) } returns lastParticipant
+
+        // when
+        leenkUsecase.participateLeenk(1L, 1L)
+
+        // then
+        verify(exactly = 1) { leenkParticipantsSaveService.save(lastParticipant) }
+        verify(exactly = 1) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(almostFullLeenk, user) }
+        assertThat(almostFullLeenk.currentParticipants).isEqualTo(10L)
+    }
 }
