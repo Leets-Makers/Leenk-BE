@@ -250,5 +250,24 @@ class LeenkUsecaseTest {
 
             verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
         }
+
+        @Test
+        @DisplayName("완료된 상태의 링크를 마감 시 예외가 발생한다")
+        fun closeLeenkCompletedStatusThrowsException() {
+            // given
+            val completedLeenk = LeenkTestFixture.createFinishedLeenk(
+                id = 1L,
+                author = user,
+                location = location
+            )
+            every { userGetService.findById(1L) } returns user
+            every { leenkGetService.findById(1L) } returns completedLeenk
+
+            // when & then
+            assertThatThrownBy { leenkUsecase.closeLeenk(1L, 1L) }
+                .isInstanceOf(LeenkAlreadyClosedException::class.java)
+
+            verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
+        }
     }
 }
