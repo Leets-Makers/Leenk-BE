@@ -115,13 +115,10 @@ class LeenkUsecaseTest {
         fun participateLeenkNotRecruitingThrowsException() {
             // given
             val location = LocationTestFixture.createLocation(id = 2L)
-            val closedLeenk = LeenkTestFixture.createLeenk(
+            val closedLeenk = LeenkTestFixture.createClosedLeenk(
                 id = 1L,
                 author = user,
-                location = location,
-                status = LeenkStatus.CLOSED,
-                currentParticipants = 5L,
-                maxParticipants = 10L
+                location = location
             )
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns closedLeenk
@@ -247,13 +244,10 @@ class LeenkUsecaseTest {
         @DisplayName("이미 마감된 링크를 다시 마감 시 예외가 발생한다")
         fun closeLeenkAlreadyClosedThrowsException() {
             // given
-            val closedLeenk = LeenkTestFixture.createLeenk(
+            val closedLeenk = LeenkTestFixture.createClosedLeenk(
                 id = 1L,
                 author = user,
-                location = location,
-                status = LeenkStatus.CLOSED,
-                currentParticipants = 5L,
-                maxParticipants = 10L
+                location = location
             )
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns closedLeenk
