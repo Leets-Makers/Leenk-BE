@@ -6,6 +6,7 @@ import io.mockk.verify
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException
+import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
 import leets.leenk.domain.leenk.domain.entity.Leenk
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
@@ -227,6 +228,22 @@ class LeenkUsecaseTest {
             // then
             assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.CLOSED)
             verify(exactly = 1) { leenkNotificationUsecase.saveLeenkClosedNotification(recruitingLeenk) }
+        }
+
+        @Test
+        @DisplayName("링크 작성자가 아닌 사용자가 마감 시도 시 예외가 발생한다")
+        fun closeLeenkNotOwnerThrowsException() {
+            // given
+            val otherUser = UserTestFixture.createUser(id = 2L, name = "김영희")
+            every { userGetService.findById(2L) } returns otherUser
+            every { leenkGetService.findById(1L) } returns recruitingLeenk
+
+            // when & then
+            assertThatThrownBy { leenkUsecase.closeLeenk(2L, 1L) }
+                .isInstanceOf(NotLeenkOwnerException::class.java)
+
+            assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.RECRUITING)
+            verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
         }
     }
 }
