@@ -3,6 +3,7 @@ package leets.leenk.domain.leenk.application.usecase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
 import leets.leenk.domain.leenk.domain.entity.Leenk
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
@@ -19,6 +20,7 @@ import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.domain.user.test.fixture.UserTestFixture
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -102,5 +104,29 @@ class LeenkUsecaseTest {
         verify(exactly = 1) { leenkParticipantsSaveService.save(participant) }
         verify(exactly = 1) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(recruitingLeenk, user) }
         assertThat(recruitingLeenk.currentParticipants).isEqualTo(initialParticipants + 1)
+    }
+
+    @Test
+    @DisplayName("모집 중이 아닌 링크에 참여 시 예외가 발생한다")
+    fun participateLeenkNotRecruitingThrowsException() {
+        // given
+        val location = LocationTestFixture.createLocation(id = 2L)
+        val closedLeenk = LeenkTestFixture.createLeenk(
+            id = 1L,
+            author = user,
+            location = location,
+            status = LeenkStatus.CLOSED,
+            currentParticipants = 5L,
+            maxParticipants = 10L
+        )
+        every { userGetService.findById(1L) } returns user
+        every { leenkGetService.findById(1L) } returns closedLeenk
+
+        // when & then
+        assertThatThrownBy { leenkUsecase.participateLeenk(1L, 1L) }
+            .isInstanceOf(LeenkNotRecruitingException::class.java)
+
+        verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
+        verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
     }
 }
