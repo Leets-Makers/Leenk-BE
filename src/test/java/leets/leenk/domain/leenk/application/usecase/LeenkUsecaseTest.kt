@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
+import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
 import leets.leenk.domain.leenk.domain.entity.Leenk
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
@@ -147,4 +148,28 @@ class LeenkUsecaseTest {
         verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
     }
 
+    @Test
+    @DisplayName("최대 참여 인원을 초과하면 예외가 발생한다")
+    fun participateLeenkMaxParticipantsExceededThrowsException() {
+        // given
+        val location = LocationTestFixture.createLocation(id = 3L)
+        val fullLeenk = LeenkTestFixture.createLeenk(
+            id = 1L,
+            author = user,
+            location = location,
+            status = LeenkStatus.RECRUITING,
+            currentParticipants = 10L,
+            maxParticipants = 10L
+        )
+        every { userGetService.findById(1L) } returns user
+        every { leenkGetService.findById(1L) } returns fullLeenk
+        every { leenkParticipantsGetService.existsByLeenkAndParticipant(fullLeenk, user) } returns false
+
+        // when & then
+        assertThatThrownBy { leenkUsecase.participateLeenk(1L, 1L) }
+            .isInstanceOf(MaxParticipantsExceededException::class.java)
+
+        verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
+        verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
+    }
 }
