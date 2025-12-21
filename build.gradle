@@ -51,6 +51,7 @@ dependencies {
     testImplementation 'org.testcontainers:mysql'
     testImplementation 'org.testcontainers:mongodb'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
+    testImplementation "io.mockk:mockk:1.13.10"
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
     testImplementation 'org.jetbrains.kotlin:kotlin-stdlib'
 
