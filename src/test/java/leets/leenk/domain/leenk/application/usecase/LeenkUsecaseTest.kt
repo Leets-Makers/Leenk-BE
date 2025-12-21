@@ -3,10 +3,7 @@ package leets.leenk.domain.leenk.application.usecase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
-import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
-import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException
-import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException
+import leets.leenk.domain.leenk.application.exception.*
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
 import leets.leenk.domain.leenk.domain.entity.Leenk
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
@@ -243,6 +240,28 @@ class LeenkUsecaseTest {
                 .isInstanceOf(NotLeenkOwnerException::class.java)
 
             assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.RECRUITING)
+            verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
+        }
+
+        @Test
+        @DisplayName("이미 마감된 링크를 다시 마감 시 예외가 발생한다")
+        fun closeLeenkAlreadyClosedThrowsException() {
+            // given
+            val closedLeenk = LeenkTestFixture.createLeenk(
+                id = 1L,
+                author = user,
+                location = location,
+                status = LeenkStatus.CLOSED,
+                currentParticipants = 5L,
+                maxParticipants = 10L
+            )
+            every { userGetService.findById(1L) } returns user
+            every { leenkGetService.findById(1L) } returns closedLeenk
+
+            // when & then
+            assertThatThrownBy { leenkUsecase.closeLeenk(1L, 1L) }
+                .isInstanceOf(LeenkAlreadyClosedException::class.java)
+
             verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
         }
     }
