@@ -174,14 +174,12 @@ class LeenkUsecaseTest {
         fun participateLeenkLastSlotSuccess() {
             // given
             val location = LocationTestFixture.createLocation(id = 4L)
-            val almostFullLeenk = LeenkTestFixture.createLeenk(
+            val almostFullLeenk = LeenkTestFixture.createAlmostFullLeenk(
                 id = 1L,
                 author = user,
-                location = location,
-                status = LeenkStatus.RECRUITING,
-                currentParticipants = 9L,
-                maxParticipants = 10L
+                location = location
             )
+
             val lastParticipant = LeenkParticipantsTestFixture.createParticipant(
                 leenk = almostFullLeenk,
                 participant = user
