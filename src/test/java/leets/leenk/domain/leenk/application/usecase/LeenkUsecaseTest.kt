@@ -210,4 +210,23 @@ class LeenkUsecaseTest {
             assertThat(almostFullLeenk.currentParticipants).isEqualTo(10L)
         }
     }
+
+    @Nested
+    @DisplayName("closeLeenk 관련 테스트")
+    inner class CloseLeenkTests {
+        @Test
+        @DisplayName("링크 작성자가 모집 중인 링크를 정상적으로 마감한다")
+        fun closeLeenkSuccess() {
+            // given
+            every { userGetService.findById(1L) } returns user
+            every { leenkGetService.findById(1L) } returns recruitingLeenk
+
+            // when
+            leenkUsecase.closeLeenk(1L, 1L)
+
+            // then
+            assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.CLOSED)
+            verify(exactly = 1) { leenkNotificationUsecase.saveLeenkClosedNotification(recruitingLeenk) }
+        }
+    }
 }
