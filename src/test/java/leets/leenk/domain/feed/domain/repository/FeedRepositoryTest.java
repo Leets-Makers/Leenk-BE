@@ -117,7 +117,7 @@ public class FeedRepositoryTest {
 
         flushAndClear();
 
-        updateFeedDates(mine2.getId(), base.plusMinutes(1), null);
+        updateFeedDates(mine1.getId(), base.plusMinutes(1), null);
         updateFeedDates(mine2.getId(), base.plusMinutes(2), null);
         updateFeedDates(mineDeleted.getId(), base.plusMinutes(3), base.plusMinutes(4));
         updateFeedDates(other1.getId(), base.plusMinutes(4), null);
