@@ -5,7 +5,7 @@ import leets.leenk.config.MysqlTestConfig;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.test.FeedTestFixture;
-import leets.leenk.domain.feed.test.LinkedUserTextFixture;
+import leets.leenk.domain.feed.test.LinkedUserTestFixture;
 import leets.leenk.domain.feed.test.UserTestFixture;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.repository.UserRepository;
@@ -49,9 +49,9 @@ public class LinkedUserRepositoryTest {
 
         Feed feed = feedRepository.save(FeedTestFixture.createFeed(null, author));
 
-        LinkedUser l1 = linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, u1, feed));
-        LinkedUser l2 = linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, u2, feed));
-        LinkedUser l3 = linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, u3, feed));
+        LinkedUser l1 = linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u1, feed));
+        LinkedUser l2 = linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u2, feed));
+        LinkedUser l3 = linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u3, feed));
 
         flushAndClear();
 
@@ -89,9 +89,9 @@ public class LinkedUserRepositoryTest {
                 base.plusMinutes(4)
         );
 
-        linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, me, myFeed));
-        linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, me, f1));
-        linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, me, deleted));
+        linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, me, myFeed));
+        linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, me, f1));
+        linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, me, deleted));
 
         flushAndClear();
 
@@ -115,9 +115,9 @@ public class LinkedUserRepositoryTest {
         Feed f1 = feedRepository.save(FeedTestFixture.createFeed(null, author));
         Feed f2 = feedRepository.save(FeedTestFixture.createFeed(null, author));
 
-        linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, u1, f1));
-        linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, u1, f2));
-        linkedUserRepository.save(LinkedUserTextFixture.createLinkedUser(null, u2, f1));
+        linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u1, f1));
+        linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u1, f2));
+        linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u2, f1));
 
         flushAndClear();
 
