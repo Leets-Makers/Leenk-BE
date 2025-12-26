@@ -24,10 +24,10 @@ public class FeedUpdateServiceTest {
 
         FeedUpdateRequest request = new FeedUpdateRequest("\n\nhello\n\n\nworld", null, null);
 
-        // then
+        // when
         feedUpdateService.update(feed, request);
 
-        // when
+        // then
         assertThat(feed.getDescription()).isEqualTo("hello\nworld");
     }
 
