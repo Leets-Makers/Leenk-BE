@@ -1,8 +1,7 @@
-package leets.leenk;
+package leets.leenk.domain.user.domain.service.user;
 
 import leets.leenk.domain.user.application.dto.request.RegisterRequest;
 import leets.leenk.domain.user.domain.entity.User;
-import leets.leenk.domain.user.domain.service.user.UserUpdateService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
