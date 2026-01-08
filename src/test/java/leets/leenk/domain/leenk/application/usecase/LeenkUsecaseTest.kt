@@ -258,7 +258,7 @@ class LeenkUsecaseTest {
             // then
             verify(exactly = 1) { leenkParticipantsSaveService.save(lastParticipant) }
             verify(exactly = 1) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(almostFullLeenk, user) }
-            assertThat(almostFullLeenk.currentParticipants).isEqualTo(10L)
+            assertThat(almostFullLeenk.currentParticipants).isEqualTo(almostFullLeenk.maxParticipants)
         }
     }
 
