@@ -26,11 +26,7 @@ import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.domain.user.test.fixture.UserTestFixture
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 
 
 class LeenkUsecaseTest {
@@ -187,8 +183,9 @@ class LeenkUsecaseTest {
             every { leenkGetService.findById(1L) } returns closedLeenk
 
             // when & then
-            assertThatThrownBy { leenkUsecase.participateLeenk(1L, 1L) }
-                .isInstanceOf(LeenkNotRecruitingException::class.java)
+            assertThrows<LeenkNotRecruitingException> {
+                leenkUsecase.participateLeenk(1L, 1L)
+            }
 
             verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
             verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
@@ -203,8 +200,9 @@ class LeenkUsecaseTest {
             every { leenkParticipantsGetService.existsByLeenkAndParticipant(recruitingLeenk, user) } returns true
 
             // when & then
-            assertThatThrownBy { leenkUsecase.participateLeenk(1L, 1L) }
-                .isInstanceOf(AlreadyParticipatedException::class.java)
+            assertThrows<AlreadyParticipatedException> {
+                leenkUsecase.participateLeenk(1L, 1L)
+            }
 
             verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
             verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
@@ -224,8 +222,9 @@ class LeenkUsecaseTest {
             every { leenkParticipantsGetService.existsByLeenkAndParticipant(fullLeenk, user) } returns false
 
             // when & then
-            assertThatThrownBy { leenkUsecase.participateLeenk(1L, 1L) }
-                .isInstanceOf(MaxParticipantsExceededException::class.java)
+            assertThrows<MaxParticipantsExceededException> {
+                leenkUsecase.participateLeenk(1L, 1L)
+            }
 
             verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
             verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
@@ -289,8 +288,9 @@ class LeenkUsecaseTest {
             every { leenkGetService.findById(1L) } returns recruitingLeenk
 
             // when & then
-            assertThatThrownBy { leenkUsecase.closeLeenk(2L, 1L) }
-                .isInstanceOf(NotLeenkOwnerException::class.java)
+            assertThrows<NotLeenkOwnerException> {
+                leenkUsecase.closeLeenk(2L, 1L)
+            }
 
             assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.RECRUITING)
             verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
@@ -309,8 +309,9 @@ class LeenkUsecaseTest {
             every { leenkGetService.findById(1L) } returns closedLeenk
 
             // when & then
-            assertThatThrownBy { leenkUsecase.closeLeenk(1L, 1L) }
-                .isInstanceOf(LeenkAlreadyClosedException::class.java)
+            assertThrows<LeenkAlreadyClosedException> {
+                leenkUsecase.closeLeenk(1L, 1L)
+            }
 
             verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
         }
@@ -328,8 +329,9 @@ class LeenkUsecaseTest {
             every { leenkGetService.findById(1L) } returns completedLeenk
 
             // when & then
-            assertThatThrownBy { leenkUsecase.closeLeenk(1L, 1L) }
-                .isInstanceOf(LeenkAlreadyClosedException::class.java)
+            assertThrows<LeenkAlreadyClosedException> {
+                leenkUsecase.closeLeenk(1L, 1L)
+            }
 
             verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
         }

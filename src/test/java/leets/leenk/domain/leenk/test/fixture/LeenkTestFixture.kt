@@ -19,8 +19,7 @@ class LeenkTestFixture {
             currentParticipants: Long = 1L,
             status: LeenkStatus = LeenkStatus.RECRUITING
         ): Leenk {
-            return Leenk.builder()
-                .apply { id?.let { id(it) } }
+            val builder = Leenk.builder()
                 .author(author)
                 .location(location)
                 .title(title)
@@ -29,7 +28,12 @@ class LeenkTestFixture {
                 .maxParticipants(maxParticipants)
                 .currentParticipants(currentParticipants)
                 .status(status)
-                .build()
+
+            if (id != null) {
+                builder.id(id)
+            }
+
+            return builder.build()
         }
 
         fun createClosedLeenk(
