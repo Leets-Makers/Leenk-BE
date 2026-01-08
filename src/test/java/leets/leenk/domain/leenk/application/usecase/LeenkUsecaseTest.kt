@@ -134,8 +134,8 @@ class LeenkUsecaseTest {
             leenkNotificationUsecase = leenkNotificationUsecase
         )
 
-        user = UserTestFixture.createUser(id = 1L, name = "김철수")
-        location = LocationTestFixture.createLocation(id = 1L, placeName = "테스트 장소")
+        user = UserTestFixture.createUser(id = 1L)
+        location = LocationTestFixture.createLocation(id = 1L)
         recruitingLeenk = LeenkTestFixture.createLeenk(
             id = 1L,
             author = user,
