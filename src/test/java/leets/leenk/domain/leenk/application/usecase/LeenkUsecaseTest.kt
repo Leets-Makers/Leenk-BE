@@ -4,19 +4,25 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import leets.leenk.domain.leenk.application.exception.*
+import leets.leenk.domain.leenk.application.mapper.LeenkMapper
 import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
+import leets.leenk.domain.leenk.application.mapper.LocationMapper
 import leets.leenk.domain.leenk.domain.entity.Leenk
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
 import leets.leenk.domain.leenk.domain.entity.Location
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
-import leets.leenk.domain.leenk.domain.service.LeenkGetService
-import leets.leenk.domain.leenk.domain.service.LeenkParticipantsGetService
-import leets.leenk.domain.leenk.domain.service.LeenkParticipantsSaveService
+import leets.leenk.domain.leenk.domain.service.*
 import leets.leenk.domain.leenk.test.fixture.LeenkParticipantsTestFixture
 import leets.leenk.domain.leenk.test.fixture.LeenkTestFixture
 import leets.leenk.domain.leenk.test.fixture.LocationTestFixture
+import leets.leenk.domain.media.application.mapper.MediaMapper
+import leets.leenk.domain.media.domain.service.MediaDeleteService
+import leets.leenk.domain.media.domain.service.MediaGetService
+import leets.leenk.domain.media.domain.service.MediaSaveService
 import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase
 import leets.leenk.domain.user.domain.entity.User
+import leets.leenk.domain.user.domain.service.NotionDatabaseService
+import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.domain.user.test.fixture.UserTestFixture
 import org.assertj.core.api.Assertions.assertThat
@@ -29,42 +35,103 @@ import org.junit.jupiter.api.Test
 
 class LeenkUsecaseTest {
 
-    private val userGetService: UserGetService = mockk()
+    private val locationSaveService: LocationSaveService = mockk()
+    private val leenkSaveService: LeenkSaveService = mockk()
     private val leenkGetService: LeenkGetService = mockk()
-    private val leenkParticipantsGetService: LeenkParticipantsGetService = mockk()
+    private val leenkUpdateService: LeenkUpdateService = mockk()
+    private val leenkDeleteService: LeenkDeleteService = mockk()
+
     private val leenkParticipantsSaveService: LeenkParticipantsSaveService = mockk()
+    private val leenkParticipantsGetService: LeenkParticipantsGetService = mockk()
+    private val leenkParticipantsDeleteService: LeenkParticipantsDeleteService = mockk()
+
+    private val mediaSaveService: MediaSaveService = mockk()
+    private val mediaGetService: MediaGetService = mockk()
+    private val mediaDeleteService: MediaDeleteService = mockk()
+
+    private val userGetService: UserGetService = mockk()
+    private val slackWebhookService: SlackWebhookService = mockk()
+    private val notionDatabaseService: NotionDatabaseService = mockk()
+
+    private val leenkMapper: LeenkMapper = mockk()
     private val participantsMapper: LeenkParticipantsMapper = mockk()
+    private val locationMapper: LocationMapper = mockk()
+    private val mediaMapper: MediaMapper = mockk()
+
     private val leenkNotificationUsecase: LeenkNotificationUsecase = mockk(relaxed = true)
 
     private lateinit var leenkUsecase: LeenkUsecase
-
     private lateinit var user: User
     private lateinit var recruitingLeenk: Leenk
     private lateinit var participant: LeenkParticipants
     private lateinit var location: Location
 
-    @BeforeEach
-    fun setUp() {
-        leenkUsecase = LeenkUsecase(
-            mockk(),
-            mockk(),
+    private fun createLeenkUsecase(
+        locationSaveService: LocationSaveService,
+        leenkSaveService: LeenkSaveService,
+        leenkGetService: LeenkGetService,
+        leenkUpdateService: LeenkUpdateService,
+        leenkDeleteService: LeenkDeleteService,
+        leenkParticipantsSaveService: LeenkParticipantsSaveService,
+        leenkParticipantsGetService: LeenkParticipantsGetService,
+        leenkParticipantsDeleteService: LeenkParticipantsDeleteService,
+        mediaSaveService: MediaSaveService,
+        mediaGetService: MediaGetService,
+        mediaDeleteService: MediaDeleteService,
+        userGetService: UserGetService,
+        slackWebhookService: SlackWebhookService,
+        notionDatabaseService: NotionDatabaseService,
+        leenkMapper: LeenkMapper,
+        participantsMapper: LeenkParticipantsMapper,
+        locationMapper: LocationMapper,
+        mediaMapper: MediaMapper,
+        leenkNotificationUsecase: LeenkNotificationUsecase
+    ): LeenkUsecase {
+        return LeenkUsecase(
+            locationSaveService,
+            leenkSaveService,
             leenkGetService,
-            mockk(),
-            mockk(),
+            leenkUpdateService,
+            leenkDeleteService,
             leenkParticipantsSaveService,
             leenkParticipantsGetService,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
+            leenkParticipantsDeleteService,
+            mediaSaveService,
+            mediaGetService,
+            mediaDeleteService,
             userGetService,
-            mockk(),
-            mockk(),
-            mockk(),
+            slackWebhookService,
+            notionDatabaseService,
+            leenkMapper,
             participantsMapper,
-            mockk(),
-            mockk(),
+            locationMapper,
+            mediaMapper,
             leenkNotificationUsecase
+        )
+    }
+
+    @BeforeEach
+    fun setUp() {
+        leenkUsecase = createLeenkUsecase(
+            locationSaveService = locationSaveService,
+            leenkSaveService = leenkSaveService,
+            leenkGetService = leenkGetService,
+            leenkUpdateService = leenkUpdateService,
+            leenkDeleteService = leenkDeleteService,
+            leenkParticipantsSaveService = leenkParticipantsSaveService,
+            leenkParticipantsGetService = leenkParticipantsGetService,
+            leenkParticipantsDeleteService = leenkParticipantsDeleteService,
+            mediaSaveService = mediaSaveService,
+            mediaGetService = mediaGetService,
+            mediaDeleteService = mediaDeleteService,
+            userGetService = userGetService,
+            slackWebhookService = slackWebhookService,
+            notionDatabaseService = notionDatabaseService,
+            leenkMapper = leenkMapper,
+            participantsMapper = participantsMapper,
+            locationMapper = locationMapper,
+            mediaMapper = mediaMapper,
+            leenkNotificationUsecase = leenkNotificationUsecase
         )
 
         user = UserTestFixture.createUser(id = 1L, name = "김철수")
