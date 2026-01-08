@@ -58,6 +58,8 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
     testImplementation("org.testcontainers:mongodb")
+    testImplementation("io.mockk:mockk:1.14.7")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
     // Kotest
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
