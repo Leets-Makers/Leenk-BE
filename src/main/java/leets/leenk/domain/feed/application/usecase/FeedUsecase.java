@@ -1,16 +1,16 @@
 package leets.leenk.domain.feed.application.usecase;
 
-import leets.leenk.domain.feed.application.dto.request.FeedReportRequest;
-import leets.leenk.domain.feed.application.dto.request.FeedUpdateRequest;
-import leets.leenk.domain.feed.application.dto.request.FeedUploadRequest;
-import leets.leenk.domain.feed.application.dto.request.ReactionRequest;
+import leets.leenk.domain.feed.application.dto.request.*;
 import leets.leenk.domain.feed.application.dto.response.*;
+import leets.leenk.domain.feed.application.exception.CommentDeleteNotAllowedException;
 import leets.leenk.domain.feed.application.exception.FeedDeleteNotAllowedException;
 import leets.leenk.domain.feed.application.exception.FeedUpdateNotAllowedException;
 import leets.leenk.domain.feed.application.exception.SelfReactionNotAllowedException;
+import leets.leenk.domain.feed.application.mapper.CommentMapper;
 import leets.leenk.domain.feed.application.mapper.FeedMapper;
 import leets.leenk.domain.feed.application.mapper.FeedUserMapper;
 import leets.leenk.domain.feed.application.mapper.ReactionMapper;
+import leets.leenk.domain.feed.domain.entity.Comment;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.entity.LinkedUser;
 import leets.leenk.domain.feed.domain.entity.Reaction;
@@ -66,12 +66,17 @@ public class FeedUsecase {
     private final ReactionGetService reactionGetService;
     private final ReactionSaveService reactionSaveService;
 
+    private final CommentSaveService commentSaveService;
+    private final CommentGetService commentGetService;
+    private final CommentDeleteService commentDeleteService;
+
     private final FeedNotificationUsecase feedNotificationUsecase;
 
     private final FeedMapper feedMapper;
     private final MediaMapper mediaMapper;
     private final FeedUserMapper feedUserMapper;
     private final ReactionMapper reactionMapper;
+    private final CommentMapper commentMapper;
 
     @Transactional(readOnly = true)
     public FeedListResponse getFeeds(long userId, int pageNumber, int pageSize) {
@@ -95,8 +100,9 @@ public class FeedUsecase {
         Feed feed = feedGetService.findById(feedId);
         List<Media> medias = mediaGetService.findAllByFeed(feed);
         List<LinkedUser> linkedUsers = linkedUserGetService.findAll(feed);
+        List<Comment> comments = commentGetService.findAllByFeed(feed);
 
-        return feedMapper.toFeedDetailResponse(feed, medias, linkedUsers);
+        return feedMapper.toFeedDetailResponse(feed, medias, linkedUsers, comments);
     }
 
     @Transactional(readOnly = true)
@@ -146,12 +152,19 @@ public class FeedUsecase {
             linkedUserMap.put(feed.getId(), linkedUsers);
         }
 
+        Map<Long, List<Comment>> commentsMap = new HashMap<>();
+        for (Feed feed : allFeeds) {
+            List<Comment> comments = commentGetService.findAllByFeed(feed);
+            commentsMap.put(feed.getId(), comments);
+        }
+
         return feedMapper.toFeedNavigationResponse(
                 currentFeed,
                 prevFeeds,
                 nextFeeds,
                 mediaMap,
                 linkedUserMap,
+                commentsMap,
                 hasMorePrev,
                 hasMoreNext
         );
@@ -217,6 +230,16 @@ public class FeedUsecase {
 
         long updatedReactionCount = previousReactionCount + request.reactionCount();
         notifyIfReachedReactionMilestone(previousReactionCount, updatedReactionCount, feed);
+    }
+
+    @Transactional
+    public void writeComment(long userId, long feedId, CommentWriteRequest request) {
+        User user = userGetService.findById(userId);
+        Feed feed = feedGetService.findById(feedId);
+
+        Comment comment = commentMapper.toComment(user, feed, request);
+
+        commentSaveService.saveComment(comment);
     }
 
     private void validateReaction(Feed feed, User user) {
@@ -323,6 +346,18 @@ public class FeedUsecase {
         }
 
         feedDeleteService.delete(feed);
+    }
+
+    @Transactional
+    public void deleteComment(long userId, long commentId) {
+        User user = userGetService.findById(userId);
+        Comment comment = commentGetService.findCommentByIdNotDeleted(commentId);
+
+        if (!comment.getUser().equals(user)) {
+            throw new CommentDeleteNotAllowedException();
+        }
+
+        commentDeleteService.deleteComment(comment);
     }
 
     @Transactional(readOnly = true)
