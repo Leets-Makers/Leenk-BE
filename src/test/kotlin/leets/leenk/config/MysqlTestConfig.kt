@@ -3,15 +3,16 @@ package leets.leenk.config
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.containers.MySQLContainer
 
-private const val MONGO_IMAGE: String = "mongo:7.0"
+private const val MYSQL_IMAGE: String = "mysql:8.0.41"
 
 @TestConfiguration
-class MongoTestConfig {
+class MysqlTestConfig {
     @Bean
     @ServiceConnection
-    fun mongoContainer(): MongoDBContainer {
-        return MongoDBContainer(MONGO_IMAGE)
+    fun mysqlContainer(): MySQLContainer<*> {
+        return MySQLContainer(MYSQL_IMAGE)
+            .withDatabaseName("testdb")
     }
 }
