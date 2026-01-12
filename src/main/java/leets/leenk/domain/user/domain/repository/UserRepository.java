@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * 동시 수정이 발생할 수 있는 경우 (공감하기 등) 사용
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @QueryHints(@QueryHint(name = "javax.persistence.lock.timeout", value = "2000"))
+    @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "2000"))
     @Query("SELECT u FROM User u WHERE u.id = :userId AND u.leaveDate IS NULL AND u.deleteDate IS NULL")
     Optional<User> findByIdWithPessimisticLock(@Param("userId") long userId);
 

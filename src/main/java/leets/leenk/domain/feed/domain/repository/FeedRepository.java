@@ -32,7 +32,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
      * 공감하기 등 동시 수정이 발생할 수 있는 경우 사용
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @QueryHints(@QueryHint(name = "javax.persistence.lock.timeout", value = "2000"))
+    @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "2000"))
     @Query("SELECT f FROM Feed f JOIN FETCH f.user WHERE f.deletedAt IS NULL AND f.id = :id")
     Optional<Feed> findByIdWithPessimisticLock(@Param("id") Long id);
 
