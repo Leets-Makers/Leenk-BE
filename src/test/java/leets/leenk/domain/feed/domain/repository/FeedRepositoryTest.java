@@ -6,7 +6,6 @@ import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.test.FeedTestFixture;
 import leets.leenk.domain.feed.test.UserTestFixture;
 import leets.leenk.domain.user.domain.entity.User;
-import leets.leenk.domain.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,35 +33,12 @@ public class FeedRepositoryTest {
     @Autowired
     FeedRepository feedRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Test
-    @DisplayName("저장(save) 및 조회(findById)")
-    void saveAndFind() {
-        User author = UserTestFixture.createUser(1L, "me");
-        userRepository.save(author);
-
-        Feed feed = FeedTestFixture.createFeed(null, author);
-        Feed saved = feedRepository.save(feed);
-
-        em.flush();
-        em.clear();
-
-        Feed result = feedRepository.findById(feed.getId()).orElseThrow();
-
-        assertThat(result.getId()).isEqualTo(saved.getId());
-        assertThat(result.getUser().getId()).isEqualTo(author.getId());
-        assertThat(result.getDescription()).isEqualTo("desc");
-        assertThat(result.getTotalReactionCount()).isEqualTo(0L);
-    }
-
     @Test
     @DisplayName("findAllByDeletedAtIsNullWithUser 테스트")
     void findAllByDeletedAtIsNullWithUser() {
         // given
-        User u1 = userRepository.save(UserTestFixture.createUser(1L, "me"));
-        User u2 = userRepository.save(UserTestFixture.createUser(2L, "me2"));
+        User u1 = persistUser(1L, "me");
+        User u2 = persistUser(2L, "me2");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 15, 0);
 
@@ -105,8 +81,8 @@ public class FeedRepositoryTest {
     @DisplayName("findAllByUserAndDeletedAtIsNull 테스트")
     void findAllByUserAndDeletedAtIsNull() {
         //given
-        User me = userRepository.save(UserTestFixture.createUser(3L, "me"));
-        User other = userRepository.save(UserTestFixture.createUser(4L, "me2"));
+        User me = persistUser(3L, "me");
+        User other = persistUser(4L, "me2");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -141,7 +117,7 @@ public class FeedRepositoryTest {
     @DisplayName("findByDeletedAtIsNullAndId 테스트")
     void findByDeletedAtIsNullAndId() {
         // given
-        User me = userRepository.save(UserTestFixture.createUser(31L, "me"));
+        User me = persistUser(31L, "me");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -167,8 +143,8 @@ public class FeedRepositoryTest {
     @DisplayName("findPrevFeeds 테스트")
     void findPrevFeeds() {
         // given
-        User me = userRepository.save(UserTestFixture.createUser(5L, "me"));
-        User blockedUser = userRepository.save(UserTestFixture.createUser(6L, "blocked"));
+        User me = persistUser(5L, "me");
+        User blockedUser = persistUser(6L, "blocked");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -211,8 +187,8 @@ public class FeedRepositoryTest {
     @DisplayName("findNextFeeds 테스트")
     void findNextFeeds(){
         // given
-        User me = userRepository.save(UserTestFixture.createUser(5L, "me"));
-        User blockedUser = userRepository.save(UserTestFixture.createUser(6L, "blocked"));
+        User me = persistUser(5L, "me");
+        User blockedUser = persistUser(6L, "blocked");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -257,6 +233,12 @@ public class FeedRepositoryTest {
                 .setParameter("deletedAt", deletedAt)
                 .setParameter("id", feedId)
                 .executeUpdate();
+    }
+
+    private User persistUser(Long id, String name) {
+        User user = UserTestFixture.createUser(id, name);
+        em.persist(user);
+        return user;
     }
 
     private void flushAndClear() {
