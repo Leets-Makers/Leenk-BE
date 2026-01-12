@@ -26,6 +26,15 @@ public class FeedGetService {
                 .orElseThrow(FeedNotFoundException::new);
     }
 
+    /**
+     * 비관적 락을 사용하여 피드 조회
+     * 동시 수정이 발생할 수 있는 경우 (공감하기 등) 사용
+     */
+    public Feed findByIdWithLock(long feedId) {
+        return feedRepository.findByIdWithPessimisticLock(feedId)
+                .orElseThrow(FeedNotFoundException::new);
+    }
+
     public Slice<Feed> findAll(Pageable pageable, List<UserBlock> blockedUser) {
         List<Long> blockedUserIds = blockedUser.stream()
                 .map(UserBlock::getBlocked)
