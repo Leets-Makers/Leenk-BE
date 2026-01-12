@@ -63,7 +63,7 @@ public class CommentRepositoryTest {
 
         // then
         assertThat(notDeletedComment).isPresent();
-        assertThat(notDeletedComment.get().getComment()).isEqualTo("hi1");
+        assertThat(notDeletedComment.get().getComment()).isEqualTo(notDeleted.getComment());
         assertThat(deletedComment).isEmpty();
     }
 
