@@ -8,7 +8,6 @@ import leets.leenk.domain.feed.test.FeedTestFixture;
 import leets.leenk.domain.feed.test.ReactionTestFixture;
 import leets.leenk.domain.feed.test.UserTestFixture;
 import leets.leenk.domain.user.domain.entity.User;
-import leets.leenk.domain.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,19 +30,15 @@ public class ReactionRepositoryTest {
 
     @Autowired
     private ReactionRepository reactionRepository;
-    @Autowired
-    private FeedRepository feedRepository;
-    @Autowired
-    private UserRepository userRepository;
 
     @Test
     @DisplayName("findByFeedAndUser 테스트")
     void findByFeedAndUser() {
         // given
-        User author = userRepository.save(UserTestFixture.createUser(1L, "author"));
-        User me = userRepository.save(UserTestFixture.createUser(2L, "me"));
+        User author = persistUser(1L, "author");
+        User me = persistUser(2L, "me");
 
-        Feed feed = feedRepository.save(FeedTestFixture.createFeed(null, author));
+        Feed feed = persistFeed(author);
 
         Reaction r1 = reactionRepository.save(ReactionTestFixture.createReaction(feed, me, 7L));
 
@@ -61,12 +56,12 @@ public class ReactionRepositoryTest {
     @DisplayName("findAllByFeed 테스트")
     void findAllByFeed() {
         // given
-        User author = userRepository.save(UserTestFixture.createUser(1L, "author"));
-        User u1 = userRepository.save(UserTestFixture.createUser(2L, "u1"));
-        User u2 = userRepository.save(UserTestFixture.createUser(3L, "u2"));
-        User u3 = userRepository.save(UserTestFixture.createUser(4L, "u3"));
+        User author = persistUser(1L, "author");
+        User u1 = persistUser(2L, "u1");
+        User u2 = persistUser(3L, "u2");
+        User u3 = persistUser(4L, "u3");
 
-        Feed feed = feedRepository.save(FeedTestFixture.createFeed(null, author));
+        Feed feed = persistFeed(author);
 
         reactionRepository.save(ReactionTestFixture.createReaction(feed, u1, 7L));
         reactionRepository.save(ReactionTestFixture.createReaction(feed, u2, 7L));
@@ -86,5 +81,17 @@ public class ReactionRepositoryTest {
     private void flushAndClear() {
         em.flush();
         em.clear();
+    }
+
+    private User persistUser(Long id, String name) {
+        User user = UserTestFixture.createUser(id, name);
+        em.persist(user);
+        return user;
+    }
+
+    private Feed persistFeed(User user) {
+        Feed feed = FeedTestFixture.createFeed(null, user);
+        em.persist(feed);
+        return feed;
     }
 }
