@@ -8,7 +8,7 @@ import leets.leenk.domain.feed.test.CommentTestFixture;
 import leets.leenk.domain.feed.test.FeedTestFixture;
 import leets.leenk.domain.feed.test.UserTestFixture;
 import leets.leenk.domain.user.domain.entity.User;
-import leets.leenk.domain.user.domain.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,27 +33,28 @@ public class CommentRepositoryTest {
 
     @Autowired
     private CommentRepository commentRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private FeedRepository feedRepository;
+
+    private static final LocalDateTime BASE_TIME = LocalDateTime.of(2025, 12, 22, 16, 0);
+    private User author;
+
+    @BeforeEach
+    void setUp() {
+        author = persistUser();
+    }
 
     @Test
     @DisplayName("findByCommentIdAndDeletedAtIsNull 테스트")
     void findByCommentIdAndDeletedAtIsNull() {
         // given
-        User author = userRepository.save(UserTestFixture.createUser(1L, "me"));
-        Feed feed = feedRepository.save(FeedTestFixture.createFeed(null, author));
+        Feed feed = persistFeed(author);
 
         Comment notDeleted = commentRepository.save(CommentTestFixture.createComment(null, author, feed, "hi1"));
         Comment deleted = commentRepository.save(CommentTestFixture.createComment(null, author, feed, "hi2"));
 
         flushAndClear();
 
-        LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
-
-        updateCommentDates(notDeleted.getCommentId(), base.plusMinutes(1), null);
-        updateCommentDates(deleted.getCommentId(), base.plusMinutes(2), base.plusMinutes(1));
+        updateCommentDates(notDeleted.getCommentId(), BASE_TIME.plusMinutes(1), null);
+        updateCommentDates(deleted.getCommentId(), BASE_TIME.plusMinutes(2), BASE_TIME.plusMinutes(1));
 
         flushAndClear();
 
@@ -71,9 +72,8 @@ public class CommentRepositoryTest {
     @DisplayName("findAllByFeedAndDeletedAtIsNullOrderByCreateDateDesc 테스트")
     void findAllByFeedAndDeletedAtIsNullOrderByCreateDateDesc() {
         // given
-        User author = userRepository.save(UserTestFixture.createUser(1L, "me"));
-        Feed feed1 = feedRepository.save(FeedTestFixture.createFeed(null, author));
-        Feed feed2 = feedRepository.save(FeedTestFixture.createFeed(null, author));
+        Feed feed1 = persistFeed(author);
+        Feed feed2 = persistFeed(author);
 
         Comment c1 = commentRepository.save(CommentTestFixture.createComment(null, author, feed1, "hi1"));
         Comment c2 = commentRepository.save(CommentTestFixture.createComment(null, author, feed1, "hi2"));
@@ -82,12 +82,10 @@ public class CommentRepositoryTest {
 
         flushAndClear();
 
-        LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
-
-        updateCommentDates(c1.getCommentId(), base.plusMinutes(1), null);
-        updateCommentDates(c2.getCommentId(), base.plusMinutes(2), null);
-        updateCommentDates(c3Deleted.getCommentId(), base.plusMinutes(3), base.plusMinutes(3));
-        updateCommentDates(other.getCommentId(), base.plusMinutes(4), null);
+        updateCommentDates(c1.getCommentId(), BASE_TIME.plusMinutes(1), null);
+        updateCommentDates(c2.getCommentId(), BASE_TIME.plusMinutes(2), null);
+        updateCommentDates(c3Deleted.getCommentId(), BASE_TIME.plusMinutes(3), BASE_TIME.plusMinutes(3));
+        updateCommentDates(other.getCommentId(), BASE_TIME.plusMinutes(4), null);
 
         flushAndClear();
 
@@ -110,6 +108,18 @@ public class CommentRepositoryTest {
                 .setParameter("deletedAt", deletedAt)
                 .setParameter("id", commentId)
                 .executeUpdate();
+    }
+
+    private User persistUser() {
+        User user = UserTestFixture.createUser(1L, "me");
+        em.persist(user);
+        return user;
+    }
+
+    private Feed persistFeed(User user) {
+        Feed feed = FeedTestFixture.createFeed(null, user);
+        em.persist(feed);
+        return feed;
     }
 
     private void flushAndClear() {
