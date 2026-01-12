@@ -143,11 +143,11 @@ class FeedUsecaseTest(
         )
 
         val feed1 = feedRepository.saveAndFlush(
-            FeedTestFixture.createFeed(id = FEED_ID_100, user = feedAuthor)
+            FeedTestFixture.createFeed(user = feedAuthor)
         )
 
         val feed2 = feedRepository.saveAndFlush(
-            FeedTestFixture.createFeed(id = FEED_ID_200, user = feedAuthor)
+            FeedTestFixture.createFeed(user = feedAuthor)
         )
 
         val users = (1..CONCURRENT_THREAD_COUNT).map { i ->
