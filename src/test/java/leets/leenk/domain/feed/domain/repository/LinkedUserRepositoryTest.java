@@ -8,7 +8,6 @@ import leets.leenk.domain.feed.test.FeedTestFixture;
 import leets.leenk.domain.feed.test.LinkedUserTestFixture;
 import leets.leenk.domain.feed.test.UserTestFixture;
 import leets.leenk.domain.user.domain.entity.User;
-import leets.leenk.domain.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,23 +30,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LinkedUserRepositoryTest {
     @Autowired
     EntityManager em;
-    @Autowired
-    UserRepository userRepository;
+
     @Autowired
     LinkedUserRepository linkedUserRepository;
-    @Autowired
-    FeedRepository feedRepository;
 
     @Test
     @DisplayName("findAllByFeed 테스트")
     void findAllByFeed() {
         // given
-        User author = userRepository.save(UserTestFixture.createUser(1L, "author"));
-        User u1 = userRepository.save(UserTestFixture.createUser(2L, "u1"));
-        User u2 = userRepository.save(UserTestFixture.createUser(3L, "u2"));
-        User u3 = userRepository.save(UserTestFixture.createUser(4L, "u3"));
+        User author = persistUser(1L, "author");
+        User u1 = persistUser(2L, "u1");
+        User u2 = persistUser(3L, "u2");
+        User u3 = persistUser(4L, "u3");
 
-        Feed feed = feedRepository.save(FeedTestFixture.createFeed(null, author));
+        Feed feed = persistFeed(author);
 
         LinkedUser l1 = linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u1, feed));
         LinkedUser l2 = linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u2, feed));
@@ -68,8 +64,8 @@ public class LinkedUserRepositoryTest {
     @DisplayName(("findFeedsByLinkedUser 테스트"))
     void findFeedsByLinkedUser() {
         // given
-        User me = userRepository.save(UserTestFixture.createUser(1L, "me"));
-        User other = userRepository.save(UserTestFixture.createUser(2L, "other"));
+        User me = persistUser(1L, "me");
+        User other = persistUser(2L, "other");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -108,12 +104,12 @@ public class LinkedUserRepositoryTest {
     @DisplayName("deleteAllByFeed 테스트")
     void deleteAllByFeed() {
         // given
-        User author = userRepository.save(UserTestFixture.createUser(1L, "author"));
-        User u1 = userRepository.save(UserTestFixture.createUser(2L, "u1"));
-        User u2 = userRepository.save(UserTestFixture.createUser(3L, "u2"));
+        User author = persistUser(1L, "author");
+        User u1 = persistUser(2L, "u1");
+        User u2 = persistUser(3L, "u2");
 
-        Feed f1 = feedRepository.save(FeedTestFixture.createFeed(null, author));
-        Feed f2 = feedRepository.save(FeedTestFixture.createFeed(null, author));
+        Feed f1 = persistFeed(author);
+        Feed f2 = persistFeed(author);
 
         linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u1, f1));
         linkedUserRepository.save(LinkedUserTestFixture.createLinkedUser(null, u1, f2));
@@ -131,7 +127,7 @@ public class LinkedUserRepositoryTest {
     }
 
     private Feed saveFeedWithCreateDate(Feed feed, LocalDateTime createDate, LocalDateTime deletedAt) {
-        Feed saved = feedRepository.save(feed);
+        Feed saved = persistFeed(feed.getUser());
         flushAndClear();
 
         em.createQuery("UPDATE Feed f SET f.createDate = :createDate, f.deletedAt = :deletedAt WHERE f.id = :id")
@@ -142,6 +138,18 @@ public class LinkedUserRepositoryTest {
         flushAndClear();
 
         return saved;
+    }
+
+    private User persistUser(Long id, String name) {
+        User user = UserTestFixture.createUser(id, name);
+        em.persist(user);
+        return user;
+    }
+
+    private Feed persistFeed(User user) {
+        Feed feed = FeedTestFixture.createFeed(null, user);
+        em.persist(feed);
+        return feed;
     }
 
     private void flushAndClear() {
