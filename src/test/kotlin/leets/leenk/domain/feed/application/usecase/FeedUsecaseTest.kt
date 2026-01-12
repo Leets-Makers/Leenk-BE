@@ -79,6 +79,13 @@ class FeedUsecaseTest(
 
                 val reactions = reactionRepository.findAllByFeed(feed)
                 reactions.size shouldBe CONCURRENT_THREAD_COUNT
+
+                // 영속성 컨텍스트에서 최신 데이터 조회
+                val updatedFeedAuthor = userRepository.findById(feedAuthor.id!!).get()
+                updatedFeedAuthor.totalReactionCount shouldBe CONCURRENT_THREAD_COUNT.toLong()
+
+                val updatedFeed = feedRepository.findById(feed.id!!).get()
+                updatedFeed.totalReactionCount shouldBe CONCURRENT_THREAD_COUNT.toLong()
             }
         }
     }
@@ -115,6 +122,13 @@ class FeedUsecaseTest(
                 val reaction = reactionRepository.findByFeedAndUser(feed, user)
                 reaction.isPresent shouldBe true
                 reaction.get().reactionCount shouldBe ATTEMPT_COUNT.toLong()
+
+                // 영속성 컨텍스트에서 최신 데이터 조회
+                val updatedFeedAuthor = userRepository.findById(feedAuthor.id!!).get()
+                updatedFeedAuthor.totalReactionCount shouldBe ATTEMPT_COUNT.toLong()
+
+                val updatedFeed = feedRepository.findById(feed.id!!).get()
+                updatedFeed.totalReactionCount shouldBe ATTEMPT_COUNT.toLong()
             }
         }
     }
@@ -161,6 +175,14 @@ class FeedUsecaseTest(
 
                 reactions1.size shouldBe (CONCURRENT_THREAD_COUNT / 2 + CONCURRENT_THREAD_COUNT % 2)
                 reactions2.size shouldBe CONCURRENT_THREAD_COUNT / 2
+
+                // 영속성 컨텍스트에서 최신 데이터 조회
+                val updatedFeedAuthor = userRepository.findById(feedAuthor.id!!).get()
+                updatedFeedAuthor.totalReactionCount shouldBe CONCURRENT_THREAD_COUNT.toLong()
+
+                val updatedFeed1 = feedRepository.findById(feed1.id!!).get()
+                val updatedFeed2 = feedRepository.findById(feed2.id!!).get()
+                (updatedFeed1.totalReactionCount + updatedFeed2.totalReactionCount) shouldBe CONCURRENT_THREAD_COUNT.toLong()
             }
         }
     }
