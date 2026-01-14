@@ -27,9 +27,6 @@ private const val FEED_AUTHOR_ID_300 = 300L
 private const val USER_ID_201 = 201L
 private const val USER_ID_BASE_300 = 300L
 
-private const val FEED_ID_100 = 100L
-private const val FEED_ID_200 = 200L
-
 @SpringBootTest
 @Import(MysqlTestConfig::class, MongoTestConfig::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

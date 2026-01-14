@@ -358,7 +358,6 @@ public class FeedUsecaseTest {
 
         given(feedGetService.findByIdWithLock(feedId)).willReturn(myFeed);
         given(userGetService.findById(userId)).willReturn(me);
-        given(userGetService.findByIdWithLock(userId)).willReturn(me);
 
         ReactionRequest request = new ReactionRequest(1L);
 
@@ -383,7 +382,6 @@ public class FeedUsecaseTest {
 
         given(feedGetService.findByIdWithLock(feedId)).willReturn(feed);
         given(userGetService.findById(userId)).willReturn(me);
-        given(userGetService.findByIdWithLock(2L)).willReturn(author);
 
         Reaction reaction = ReactionTestFixture.createReaction(feed, me, 4);
         given(reactionGetService.findByFeedAndUser(feed, me)).willReturn(Optional.of(reaction));
@@ -412,7 +410,6 @@ public class FeedUsecaseTest {
 
         given(feedGetService.findByIdWithLock(feedId)).willReturn(feed);
         given(userGetService.findById(userId)).willReturn(me);
-        given(userGetService.findByIdWithLock(2L)).willReturn(author);
 
         given(reactionGetService.findByFeedAndUser(feed, me)).willReturn(Optional.empty());
 
