@@ -356,8 +356,9 @@ public class FeedUsecaseTest {
         User me = UserTestFixture.createUser(userId, "me");
         Feed myFeed = FeedTestFixture.createFeed(feedId, me);
 
+        given(feedGetService.findByIdWithLock(feedId)).willReturn(myFeed);
         given(userGetService.findById(userId)).willReturn(me);
-        given(feedGetService.findById(feedId)).willReturn(myFeed);
+        given(userGetService.findByIdWithLock(userId)).willReturn(me);
 
         ReactionRequest request = new ReactionRequest(1L);
 
@@ -380,8 +381,9 @@ public class FeedUsecaseTest {
         User author = UserTestFixture.createUser(2L, "author");
         Feed feed = FeedTestFixture.createFeed(feedId, author);
 
+        given(feedGetService.findByIdWithLock(feedId)).willReturn(feed);
         given(userGetService.findById(userId)).willReturn(me);
-        given(feedGetService.findById(feedId)).willReturn(feed);
+        given(userGetService.findByIdWithLock(2L)).willReturn(author);
 
         Reaction reaction = ReactionTestFixture.createReaction(feed, me, 4);
         given(reactionGetService.findByFeedAndUser(feed, me)).willReturn(Optional.of(reaction));
@@ -408,8 +410,9 @@ public class FeedUsecaseTest {
         User author = UserTestFixture.createUser(2L, "author");
         Feed feed = FeedTestFixture.createFeed(feedId, author);
 
+        given(feedGetService.findByIdWithLock(feedId)).willReturn(feed);
         given(userGetService.findById(userId)).willReturn(me);
-        given(feedGetService.findById(feedId)).willReturn(feed);
+        given(userGetService.findByIdWithLock(2L)).willReturn(author);
 
         given(reactionGetService.findByFeedAndUser(feed, me)).willReturn(Optional.empty());
 
