@@ -33,7 +33,7 @@ private const val FEED_ID_200 = 200L
 @SpringBootTest
 @Import(MysqlTestConfig::class, MongoTestConfig::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class FeedUsecaseTest(
+class FeedUsecaseIntegrationTest(
     private val feedUsecase: FeedUsecase,
     private val userRepository: UserRepository,
     private val feedRepository: FeedRepository,
