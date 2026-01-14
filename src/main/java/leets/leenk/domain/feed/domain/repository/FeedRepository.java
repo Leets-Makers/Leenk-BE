@@ -30,6 +30,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     /**
      * 비관적 락을 사용하여 피드 조회 (동시성 제어용)
      * 공감하기 등 동시 수정이 발생할 수 있는 경우 사용
+     * feed.user를 함께 가져오기 때문에 해당 유저에도 락이 함께 걸리니 주의
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "2000"))

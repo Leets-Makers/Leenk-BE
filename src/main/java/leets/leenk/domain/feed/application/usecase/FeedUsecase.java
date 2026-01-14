@@ -221,9 +221,6 @@ public class FeedUsecase {
         Feed feed = feedGetService.findByIdWithLock(feedId); // !락 순서 중요!
         User user = userGetService.findById(userId);
 
-        // 피드 작성자에 대한 비관적 락 획득 (totalReactionCount 업데이트 데드락 방지)
-        User feedAuthor = userGetService.findByIdWithLock(feed.getUser().getId());
-
         validateReaction(feed, user);
 
         Reaction reaction = reactionGetService.findByFeedAndUser(feed, user)
@@ -235,7 +232,8 @@ public class FeedUsecase {
 
         long previousReactionCount = reaction.getReactionCount();
 
-        feedUpdateService.updateTotalReaction(feed, reaction, feedAuthor, request.reactionCount());
+        // Feed를 가져올 때 Fetch Join으로 작성자를 함께 가져와 락이 함께 걸리므로 별도의 락 필요 없음.
+        feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
         feedNotificationUsecase.saveFirstReactionNotification(reaction);
 
         long updatedReactionCount = previousReactionCount + request.reactionCount();
