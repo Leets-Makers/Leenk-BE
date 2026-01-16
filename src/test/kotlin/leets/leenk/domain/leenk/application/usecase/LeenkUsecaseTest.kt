@@ -28,9 +28,7 @@ import leets.leenk.domain.user.test.fixture.UserTestFixture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 
-
 class LeenkUsecaseTest {
-
     private val locationSaveService: LocationSaveService = mockk()
     private val leenkSaveService: LeenkSaveService = mockk()
     private val leenkGetService: LeenkGetService = mockk()
@@ -81,9 +79,9 @@ class LeenkUsecaseTest {
         participantsMapper: LeenkParticipantsMapper,
         locationMapper: LocationMapper,
         mediaMapper: MediaMapper,
-        leenkNotificationUsecase: LeenkNotificationUsecase
-    ): LeenkUsecase {
-        return LeenkUsecase(
+        leenkNotificationUsecase: LeenkNotificationUsecase,
+    ): LeenkUsecase =
+        LeenkUsecase(
             locationSaveService,
             leenkSaveService,
             leenkGetService,
@@ -102,48 +100,50 @@ class LeenkUsecaseTest {
             participantsMapper,
             locationMapper,
             mediaMapper,
-            leenkNotificationUsecase
+            leenkNotificationUsecase,
         )
-    }
 
     @BeforeEach
     fun setUp() {
-        leenkUsecase = createLeenkUsecase(
-            locationSaveService = locationSaveService,
-            leenkSaveService = leenkSaveService,
-            leenkGetService = leenkGetService,
-            leenkUpdateService = leenkUpdateService,
-            leenkDeleteService = leenkDeleteService,
-            leenkParticipantsSaveService = leenkParticipantsSaveService,
-            leenkParticipantsGetService = leenkParticipantsGetService,
-            leenkParticipantsDeleteService = leenkParticipantsDeleteService,
-            mediaSaveService = mediaSaveService,
-            mediaGetService = mediaGetService,
-            mediaDeleteService = mediaDeleteService,
-            userGetService = userGetService,
-            slackWebhookService = slackWebhookService,
-            notionDatabaseService = notionDatabaseService,
-            leenkMapper = leenkMapper,
-            participantsMapper = participantsMapper,
-            locationMapper = locationMapper,
-            mediaMapper = mediaMapper,
-            leenkNotificationUsecase = leenkNotificationUsecase
-        )
+        leenkUsecase =
+            createLeenkUsecase(
+                locationSaveService = locationSaveService,
+                leenkSaveService = leenkSaveService,
+                leenkGetService = leenkGetService,
+                leenkUpdateService = leenkUpdateService,
+                leenkDeleteService = leenkDeleteService,
+                leenkParticipantsSaveService = leenkParticipantsSaveService,
+                leenkParticipantsGetService = leenkParticipantsGetService,
+                leenkParticipantsDeleteService = leenkParticipantsDeleteService,
+                mediaSaveService = mediaSaveService,
+                mediaGetService = mediaGetService,
+                mediaDeleteService = mediaDeleteService,
+                userGetService = userGetService,
+                slackWebhookService = slackWebhookService,
+                notionDatabaseService = notionDatabaseService,
+                leenkMapper = leenkMapper,
+                participantsMapper = participantsMapper,
+                locationMapper = locationMapper,
+                mediaMapper = mediaMapper,
+                leenkNotificationUsecase = leenkNotificationUsecase,
+            )
 
         user = UserTestFixture.createUser(id = 1L)
         location = LocationTestFixture.createLocation(id = 1L)
-        recruitingLeenk = LeenkTestFixture.createLeenk(
-            id = 1L,
-            author = user,
-            location = location,
-            status = LeenkStatus.RECRUITING,
-            currentParticipants = 2L,
-            maxParticipants = 10L
-        )
-        participant = LeenkParticipantsTestFixture.createParticipant(
-            leenk = recruitingLeenk,
-            participant = user
-        )
+        recruitingLeenk =
+            LeenkTestFixture.createLeenk(
+                id = 1L,
+                author = user,
+                location = location,
+                status = LeenkStatus.RECRUITING,
+                currentParticipants = 2L,
+                maxParticipants = 10L,
+            )
+        participant =
+            LeenkParticipantsTestFixture.createParticipant(
+                leenk = recruitingLeenk,
+                participant = user,
+            )
     }
 
     @Nested
@@ -174,11 +174,12 @@ class LeenkUsecaseTest {
         @DisplayName("모집 중이 아닌 링크에 참여 시 예외가 발생한다")
         fun participateLeenkNotRecruitingThrowsException() {
             // given
-            val closedLeenk = LeenkTestFixture.createClosedLeenk(
-                id = 1L,
-                author = user,
-                location = location
-            )
+            val closedLeenk =
+                LeenkTestFixture.createClosedLeenk(
+                    id = 1L,
+                    author = user,
+                    location = location,
+                )
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns closedLeenk
 
@@ -212,11 +213,12 @@ class LeenkUsecaseTest {
         @DisplayName("최대 참여 인원을 초과하면 예외가 발생한다")
         fun participateLeenkMaxParticipantsExceededThrowsException() {
             // given
-            val fullLeenk = LeenkTestFixture.createFullLeenk(
-                id = 1L,
-                author = user,
-                location = location
-            )
+            val fullLeenk =
+                LeenkTestFixture.createFullLeenk(
+                    id = 1L,
+                    author = user,
+                    location = location,
+                )
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns fullLeenk
             every { leenkParticipantsGetService.existsByLeenkAndParticipant(fullLeenk, user) } returns false
@@ -234,16 +236,18 @@ class LeenkUsecaseTest {
         @DisplayName("최대 참여 인원 직전에 참여하면 정상적으로 처리된다")
         fun participateLeenkLastSlotSuccess() {
             // given
-            val almostFullLeenk = LeenkTestFixture.createAlmostFullLeenk(
-                id = 1L,
-                author = user,
-                location = location
-            )
+            val almostFullLeenk =
+                LeenkTestFixture.createAlmostFullLeenk(
+                    id = 1L,
+                    author = user,
+                    location = location,
+                )
 
-            val lastParticipant = LeenkParticipantsTestFixture.createParticipant(
-                leenk = almostFullLeenk,
-                participant = user
-            )
+            val lastParticipant =
+                LeenkParticipantsTestFixture.createParticipant(
+                    leenk = almostFullLeenk,
+                    participant = user,
+                )
 
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns almostFullLeenk
@@ -300,11 +304,12 @@ class LeenkUsecaseTest {
         @DisplayName("이미 마감된 링크를 다시 마감 시 예외가 발생한다")
         fun closeLeenkAlreadyClosedThrowsException() {
             // given
-            val closedLeenk = LeenkTestFixture.createClosedLeenk(
-                id = 1L,
-                author = user,
-                location = location
-            )
+            val closedLeenk =
+                LeenkTestFixture.createClosedLeenk(
+                    id = 1L,
+                    author = user,
+                    location = location,
+                )
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns closedLeenk
 
@@ -320,11 +325,12 @@ class LeenkUsecaseTest {
         @DisplayName("완료된 상태의 링크를 마감 시 예외가 발생한다")
         fun closeLeenkCompletedStatusThrowsException() {
             // given
-            val completedLeenk = LeenkTestFixture.createFinishedLeenk(
-                id = 1L,
-                author = user,
-                location = location
-            )
+            val completedLeenk =
+                LeenkTestFixture.createFinishedLeenk(
+                    id = 1L,
+                    author = user,
+                    location = location,
+                )
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns completedLeenk
 

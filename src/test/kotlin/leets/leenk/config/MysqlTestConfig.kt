@@ -11,8 +11,7 @@ private const val MYSQL_IMAGE: String = "mysql:8.0.41"
 class MysqlTestConfig {
     @Bean
     @ServiceConnection
-    fun mysqlContainer(): MySQLContainer<*> {
-        return MySQLContainer(MYSQL_IMAGE)
+    fun mysqlContainer(): MySQLContainer<*> =
+        MySQLContainer(MYSQL_IMAGE)
             .withDatabaseName("testdb")
-    }
 }

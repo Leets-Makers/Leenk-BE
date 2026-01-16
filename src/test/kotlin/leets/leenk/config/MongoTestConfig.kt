@@ -11,7 +11,5 @@ private const val MONGO_IMAGE: String = "mongo:7.0"
 class MongoTestConfig {
     @Bean
     @ServiceConnection
-    fun mongoContainer(): MongoDBContainer {
-        return MongoDBContainer(MONGO_IMAGE)
-    }
+    fun mongoContainer(): MongoDBContainer = MongoDBContainer(MONGO_IMAGE)
 }

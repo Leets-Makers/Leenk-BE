@@ -18,21 +18,23 @@ class UserTestFixture {
             kakaoTalkId: String? = null,
             totalReactionCount: Long = 0L,
             termsAgreement: Boolean = true,
-            privacyAgreement: Boolean = true
-        ): User = User.builder()
-            .id(id)
-            .name(name)
-            .cardinal(cardinal)
-            .profileImage(profileImage)
-            .birthday(birthday)
-            .thumbnail(thumbnail)
-            .mbti(mbti)
-            .introduction(introduction)
-            .fcmToken(fcmToken)
-            .kakaoTalkId(kakaoTalkId)
-            .totalReactionCount(totalReactionCount)
-            .termsAgreement(termsAgreement)
-            .privacyAgreement(privacyAgreement)
-            .build()
+            privacyAgreement: Boolean = true,
+        ): User =
+            User
+                .builder()
+                .id(id)
+                .name(name)
+                .cardinal(cardinal)
+                .profileImage(profileImage)
+                .birthday(birthday)
+                .thumbnail(thumbnail)
+                .mbti(mbti)
+                .introduction(introduction)
+                .fcmToken(fcmToken)
+                .kakaoTalkId(kakaoTalkId)
+                .totalReactionCount(totalReactionCount)
+                .termsAgreement(termsAgreement)
+                .privacyAgreement(privacyAgreement)
+                .build()
     }
 }
