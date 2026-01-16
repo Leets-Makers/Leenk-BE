@@ -1,11 +1,13 @@
 package leets.leenk.domain.feed.domain.service;
 
+import jakarta.persistence.PessimisticLockException;
 import leets.leenk.domain.feed.application.exception.FeedNotFoundException;
 import leets.leenk.domain.feed.domain.entity.Feed;
 import leets.leenk.domain.feed.domain.repository.FeedRepository;
 import leets.leenk.domain.feed.domain.service.dto.FeedNavigationResult;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserBlock;
+import leets.leenk.global.common.exception.ResourceLockedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,19 @@ public class FeedGetService {
     public Feed findById(long feedId) {
         return feedRepository.findByDeletedAtIsNullAndId(feedId)
                 .orElseThrow(FeedNotFoundException::new);
+    }
+
+    /**
+     * 비관적 락을 사용하여 피드 조회
+     * 동시 수정이 발생할 수 있는 경우 (공감하기 등) 사용
+     */
+    public Feed findByIdWithLock(long feedId) {
+        try {
+            return feedRepository.findByIdWithPessimisticLock(feedId)
+                    .orElseThrow(FeedNotFoundException::new);
+        } catch (PessimisticLockException e) {
+            throw new ResourceLockedException();
+        }
     }
 
     public Slice<Feed> findAll(Pageable pageable, List<UserBlock> blockedUser) {

@@ -23,6 +23,15 @@ public class UserGetService {
                 .orElseThrow(UserNotFoundException::new);
     }
 
+    /**
+     * 비관적 락을 사용하여 유저 조회
+     * 동시 수정이 발생할 수 있는 경우 (공감하기 등) 사용
+     */
+    public User findByIdWithLock(long userId) {
+        return userRepository.findByIdWithPessimisticLock(userId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
     public Optional<User> existById(long userId) {
         return userRepository.findById(userId);
     }
