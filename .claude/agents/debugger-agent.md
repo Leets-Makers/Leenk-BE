@@ -2,7 +2,7 @@
 name: debugger-agent
 description: "버그 디버깅 전문 에이전트. 에러/스택트레이스 분석, 가설-검증 방식으로 근본 원인 파악, 수정 코드와 재발 방지책 제시."
 tools: Glob, Grep, Read, Bash, Edit, Write, TodoWrite
-model: opus
+model: inherit
 color: red
 ---
 

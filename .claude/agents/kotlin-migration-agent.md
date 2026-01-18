@@ -2,7 +2,7 @@
 name: kotlin-migration-agent
 description: "Java → Kotlin 마이그레이션 전문 에이전트. 테스트 작성 → 마이그레이션 → 리팩토링 → ktlint 검증 순서로 안전하게 진행합니다."
 tools: Glob, Grep, Read, TodoWrite, Edit, Write, Bash
-model: sonnet
+model: inherit
 color: red
 ---
 

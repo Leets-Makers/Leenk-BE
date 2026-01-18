@@ -2,7 +2,7 @@
 name: code-review-agent
 description: "PR/커밋 코드 리뷰 전문 에이전트. 버그, 보안 취약점, 성능 이슈를 탐지하고 구체적인 수정 코드를 제시합니다.(사용 예시: 현재까지 작업한 내용 코드리뷰 에이전트를 사용해 백그라운드에서 리뷰를 진행해줘.)"
 tools: Glob, Grep, Read, Bash
-model: sonnet
+model: inherit
 color: orange
 ---
 
