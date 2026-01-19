@@ -7,13 +7,16 @@ import jakarta.validation.Valid;
 import leets.leenk.domain.user.application.dto.request.FeedbackRequest;
 import leets.leenk.domain.user.application.dto.request.NotificationSettingUpdateRequest;
 import leets.leenk.domain.user.application.dto.response.NotificationSettingResponse;
+import leets.leenk.domain.user.application.exception.UserErrorCode;
 import leets.leenk.domain.user.application.usecase.UserSettingUsecase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "USER-SETTING")
+@ApiErrorCodeExample(UserErrorCode.class)
 @RestController
 @RequestMapping("/user-setting")
 @RequiredArgsConstructor

@@ -6,8 +6,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import leets.leenk.domain.user.application.dto.request.*;
 import leets.leenk.domain.user.application.dto.response.UserInfoResponse;
+import leets.leenk.domain.user.application.exception.UserErrorCode;
 import leets.leenk.domain.user.application.usecase.UserUsecase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import static leets.leenk.domain.user.presentation.ResponseCode.*;
 
 @Tag(name = "USER")
+@ApiErrorCodeExample(UserErrorCode.class)
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
