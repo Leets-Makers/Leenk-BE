@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class LeenkNotRecruitingException extends BaseException {
     public LeenkNotRecruitingException() {
-        super(ErrorCode.LEENK_NOT_RECRUITING);
+        super(LeenkErrorCode.LEENK_NOT_RECRUITING);
     }
 }

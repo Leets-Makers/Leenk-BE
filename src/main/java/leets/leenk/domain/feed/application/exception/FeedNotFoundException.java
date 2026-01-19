@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class FeedNotFoundException extends BaseException {
     public FeedNotFoundException() {
-        super(ErrorCode.FEED_NOT_FOUND);
+        super(FeedErrorCode.FEED_NOT_FOUND);
     }
 }

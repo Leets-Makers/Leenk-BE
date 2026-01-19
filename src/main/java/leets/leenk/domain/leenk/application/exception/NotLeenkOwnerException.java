@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class NotLeenkOwnerException extends BaseException {
     public NotLeenkOwnerException() {
-        super(ErrorCode.LEENK_NOT_OWNER);
+        super(LeenkErrorCode.LEENK_NOT_OWNER);
     }
 }
