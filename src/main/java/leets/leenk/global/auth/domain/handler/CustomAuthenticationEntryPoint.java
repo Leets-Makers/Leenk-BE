@@ -3,7 +3,7 @@ package leets.leenk.global.auth.domain.handler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import leets.leenk.global.auth.application.exception.ErrorCode;
+import leets.leenk.global.auth.application.exception.AuthErrorCode;
 import leets.leenk.global.auth.application.util.HandlerResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +22,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        handlerResponseUtil.setResponse(response, HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage(), ErrorCode.OAUTH_ERROR);
+        handlerResponseUtil.setResponse(response, HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage(), AuthErrorCode.OAUTH_ERROR);
     }
 }
