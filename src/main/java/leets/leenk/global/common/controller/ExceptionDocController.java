@@ -17,13 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * API 예외 코드 문서화를 위한 컨트롤러
- *
  * 실제 비즈니스 로직을 수행하지 않고, Swagger 문서에 각 도메인별 예외 정보를 표시하기 위한 목적으로만 사용됩니다.
  * 각 엔드포인트는 해당 도메인에서 발생할 수 있는 모든 예외 케이스를 Swagger UI에서 확인할 수 있도록 합니다.
  */
-@Tag(name = "EXCEPTION-DOCS", description = "API 에러 코드 문서")
 @RestController
 @RequestMapping("/api/v1/exceptions")
+@Tag(name = "Exception Document", description = "API 에러 코드 문서")
 public class ExceptionDocController {
 
     @GetMapping("/auth")
@@ -33,7 +32,6 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(AuthErrorCode.class)
     public void authErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 
     @GetMapping("/user")
@@ -43,7 +41,6 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(UserErrorCode.class)
     public void userErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 
     @GetMapping("/feed")
@@ -53,7 +50,6 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(FeedErrorCode.class)
     public void feedErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 
     @GetMapping("/notification")
@@ -63,7 +59,6 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(NotificationErrorCode.class)
     public void notificationErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 
     @GetMapping("/leenk")
@@ -73,7 +68,6 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(LeenkErrorCode.class)
     public void leenkErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 
     @GetMapping("/media")
@@ -83,7 +77,6 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(MediaErrorCode.class)
     public void mediaErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 
     @GetMapping("/birthday")
@@ -93,7 +86,6 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(BirthdayErrorCode.class)
     public void birthdayErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 
     @GetMapping("/common")
@@ -103,6 +95,5 @@ public class ExceptionDocController {
     )
     @ApiErrorCodeExample(CommonErrorCode.class)
     public void commonErrorCodes() {
-        // Swagger 문서화 전용 메서드
     }
 }
