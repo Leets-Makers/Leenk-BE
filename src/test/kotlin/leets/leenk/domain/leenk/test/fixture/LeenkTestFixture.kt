@@ -17,17 +17,19 @@ class LeenkTestFixture {
             startTime: LocalDateTime = LocalDateTime.now().plusDays(1),
             maxParticipants: Long = 10L,
             currentParticipants: Long = 1L,
-            status: LeenkStatus = LeenkStatus.RECRUITING
+            status: LeenkStatus = LeenkStatus.RECRUITING,
         ): Leenk {
-            val builder = Leenk.builder()
-                .author(author)
-                .location(location)
-                .title(title)
-                .content(content)
-                .startTime(startTime)
-                .maxParticipants(maxParticipants)
-                .currentParticipants(currentParticipants)
-                .status(status)
+            val builder =
+                Leenk
+                    .builder()
+                    .author(author)
+                    .location(location)
+                    .title(title)
+                    .content(content)
+                    .startTime(startTime)
+                    .maxParticipants(maxParticipants)
+                    .currentParticipants(currentParticipants)
+                    .status(status)
 
             if (id != null) {
                 builder.id(id)
@@ -41,65 +43,61 @@ class LeenkTestFixture {
             author: User,
             location: Location,
             currentParticipants: Long = 5L,
-            maxParticipants: Long = 10L
-        ): Leenk {
-            return createLeenk(
+            maxParticipants: Long = 10L,
+        ): Leenk =
+            createLeenk(
                 id = id,
                 author = author,
                 location = location,
                 status = LeenkStatus.CLOSED,
                 currentParticipants = currentParticipants,
-                maxParticipants = maxParticipants
+                maxParticipants = maxParticipants,
             )
-        }
 
         fun createFullLeenk(
             id: Long? = null,
             author: User,
             location: Location,
-            maxParticipants: Long = 10L
-        ): Leenk {
-            return createLeenk(
+            maxParticipants: Long = 10L,
+        ): Leenk =
+            createLeenk(
                 id = id,
                 author = author,
                 location = location,
                 status = LeenkStatus.RECRUITING,
                 currentParticipants = maxParticipants,
-                maxParticipants = maxParticipants
+                maxParticipants = maxParticipants,
             )
-        }
 
         fun createAlmostFullLeenk(
             id: Long? = null,
             author: User,
             location: Location,
-            maxParticipants: Long = 10L
-        ): Leenk {
-            return createLeenk(
+            maxParticipants: Long = 10L,
+        ): Leenk =
+            createLeenk(
                 id = id,
                 author = author,
                 location = location,
                 status = LeenkStatus.RECRUITING,
                 currentParticipants = maxParticipants - 1,
-                maxParticipants = maxParticipants
+                maxParticipants = maxParticipants,
             )
-        }
 
         fun createFinishedLeenk(
             id: Long? = null,
             author: User,
             location: Location,
             currentParticipants: Long = 10L,
-            maxParticipants: Long = 10L
-        ): Leenk {
-            return createLeenk(
+            maxParticipants: Long = 10L,
+        ): Leenk =
+            createLeenk(
                 id = id,
                 author = author,
                 location = location,
                 status = LeenkStatus.FINISHED,
                 currentParticipants = currentParticipants,
-                maxParticipants = maxParticipants
+                maxParticipants = maxParticipants,
             )
-        }
     }
 }
