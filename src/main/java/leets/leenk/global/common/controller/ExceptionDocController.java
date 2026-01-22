@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 각 엔드포인트는 해당 도메인에서 발생할 수 있는 모든 예외 케이스를 Swagger UI에서 확인할 수 있도록 합니다.
  */
 @RestController
-@RequestMapping("/api/v1/exceptions")
+@RequestMapping("/api/v1/docs/exceptions")
 @Tag(name = "Exception Document", description = "API 에러 코드 문서")
 public class ExceptionDocController {
 
