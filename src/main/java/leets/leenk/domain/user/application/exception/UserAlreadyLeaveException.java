@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class UserAlreadyLeaveException extends BaseException {
     public UserAlreadyLeaveException() {
-        super(UserErrorCode.USER_ALREADY_Leave);
+        super(UserErrorCode.USER_ALREADY_LEAVE);
     }
 }
