@@ -50,7 +50,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
     fun handleMethodNotAllowed(e: HttpRequestMethodNotSupportedException): ResponseEntity<CommonResponse<Void?>> =
-        ErrorCode.INVALID_ARGUMENT.let { errorCode ->
+        ErrorCode.METHOD_NOT_ALLOWED.let { errorCode ->
             ResponseEntity.status(errorCode.status).body(CommonResponse.error(errorCode))
         }
 
