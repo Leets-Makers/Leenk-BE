@@ -14,9 +14,51 @@ Migrate Java to idiomatic Kotlin with Test-First methodology.
 
 ### 1. Pre-Migration Test
 - Analyze Java code behavior and dependencies
-- Write tests FIRST in `src/test/kotlin/{domain}/`
+- **Write ONLY essential tests** that verify critical business logic
 - Use Kotest + mockk
 - Run tests against Java code to confirm they pass
+
+**Tests to Write (HIGH value):**
+- Business logic with conditions/branching (예: 권한 검증, 상태 체크, 조건부 로직)
+- Exception scenarios (예: 존재하지 않는 엔티티 조회 시 예외, 권한 없음 예외)
+- Complex calculations or transformations
+- Transaction boundaries and side effects
+- Custom query methods with specific logic
+- Domain validation rules
+
+**Tests to SKIP (LOW value):**
+- JPA basic CRUD (findById, save, delete, findAll)
+- Simple getter/setter or DTO field mapping
+- Obvious pass-through methods (repository calls without logic)
+- Framework-provided functionality
+- Constructor assignments
+- Simple delegation patterns
+
+**Example - Service to Test:**
+```java
+public Feed getFeed(Long feedId, Long userId) {
+    Feed feed = feedRepository.findById(feedId)
+        .orElseThrow(() -> new FeedNotFoundException());
+
+    if (feed.isBlocked(userId)) {  // ← Test this
+        throw new FeedAccessDeniedException();  // ← Test this
+    }
+
+    return feed;  // ← Don't test simple return
+}
+```
+
+**Write 2-3 focused tests:**
+- "존재하지 않는 피드 조회 시 예외 발생"
+- "차단된 사용자가 조회 시 예외 발생"
+- (Optional) "정상 피드 조회 시 반환" only if complex setup is needed
+
+**Skip if code is trivial:**
+```java
+public void deleteFeed(Long feedId) {
+    feedRepository.deleteById(feedId);  // ← Skip, JPA basic method
+}
+```
 
 ### 2. Migration
 - Convert to Kotlin preserving architecture: Controller → UseCase → Domain Service → Repository
