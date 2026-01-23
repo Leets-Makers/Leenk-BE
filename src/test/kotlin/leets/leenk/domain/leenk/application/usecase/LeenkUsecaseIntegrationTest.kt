@@ -5,8 +5,11 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import leets.leenk.config.MysqlTestConfig
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
+import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException
+import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException
+import leets.leenk.domain.leenk.domain.entity.Location
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
 import leets.leenk.domain.leenk.domain.repository.LeenkParticipantsRepository
 import leets.leenk.domain.leenk.domain.repository.LeenkRepository
@@ -50,14 +53,10 @@ class LeenkUsecaseIntegrationTest(
 
     // 헬퍼
     fun persistUser(id: Long, name: String = "테스트유저"): User =
-        userRepository.save(
-            UserTestFixture.createUser(id = id, name = name)
-        )
+        userRepository.save(UserTestFixture.createUser(id = id, name = name))
 
     fun persistLocation() =
-        locationRepository.save(
-            LocationTestFixture.createLocation(id = null, "서울")
-        )
+        locationRepository.save(LocationTestFixture.createLocation(id = null, "서울"))
 
     fun persistLeenk(
         author: User,
@@ -150,6 +149,55 @@ class LeenkUsecaseIntegrationTest(
 
                 val updated = leenkRepository.findById(leenk.id!!).get()
                 updated.currentParticipants shouldBe updated.maxParticipants
+            }
+        }
+    }
+
+
+    Given("closeLeenk - 링크 마감") {
+
+        When("호스트가 모집 중인 링크를 마감하면") {
+            val host = persistUser(1L, "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            Then("링크 상태가 CLOSED로 변경된다") {
+                leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
+                val updated = leenkRepository.findById(leenk.id!!).get()
+                updated.status shouldBe LeenkStatus.CLOSED
+            }
+        }
+
+        When("호스트가 아닌 사용자가 링크 마감을 시도하면") {
+            val host = persistUser(1L, "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            Then("NotLeenkOwnerException이 발생한다") {
+                shouldThrow<NotLeenkOwnerException> {
+                    leenkUsecase.closeLeenk(otherUser.id!!, leenk.id!!)
+                }
+            }
+        }
+
+        When("이미 마감된 링크를 다시 마감하려 하면") {
+            val host = persistUser(1L, "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+
+            Then("LeenkAlreadyClosedException이 발생한다") {
+                shouldThrow<LeenkAlreadyClosedException> {
+                    leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
+                }
+            }
+        }
+
+        When("완료된 상태의 링크를 마감하려 하면") {
+            val host = persistUser(1L, "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
+
+            Then("LeenkAlreadyClosedException이 발생한다") {
+                shouldThrow<LeenkAlreadyClosedException> {
+                    leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
+                }
             }
         }
     }
