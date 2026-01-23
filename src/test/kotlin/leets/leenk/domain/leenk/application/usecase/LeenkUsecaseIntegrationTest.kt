@@ -61,7 +61,7 @@ class LeenkUsecaseIntegrationTest(
     fun persistLeenk(
         author: User,
         status: LeenkStatus = LeenkStatus.RECRUITING,
-        currentParticipants: Long = 0,
+        currentParticipants: Long = 1,
         maxParticipants: Long = 2
     ) = leenkRepository.save(
         LeenkTestFixture.createLeenk(
