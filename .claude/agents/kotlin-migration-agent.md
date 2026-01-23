@@ -61,6 +61,34 @@ public void deleteFeed(Long feedId) {
 ```
 
 ### 2. Migration
+
+#### File Move and Conversion Workflow
+**Instead of deleting Java files and creating new ones, move files using `git mv` then modify the content.**
+
+**Step 1: Move file path**
+```bash
+git mv src/main/java/leets/leenk/domain/{domain}/{path}/{File}.java \
+       src/main/kotlin/leets/leenk/domain/{domain}/{path}/{File}.kt
+```
+
+**Step 2: Convert to Kotlin**
+- Read current file using Read tool
+- Modify file content from Java → Kotlin syntax using Edit tool
+- Keep business logic identical
+
+**Step 3: Run tests**
+```bash
+./gradlew test  # Run pre-written tests
+```
+
+**Benefits:**
+- `git log --stat` clearly shows file move + modifications
+- `git show` can verify actual code changes
+- `git blame` can track commit history of Java version
+
+---
+
+#### Migration Guide
 - Convert to Kotlin preserving architecture: Controller → UseCase → Domain Service → Repository
 - Apply Kotlin idioms: data class for DTOs, val over var, nullable only when needed
 - Keep Single Responsibility: `{Domain}GetService`, `{Domain}SaveService`, etc.
