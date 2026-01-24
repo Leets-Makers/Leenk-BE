@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CommonResponse<List<ValidErrorResponse>>> handleValidation(MethodArgumentNotValidException e) {
-        ErrorCode errorCode = ErrorCode.INVALID_ARGUMENT;
+        CommonErrorCode errorCode = CommonErrorCode.INVALID_ARGUMENT;
 
         List<ValidErrorResponse> errors = e.getBindingResult()
                 .getFieldErrors().stream()
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<CommonResponse<Void>> handleIllegalArgument(IllegalArgumentException e) {
-        ErrorCode errorCode = ErrorCode.INVALID_ARGUMENT;
+        CommonErrorCode errorCode = CommonErrorCode.INVALID_ARGUMENT;
         CommonResponse<Void> body = CommonResponse.error(errorCode);
 
 
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<CommonResponse<Void>> handleNoResourceFound() {
-        ErrorCode errorCode = ErrorCode.RESOURCE_NOT_FOUND;
+        CommonErrorCode errorCode = CommonErrorCode.RESOURCE_NOT_FOUND;
         CommonResponse<Void> body = CommonResponse.error(errorCode);
 
         return ResponseEntity
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<CommonResponse<Void>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
-        ErrorCode errorCode = ErrorCode.METHOD_NOT_ALLOWED;
+        CommonErrorCode errorCode = CommonErrorCode.METHOD_NOT_ALLOWED;
         CommonResponse<Void> body = CommonResponse.error(errorCode);
 
 
@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
                     .body(body);
         }
 
-        ErrorCode errorCode = ErrorCode.JSON_PARSE_ERROR;
+        CommonErrorCode errorCode = CommonErrorCode.JSON_PARSE_ERROR;
         CommonResponse<Void> body = CommonResponse.error(errorCode, ex.getMessage());
 
         return ResponseEntity
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<Void>> handleAll(Exception e) {
-        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+        CommonErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         CommonResponse<Void> body = CommonResponse.error(errorCode, e.getMessage());
 
 

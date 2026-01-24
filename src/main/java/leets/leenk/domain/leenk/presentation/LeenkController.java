@@ -12,22 +12,18 @@ import leets.leenk.domain.leenk.application.dto.response.LeenkCreateResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
 import leets.leenk.domain.leenk.application.dto.response.LeenkParticipantsListResponse;
+import leets.leenk.domain.leenk.application.exception.LeenkErrorCode;
 import leets.leenk.domain.leenk.application.usecase.LeenkUsecase;
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
+import leets.leenk.domain.user.application.exception.UserErrorCode;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "LEENK")
+@ApiErrorCodeExample({LeenkErrorCode.class, UserErrorCode.class})
 @RestController
 @RequestMapping("/leenks")
 @RequiredArgsConstructor
