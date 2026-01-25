@@ -22,10 +22,13 @@ class LinkedUser(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "feed_id", nullable = false, updatable = false)
     val feed: Feed,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     val user: User,
-)
+
+    )

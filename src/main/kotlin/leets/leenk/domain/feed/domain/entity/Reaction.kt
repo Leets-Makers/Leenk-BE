@@ -31,7 +31,8 @@ class Reaction(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     val user: User,
-) {
+
+    ) {
     fun increaseReactionCount(reactionCount: Long) {
         this.reactionCount += reactionCount
     }
