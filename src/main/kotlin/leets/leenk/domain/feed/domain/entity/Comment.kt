@@ -34,8 +34,8 @@ class Comment(
 
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null,
+) : BaseEntity() {
 
-    ) : BaseEntity() {
     fun deleteComment() {
         this.deletedAt = LocalDateTime.now()
     }

@@ -40,8 +40,8 @@ class Feed(
     val user: User,
 
     var deletedAt: LocalDateTime? = null,
+) : BaseEntity() {
 
-    ) : BaseEntity() {
     fun increaseTotalReactionCount(reactionCount: Long) {
         this.totalReactionCount += reactionCount
     }

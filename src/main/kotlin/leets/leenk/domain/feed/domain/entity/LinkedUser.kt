@@ -30,5 +30,4 @@ class LinkedUser(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     val user: User,
-
-    )
+)
