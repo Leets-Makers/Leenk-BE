@@ -3,11 +3,14 @@ package leets.leenk.domain.leenk.application.usecase
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
+import leets.leenk.config.MongoTestConfig
 import leets.leenk.config.MysqlTestConfig
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
+import leets.leenk.domain.leenk.application.exception.CannotKickSelfException
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyFinishedException
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
+import leets.leenk.domain.leenk.application.exception.LeenkParticipantNotFoundException
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException
 import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException
 import leets.leenk.domain.leenk.domain.entity.Location
@@ -35,7 +38,7 @@ import org.springframework.context.annotation.Import
  * - leaveLeenk: 링크 나가기 시 호스트 검증, currentParticipants 감소
  */
 @SpringBootTest
-@Import(MysqlTestConfig::class)
+@Import(MysqlTestConfig::class, MongoTestConfig::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class LeenkUsecaseIntegrationTest(
     private val leenkUsecase: LeenkUsecase,
@@ -247,6 +250,92 @@ class LeenkUsecaseIntegrationTest(
             Then("LeenkAlreadyFinishedException이 발생한다") {
                 shouldThrow<LeenkAlreadyFinishedException> {
                     leenkUsecase.finishLeenk(host.id, leenk.id)
+                }
+            }
+        }
+    }
+
+
+    Given("kickParticipant - 참여자 강퇴") {
+
+        When("작성자가 일반 참여자를 강퇴하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            // 참여자 추가
+            leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+
+            // DB에서 최신 currentParticipants 가져오기
+            val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
+            val initialCount = updatedAfterParticipate.currentParticipants
+
+            Then("참여자가 제거되고 currentParticipants가 1 감소하며 알림이 전송된다") {
+                leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
+                val updated = leenkRepository.findById(leenk.id!!).get()
+                updated.currentParticipants shouldBe initialCount - 1
+            }
+        }
+
+        When("작성자가 아닌 사용자가 강퇴 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val participant = persistUser(3L, "참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            // 참여자 추가
+            leenkUsecase.participateLeenk(participant.id, leenk.id)
+
+            Then("NotLeenkOwnerException이 발생한다") {
+                shouldThrow<NotLeenkOwnerException> {
+                    leenkUsecase.kickParticipant(otherUser.id, leenk.id, participant.id)
+                }
+            }
+        }
+
+        When("작성자가 자기 자신을 강퇴 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            Then("CannotKickSelfException이 발생한다") {
+                shouldThrow<CannotKickSelfException> {
+                    leenkUsecase.kickParticipant(host.id, leenk.id, host.id)
+                }
+            }
+        }
+
+        When("링크에 참여하지 않은 사용자를 강퇴 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val nonParticipant = persistUser(2L, "미참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            Then("LeenkParticipantNotFoundException이 발생한다") {
+                shouldThrow<LeenkParticipantNotFoundException> {
+                    leenkUsecase.kickParticipant(host.id, leenk.id, nonParticipant.id)
+                }
+            }
+        }
+
+        When("마감된 링크에서 강퇴 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+
+            Then("LeenkNotRecruitingException이 발생한다") {
+                shouldThrow<LeenkNotRecruitingException> {
+                    leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
+                }
+            }
+        }
+
+        When("완료된 링크에서 강퇴 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
+
+            Then("LeenkNotRecruitingException이 발생한다") {
+                shouldThrow<LeenkNotRecruitingException> {
+                    leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
                 }
             }
         }
