@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import leets.leenk.config.MysqlTestConfig
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException
+import leets.leenk.domain.leenk.application.exception.LeenkAlreadyFinishedException
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
 import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException
 import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException
@@ -197,6 +198,55 @@ class LeenkUsecaseIntegrationTest(
             Then("LeenkAlreadyClosedException이 발생한다") {
                 shouldThrow<LeenkAlreadyClosedException> {
                     leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
+                }
+            }
+        }
+    }
+
+
+    Given("finishLeenk - 링크 완료") {
+
+        When("작성자가 마감된 링크를 완료 처리하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+
+            Then("링크 상태가 FINISHED로 변경된다") {
+                leenkUsecase.finishLeenk(host.id, leenk.id)
+                val updated = leenkRepository.findById(leenk.id!!).get()
+                updated.status shouldBe LeenkStatus.FINISHED
+            }
+        }
+
+        When("작성자가 아닌 사용자가 완료 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+
+            Then("NotLeenkOwnerException이 발생한다") {
+                shouldThrow<NotLeenkOwnerException> {
+                    leenkUsecase.finishLeenk(otherUser.id, leenk.id)
+                }
+            }
+        }
+
+        When("모집 중인 링크를 완료 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            Then("정상적으로 완료된다 (RECRUITING -> FINISHED 직접 전환 가능)") {
+                leenkUsecase.finishLeenk(host.id, leenk.id)
+                val updated = leenkRepository.findById(leenk.id!!).get()
+                updated.status shouldBe LeenkStatus.FINISHED
+            }
+        }
+
+        When("이미 완료된 링크를 다시 완료 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
+
+            Then("LeenkAlreadyFinishedException이 발생한다") {
+                shouldThrow<LeenkAlreadyFinishedException> {
+                    leenkUsecase.finishLeenk(host.id, leenk.id)
                 }
             }
         }
