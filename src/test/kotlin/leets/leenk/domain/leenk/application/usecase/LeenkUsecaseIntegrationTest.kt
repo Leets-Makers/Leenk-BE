@@ -7,6 +7,7 @@ import leets.leenk.config.MongoTestConfig
 import leets.leenk.config.MysqlTestConfig
 import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
 import leets.leenk.domain.leenk.application.exception.CannotKickSelfException
+import leets.leenk.domain.leenk.application.exception.CannotLeaveAsHostException
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException
 import leets.leenk.domain.leenk.application.exception.LeenkAlreadyFinishedException
 import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
@@ -337,6 +338,95 @@ class LeenkUsecaseIntegrationTest(
                 shouldThrow<LeenkNotRecruitingException> {
                     leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
                 }
+            }
+        }
+    }
+
+    Given("leaveLeenk - 링크 나가기") {
+
+        When("일반 참여자가 링크를 나가면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            // 참여자 추가
+            leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+
+            // DB에서 최신 currentParticipants 가져오기
+            val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
+            val initialCount = updatedAfterParticipate.currentParticipants
+
+            Then("정상적으로 나가지고 currentParticipants가 1 감소하며 알림이 전송된다") {
+                leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                val updated = leenkRepository.findById(leenk.id!!).get()
+                updated.currentParticipants shouldBe initialCount - 1
+            }
+        }
+
+        When("호스트가 나가기 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            Then("CannotLeaveAsHostException이 발생한다") {
+                shouldThrow<CannotLeaveAsHostException> {
+                    leenkUsecase.leaveLeenk(host.id, leenk.id)
+                }
+            }
+        }
+
+        When("참여하지 않은 사용자가 나가기 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val nonParticipant = persistUser(2L, "미참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            Then("LeenkParticipantNotFoundException이 발생한다") {
+                shouldThrow<LeenkParticipantNotFoundException> {
+                    leenkUsecase.leaveLeenk(nonParticipant.id, leenk.id)
+                }
+            }
+        }
+
+        When("마감된 링크에서 나가기 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+
+            Then("LeenkNotRecruitingException이 발생한다") {
+                shouldThrow<LeenkNotRecruitingException> {
+                    leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                }
+            }
+        }
+
+        When("완료된 링크에서 나가기 시도하면") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
+
+            Then("LeenkNotRecruitingException이 발생한다") {
+                shouldThrow<LeenkNotRecruitingException> {
+                    leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                }
+            }
+        }
+
+        When("마지막 일반 참여자가 나가면 (경계값 테스트)") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val lastParticipant = persistUser(2L, "마지막참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+
+            // 참여자 추가 (host + lastParticipant = 2명)
+            leenkUsecase.participateLeenk(lastParticipant.id, leenk.id)
+
+            // DB에서 최신 currentParticipants 가져오기
+            val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
+            val initialCount = updatedAfterParticipate.currentParticipants
+
+            Then("정상적으로 나가지고 host만 남는다") {
+                leenkUsecase.leaveLeenk(lastParticipant.id, leenk.id)
+                val updated = leenkRepository.findById(leenk.id!!).get()
+                // host만 남음
+                updated.currentParticipants shouldBe initialCount - 1
             }
         }
     }
