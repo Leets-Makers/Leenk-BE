@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Bash(./gradlew:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(echo:*)",
+      "Grep(*)",
+      "Glob(*)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:github.com)"
+    ],
+    "ask": [
+      "Write(*)",
+      "Edit(*)",
+      "Bash(git:*)"
+    ],
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(git:push --force*)"
+    ]
+  },
+  "classifierPermissionsEnabled": true
+}

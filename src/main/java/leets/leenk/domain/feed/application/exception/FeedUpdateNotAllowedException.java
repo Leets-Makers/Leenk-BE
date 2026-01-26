@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class FeedUpdateNotAllowedException extends BaseException {
     public FeedUpdateNotAllowedException() {
-        super(ErrorCode.FEED_UPDATE_NOT_ALLOWED);
+        super(FeedErrorCode.FEED_UPDATE_NOT_ALLOWED);
     }
 }

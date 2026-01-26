@@ -1,5 +1,6 @@
 package leets.leenk.domain.notification.application.exception;
 
+import leets.leenk.global.common.exception.ExplainError;
 import org.springframework.http.HttpStatus;
 
 import leets.leenk.global.common.exception.ErrorCodeInterface;
@@ -8,8 +9,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorCode implements ErrorCodeInterface {
+public enum NotificationErrorCode implements ErrorCodeInterface {
+
+    @ExplainError("알림 ID로 조회했으나 해당 알림이 존재하지 않을 때 발생합니다.")
     NOTIFICATION_NOT_FOUND(2300, HttpStatus.NOT_FOUND, "존재하지 않는 알림입니다."),
+
+    @ExplainError("다른 사용자의 알림에 접근하려고 시도할 때 발생합니다.")
     INVALID_NOTIFICATION_ACCESS(2301, HttpStatus.FORBIDDEN, "본인의 알림에만 접근할 수 있습니다.");
 
     private final int code;

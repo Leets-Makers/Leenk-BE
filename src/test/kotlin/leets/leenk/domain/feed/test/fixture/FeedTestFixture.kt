@@ -8,13 +8,13 @@ class FeedTestFixture {
         fun createFeed(
             user: User,
             description: String = "테스트 피드",
-            totalReactionCount: Long = 0L
-        ): Feed {
-            return Feed.builder()
+            totalReactionCount: Long = 0L,
+        ): Feed =
+            Feed
+                .builder()
                 .user(user)
                 .description(description)
                 .totalReactionCount(totalReactionCount)
                 .build()
-        }
     }
 }

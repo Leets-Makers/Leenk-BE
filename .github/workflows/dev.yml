@@ -32,6 +32,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      # Check Ktlint
+      - name: Run ktlint Check
+        run: ./gradlew ktlintCheck
+
       # Run tests
       - name: Run tests
         run: ./gradlew test
@@ -67,12 +71,12 @@ jobs:
           port: 22
           script: |
             cd /home/ubuntu/compose
-            
+
             echo "===== 최신 Docker 이미지 가져오는 중 ====="
             docker pull ${{ secrets.DOCKER_USER_NAME }}/leenk-dev
-            
+
             EXIST_BLUE=$(docker inspect -f '{{.State.Running}}' spring-blue 2>/dev/null)
-            
+
             if [ "$EXIST_BLUE" != "true" ]; then
               docker-compose up -d spring-blue
               BEFORE_COLOR="green"
@@ -86,9 +90,9 @@ jobs:
               BEFORE_PORT=8080
               AFTER_PORT=8081
             fi
-            
+
             echo "===== ${AFTER_COLOR} server up(port:${AFTER_PORT}) ====="
-            
+
             for cnt in {1..10}
             do
               echo "===== 서버 응답 확인중(${cnt}/10) =====";
@@ -100,29 +104,29 @@ jobs:
                   break
               fi
             done
-            
+
             if [ $cnt -eq 10 ]; then
               echo "===== 서버 실행 실패 ====="
-            
+
               echo "===== Health-check 실패: spring-${AFTER_COLOR} 로그 ====="
               docker logs spring-${AFTER_COLOR} || true
 
               docker-compose stop spring-${AFTER_COLOR}
               docker-compose rm -f spring-${AFTER_COLOR}
-            
-              echo "===== 롤백 완료: 기존 컨테이너 유지 ====="            
+
+              echo "===== 롤백 완료: 기존 컨테이너 유지 ====="
               exit 1
             fi
-            
+
             echo "===== Caddy 설정 변경 ====="
             sudo sed -i "s/${BEFORE_PORT}/${AFTER_PORT}/g" /etc/caddy/Caddyfile
-            
+
             sudo caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
-  
+
             echo "$BEFORE_COLOR server down(port:${BEFORE_PORT})"
             docker-compose stop spring-${BEFORE_COLOR}
             docker-compose rm -f spring-${BEFORE_COLOR}
-            
+
             echo "===== 사용하지 않는 Docker 이미지 정리 중 ====="
             sudo docker image prune -f
 

@@ -6,7 +6,9 @@ import jakarta.validation.Valid;
 import leets.leenk.global.auth.application.dto.request.RefreshTokenRequest;
 import leets.leenk.global.auth.application.dto.request.UsernamePasswordLoginRequest;
 import leets.leenk.global.auth.application.dto.response.LoginResponse;
+import leets.leenk.global.auth.application.exception.AuthErrorCode;
 import leets.leenk.global.auth.application.usecase.AuthUsecase;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "AUTH")
+@ApiErrorCodeExample(AuthErrorCode.class)
 @RestController
 @RequiredArgsConstructor
 public class AuthController {

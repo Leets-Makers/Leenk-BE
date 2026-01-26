@@ -1,21 +1,23 @@
 package leets.leenk.domain.notification.presentation;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import leets.leenk.domain.notification.application.usecase.NotificationUseCase;
-import org.springframework.web.bind.annotation.*;
-
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leets.leenk.domain.notification.application.dto.response.NotificationCountResponse;
 import leets.leenk.domain.notification.application.dto.response.NotificationListResponse;
+import leets.leenk.domain.notification.application.exception.NotificationErrorCode;
 import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase;
+import leets.leenk.domain.notification.application.usecase.NotificationUseCase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Tag(name = "NOTIFICATION", description = "알림 API")
+@ApiErrorCodeExample(NotificationErrorCode.class)
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
