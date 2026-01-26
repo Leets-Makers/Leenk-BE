@@ -2,10 +2,11 @@ package leets.leenk.domain.leenk.domain.entity
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import leets.leenk.domain.feed.test.UserTestFixture
+
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
 import leets.leenk.domain.leenk.test.fixture.LeenkTestFixture
 import leets.leenk.domain.leenk.test.fixture.LocationTestFixture
+import leets.leenk.domain.user.test.fixture.UserTestFixture
 
 class LeenkTest : StringSpec({
 
