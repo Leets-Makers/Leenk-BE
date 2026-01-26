@@ -11,7 +11,7 @@ import leets.leenk.domain.leenk.test.fixture.LeenkTestFixture
 import leets.leenk.domain.leenk.test.fixture.LocationTestFixture
 import java.time.LocalDateTime
 
-class LeenkUpdateServiceTest : BehaviorSpec ({
+class LeenkUpdateServiceTest : BehaviorSpec({
 
     val leenkUpdateService = LeenkUpdateService()
 

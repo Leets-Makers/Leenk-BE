@@ -5,16 +5,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import leets.leenk.config.MongoTestConfig
 import leets.leenk.config.MysqlTestConfig
-import leets.leenk.domain.leenk.application.exception.AlreadyParticipatedException
-import leets.leenk.domain.leenk.application.exception.CannotKickSelfException
-import leets.leenk.domain.leenk.application.exception.CannotLeaveAsHostException
-import leets.leenk.domain.leenk.application.exception.LeenkAlreadyClosedException
-import leets.leenk.domain.leenk.application.exception.LeenkAlreadyFinishedException
-import leets.leenk.domain.leenk.application.exception.LeenkNotRecruitingException
-import leets.leenk.domain.leenk.application.exception.LeenkParticipantNotFoundException
-import leets.leenk.domain.leenk.application.exception.MaxParticipantsExceededException
-import leets.leenk.domain.leenk.application.exception.NotLeenkOwnerException
-import leets.leenk.domain.leenk.domain.entity.Location
+import leets.leenk.domain.leenk.application.exception.*
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
 import leets.leenk.domain.leenk.domain.repository.LeenkParticipantsRepository
 import leets.leenk.domain.leenk.domain.repository.LeenkRepository
@@ -44,7 +35,7 @@ import org.springframework.context.annotation.Import
 class LeenkUsecaseIntegrationTest(
     private val leenkUsecase: LeenkUsecase,
     private val userRepository: UserRepository,
-    private val locationRepository : LocationRepository,
+    private val locationRepository: LocationRepository,
     private val leenkRepository: LeenkRepository,
     private val leenkParticipantsRepository: LeenkParticipantsRepository
 ) : BehaviorSpec({
