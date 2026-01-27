@@ -31,4 +31,4 @@ Invoke the code review agent defined in `.claude/agents/code-review-agent.md` to
 ├── commands/
 │   └── code-review.md      # This command file
 └── agents/
-└── code-review-agent.md  # Agent definition (checklist, output format, etc.)
+    └── code-review-agent.md  # Agent definition (checklist, output format, etc.)

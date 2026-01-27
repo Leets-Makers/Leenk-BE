@@ -27,7 +27,7 @@ Call the Task tool with:
 - description: "Migrate Java to Kotlin"
 
 Example:
-```
+```text
 Task tool:
   subagent_type: kotlin-migration-agent
   prompt: Migrate src/main/java/leets/leenk/domain/feed/service/FeedGetService.java from Java to Kotlin following the Test-First methodology
