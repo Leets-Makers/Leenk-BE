@@ -3,7 +3,7 @@ package leets.leenk.global.auth.domain.handler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import leets.leenk.global.auth.application.exception.ErrorCode;
+import leets.leenk.global.auth.application.exception.AuthErrorCode;
 import leets.leenk.global.auth.application.util.HandlerResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,6 +20,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        handlerResponseUtil.setResponse(response, HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage(), ErrorCode.ACCESS_DENIED);
+        handlerResponseUtil.setResponse(response, HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage(), AuthErrorCode.ACCESS_DENIED);
     }
 }

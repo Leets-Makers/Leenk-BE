@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class LeenkAlreadyFinishedException extends BaseException {
     public LeenkAlreadyFinishedException() {
-        super(ErrorCode.LEENK_ALREADY_FINISHED);
+        super(LeenkErrorCode.LEENK_ALREADY_FINISHED);
     }
 }

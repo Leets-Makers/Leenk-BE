@@ -3,8 +3,10 @@ package leets.leenk.domain.media.presentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import leets.leenk.domain.media.application.dto.response.MediaUrlResponse;
+import leets.leenk.domain.media.application.exception.MediaErrorCode;
 import leets.leenk.domain.media.application.usecase.MediaUsecase;
 import leets.leenk.domain.media.domain.entity.enums.DomainType;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Tag(name = "MEDIA")
+@ApiErrorCodeExample(MediaErrorCode.class)
 @RestController
 @RequestMapping("/medias")
 @RequiredArgsConstructor

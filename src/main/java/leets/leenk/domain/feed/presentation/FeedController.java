@@ -7,8 +7,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import leets.leenk.domain.feed.application.dto.request.*;
 import leets.leenk.domain.feed.application.dto.response.*;
+import leets.leenk.domain.feed.application.exception.FeedErrorCode;
 import leets.leenk.domain.feed.application.usecase.FeedUsecase;
+import leets.leenk.domain.user.application.exception.UserErrorCode;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "FEED")
+@ApiErrorCodeExample({FeedErrorCode.class,  UserErrorCode.class})
 @RestController
 @RequestMapping("/feeds")
 @RequiredArgsConstructor
