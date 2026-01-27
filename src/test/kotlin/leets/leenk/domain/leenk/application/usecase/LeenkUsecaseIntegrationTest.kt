@@ -71,128 +71,130 @@ class LeenkUsecaseIntegrationTest(
             ),
         )
 
-        Given("participateLeenk - 링크 참여") {
+        // participateLeenk 링크 참여
+        Given("모집 중인 링크에 일반 사용자가 참여하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val participant = persistUser(id = 2L, name = "참여자")
+            val leenk = persistLeenk(author = host)
+            val initialCount = leenk.currentParticipants
 
-            When("일반 사용자가 모집 중인 링크에 참여하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val participant = persistUser(id = 2L, name = "참여자")
-                val leenk = persistLeenk(author = host)
-                val initialCount = leenk.currentParticipants
+            When("링크에 참여하면") {
+                leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
 
-                Then("정상적으로 참여되고 currentParticipants가 1 증가한다") {
-                    leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
-
+                Then("참여가 완료되고 currentParticipants가 1 증가한다") {
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.currentParticipants shouldBe initialCount + 1
                 }
             }
+        }
 
-            When("모집 중이 아닌 링크(CLOSED)에 참여 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val participant = persistUser(id = 2L, name = "참여자")
-                val leenk =
-                    persistLeenk(
-                        author = host,
-                        status = LeenkStatus.CLOSED,
-                    )
+        Given("CLOSED 상태의 링크에 참여하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val participant = persistUser(id = 2L, name = "참여자")
+            val leenk =
+                persistLeenk(
+                    author = host,
+                    status = LeenkStatus.CLOSED,
+                )
 
+            When("링크에 참여하면") {
                 Then("LeenkNotRecruitingException이 발생한다") {
                     shouldThrow<LeenkNotRecruitingException> {
                         leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
                     }
                 }
             }
+        }
 
-            When("이미 참여한 사용자가 다시 참여 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val participant = persistUser(id = 2L, name = "참여자")
-                val leenk = persistLeenk(author = host)
+        Given("이미 참여한 사용자가 다시 참여하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val participant = persistUser(id = 2L, name = "참여자")
+            val leenk = persistLeenk(author = host)
 
-                leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
+            leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
 
+            When("다시 참여하면") {
                 Then("AlreadyParticipatedException이 발생한다") {
                     shouldThrow<AlreadyParticipatedException> {
                         leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
                     }
                 }
             }
+        }
 
-            When("최대 인원이 이미 찬 링크에 참여 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val participant = persistUser(id = 2L, name = "참여자")
-                val leenk =
-                    persistLeenk(
-                        author = host,
-                        currentParticipants = 2,
-                        maxParticipants = 2,
-                    )
+        Given("최대 인원이 이미 찬 링크에 참여하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val participant = persistUser(id = 2L, name = "참여자")
+            val leenk =
+                persistLeenk(
+                    author = host,
+                    currentParticipants = 2,
+                    maxParticipants = 2,
+                )
 
+            When("링크에 참여하면") {
                 Then("MaxParticipantsExceededException이 발생한다") {
                     shouldThrow<MaxParticipantsExceededException> {
                         leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
                     }
                 }
             }
+        }
 
-            When("최대 인원 직전 상태에서 참여하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val participant = persistUser(id = 2L, name = "참여자")
-                val leenk =
-                    persistLeenk(
-                        author = host,
-                        currentParticipants = 1,
-                        maxParticipants = 2,
-                    )
+        Given("최대 인원 직전 상태의 링크에 참여하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val participant = persistUser(id = 2L, name = "참여자")
+            val leenk =
+                persistLeenk(
+                    author = host,
+                    currentParticipants = 1,
+                    maxParticipants = 2,
+                )
 
-                Then("정상적으로 참여되어 최대 인원이 된다") {
-                    leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
+            When("링크에 참여하면") {
+                leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
 
+                Then("참여가 완료되어 최대 인원이 된다") {
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.currentParticipants shouldBe updated.maxParticipants
                 }
             }
         }
 
-        Given("closeLeenk - 링크 마감") {
+        // closeLeenk 링크 마감
+        Given("호스트가 모집 중인 링크를 마감하는 경우") {
+            val host = persistUser(1L, "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
-            When("호스트가 모집 중인 링크를 마감하면") {
-                val host = persistUser(1L, "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+            When("링크를 마감하면") {
+                leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
 
                 Then("링크 상태가 CLOSED로 변경된다") {
-                    leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.status shouldBe LeenkStatus.CLOSED
                 }
             }
+        }
 
-            When("호스트가 아닌 사용자가 링크 마감을 시도하면") {
-                val host = persistUser(1L, "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("호스트가 아닌 사용자가 링크를 마감하는 경우") {
+            val host = persistUser(1L, "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
+            When("링크를 마감하면") {
                 Then("NotLeenkOwnerException이 발생한다") {
                     shouldThrow<NotLeenkOwnerException> {
                         leenkUsecase.closeLeenk(otherUser.id!!, leenk.id!!)
                     }
                 }
             }
+        }
 
-            When("이미 마감된 링크를 다시 마감하려 하면") {
-                val host = persistUser(1L, "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+        Given("이미 마감된 링크를 다시 마감하는 경우") {
+            val host = persistUser(1L, "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
 
-                Then("LeenkAlreadyClosedException이 발생한다") {
-                    shouldThrow<LeenkAlreadyClosedException> {
-                        leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
-                    }
-                }
-            }
-
-            When("완료된 상태의 링크를 마감하려 하면") {
-                val host = persistUser(1L, "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
-
+            When("링크를 마감하면") {
                 Then("LeenkAlreadyClosedException이 발생한다") {
                     shouldThrow<LeenkAlreadyClosedException> {
                         leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
@@ -201,46 +203,67 @@ class LeenkUsecaseIntegrationTest(
             }
         }
 
-        Given("finishLeenk - 링크 완료") {
+        Given("완료된 상태의 링크를 마감하는 경우") {
+            val host = persistUser(1L, "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
 
-            When("작성자가 마감된 링크를 완료 처리하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+            When("링크를 마감하면") {
+                Then("LeenkAlreadyClosedException이 발생한다") {
+                    shouldThrow<LeenkAlreadyClosedException> {
+                        leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
+                    }
+                }
+            }
+        }
+
+        // finishLeenk 링크 완료
+        Given("호스트가 마감된 링크를 완료 처리하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+
+            When("링크를 완료하면") {
+                leenkUsecase.finishLeenk(host.id, leenk.id)
 
                 Then("링크 상태가 FINISHED로 변경된다") {
-                    leenkUsecase.finishLeenk(host.id, leenk.id)
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.status shouldBe LeenkStatus.FINISHED
                 }
             }
+        }
 
-            When("작성자가 아닌 사용자가 완료 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+        Given("호스트가 아닌 사용자가 링크를 완료하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
 
+            When("링크를 완료하면") {
                 Then("NotLeenkOwnerException이 발생한다") {
                     shouldThrow<NotLeenkOwnerException> {
                         leenkUsecase.finishLeenk(otherUser.id, leenk.id)
                     }
                 }
             }
+        }
 
-            When("모집 중인 링크를 완료 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("모집 중인 링크를 완료하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
-                Then("정상적으로 완료된다 (RECRUITING -> FINISHED 직접 전환 가능)") {
-                    leenkUsecase.finishLeenk(host.id, leenk.id)
+            When("링크를 완료하면") {
+                leenkUsecase.finishLeenk(host.id, leenk.id)
+
+                Then("RECRUITING에서 FINISHED로 직접 전환된다") {
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.status shouldBe LeenkStatus.FINISHED
                 }
             }
+        }
 
-            When("이미 완료된 링크를 다시 완료 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
+        Given("이미 완료된 링크를 다시 완료하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
 
+            When("링크를 완료하면") {
                 Then("LeenkAlreadyFinishedException이 발생한다") {
                     shouldThrow<LeenkAlreadyFinishedException> {
                         leenkUsecase.finishLeenk(host.id, leenk.id)
@@ -249,83 +272,80 @@ class LeenkUsecaseIntegrationTest(
             }
         }
 
-        Given("kickParticipant - 참여자 강퇴") {
+        // kickParticipant 참여자 강퇴
+        Given("호스트가 일반 참여자를 강퇴하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
-            When("작성자가 일반 참여자를 강퇴하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+            // 참여자 추가
+            leenkUsecase.participateLeenk(otherUser.id, leenk.id)
 
-                // 참여자 추가
-                leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+            // DB에서 최신 currentParticipants 가져오기
+            val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
+            val initialCount = updatedAfterParticipate.currentParticipants
 
-                // DB에서 최신 currentParticipants 가져오기
-                val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
-                val initialCount = updatedAfterParticipate.currentParticipants
+            When("참여자를 강퇴하면") {
+                leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
 
                 Then("참여자가 제거되고 currentParticipants가 1 감소하며 알림이 전송된다") {
-                    leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.currentParticipants shouldBe initialCount - 1
                 }
             }
+        }
 
-            When("작성자가 아닌 사용자가 강퇴 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val participant = persistUser(3L, "참여자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("호스트가 아닌 사용자가 참여자를 강퇴하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val participant = persistUser(3L, "참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
-                // 참여자 추가
-                leenkUsecase.participateLeenk(participant.id, leenk.id)
+            // 참여자 추가
+            leenkUsecase.participateLeenk(participant.id, leenk.id)
 
+            When("참여자를 강퇴하면") {
                 Then("NotLeenkOwnerException이 발생한다") {
                     shouldThrow<NotLeenkOwnerException> {
                         leenkUsecase.kickParticipant(otherUser.id, leenk.id, participant.id)
                     }
                 }
             }
+        }
 
-            When("작성자가 자기 자신을 강퇴 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("호스트가 자기 자신을 강퇴하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
+            When("자신을 강퇴하면") {
                 Then("CannotKickSelfException이 발생한다") {
                     shouldThrow<CannotKickSelfException> {
                         leenkUsecase.kickParticipant(host.id, leenk.id, host.id)
                     }
                 }
             }
+        }
 
-            When("링크에 참여하지 않은 사용자를 강퇴 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val nonParticipant = persistUser(2L, "미참여자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("링크에 참여하지 않은 사용자를 강퇴하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val nonParticipant = persistUser(2L, "미참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
+            When("미참여자를 강퇴하면") {
                 Then("LeenkParticipantNotFoundException이 발생한다") {
                     shouldThrow<LeenkParticipantNotFoundException> {
                         leenkUsecase.kickParticipant(host.id, leenk.id, nonParticipant.id)
                     }
                 }
             }
+        }
 
-            When("마감된 링크에서 강퇴 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+        Given("마감된 링크에서 참여자를 강퇴하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
 
-                Then("LeenkNotRecruitingException이 발생한다") {
-                    shouldThrow<LeenkNotRecruitingException> {
-                        leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
-                    }
-                }
-            }
-
-            When("완료된 링크에서 강퇴 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
-
+            When("참여자를 강퇴하면") {
                 Then("LeenkNotRecruitingException이 발생한다") {
                     shouldThrow<LeenkNotRecruitingException> {
                         leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
@@ -334,88 +354,114 @@ class LeenkUsecaseIntegrationTest(
             }
         }
 
-        Given("leaveLeenk - 링크 나가기") {
+        Given("완료된 링크에서 참여자를 강퇴하는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
 
-            When("일반 참여자가 링크를 나가면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+            When("참여자를 강퇴하면") {
+                Then("LeenkNotRecruitingException이 발생한다") {
+                    shouldThrow<LeenkNotRecruitingException> {
+                        leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
+                    }
+                }
+            }
+        }
 
-                // 참여자 추가
-                leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+        // leaveLeenk 링크 나가기
+        Given("일반 참여자가 링크를 나가는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
-                // DB에서 최신 currentParticipants 가져오기
-                val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
-                val initialCount = updatedAfterParticipate.currentParticipants
+            // 참여자 추가
+            leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+
+            // DB에서 최신 currentParticipants 가져오기
+            val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
+            val initialCount = updatedAfterParticipate.currentParticipants
+
+            When("링크를 나가면") {
+                leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
 
                 Then("정상적으로 나가지고 currentParticipants가 1 감소하며 알림이 전송된다") {
-                    leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.currentParticipants shouldBe initialCount - 1
                 }
             }
+        }
 
-            When("호스트가 나가기 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("호스트가 링크를 나가는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
+            When("링크를 나가면") {
                 Then("CannotLeaveAsHostException이 발생한다") {
                     shouldThrow<CannotLeaveAsHostException> {
                         leenkUsecase.leaveLeenk(host.id, leenk.id)
                     }
                 }
             }
+        }
 
-            When("참여하지 않은 사용자가 나가기 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val nonParticipant = persistUser(2L, "미참여자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("참여하지 않은 사용자가 링크를 나가는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val nonParticipant = persistUser(2L, "미참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
+            When("링크를 나가면") {
                 Then("LeenkParticipantNotFoundException이 발생한다") {
                     shouldThrow<LeenkParticipantNotFoundException> {
                         leenkUsecase.leaveLeenk(nonParticipant.id, leenk.id)
                     }
                 }
             }
+        }
 
-            When("마감된 링크에서 나가기 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
+        Given("마감된 링크에서 나가는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.CLOSED)
 
+            When("링크를 나가면") {
                 Then("LeenkNotRecruitingException이 발생한다") {
                     shouldThrow<LeenkNotRecruitingException> {
                         leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
                     }
                 }
             }
+        }
 
-            When("완료된 링크에서 나가기 시도하면") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val otherUser = persistUser(2L, "다른 사용자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
+        Given("완료된 링크에서 나가는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val otherUser = persistUser(2L, "다른 사용자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.FINISHED)
 
+            When("링크를 나가면") {
                 Then("LeenkNotRecruitingException이 발생한다") {
                     shouldThrow<LeenkNotRecruitingException> {
                         leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
                     }
                 }
             }
+        }
 
-            When("마지막 일반 참여자가 나가면 (경계값 테스트)") {
-                val host = persistUser(id = 1L, name = "호스트")
-                val lastParticipant = persistUser(2L, "마지막참여자")
-                val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
+        Given("마지막 일반 참여자가 링크를 나가는 경우") {
+            val host = persistUser(id = 1L, name = "호스트")
+            val lastParticipant = persistUser(2L, "마지막참여자")
+            val leenk = persistLeenk(author = host, status = LeenkStatus.RECRUITING)
 
-                // 참여자 추가 (host + lastParticipant = 2명)
-                leenkUsecase.participateLeenk(lastParticipant.id, leenk.id)
+            // 참여자 추가 (host + lastParticipant = 2명)
+            leenkUsecase.participateLeenk(lastParticipant.id, leenk.id)
 
-                // DB에서 최신 currentParticipants 가져오기
-                val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
-                val initialCount = updatedAfterParticipate.currentParticipants
+            // DB에서 최신 currentParticipants 가져오기
+            val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
+            val initialCount = updatedAfterParticipate.currentParticipants
 
-                Then("정상적으로 나가지고 host만 남는다") {
-                    leenkUsecase.leaveLeenk(lastParticipant.id, leenk.id)
+            When("링크를 나가면") {
+                leenkUsecase.leaveLeenk(lastParticipant.id, leenk.id)
+
+                Then("호스트만 남고 currentParticipants가 1 감소한다") {
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     // host만 남음
                     updated.currentParticipants shouldBe initialCount - 1
