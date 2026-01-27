@@ -91,7 +91,10 @@ refactor: dto validation 수정
 - **springmockk** for Spring bean mocking - use `@MockkBean` instead of `@MockBean`
 - **Testcontainers** for integration tests (MySQL, MongoDB)
 - Test both success and failure scenarios
-- Use Kotest's `describe`/`context`/`it` for test structure
+- **Kotest Test Styles:**
+  - `StringSpec` - Simple tests with minimal boilerplate
+  - `BehaviorSpec` - BDD-style tests (Given/When/Then)
+  - `DescribeSpec` - Technical specs requiring detailed structure and readability
 - Controller tests: Use `@WebMvcTest` with `@Import` for Security config testing
 
 ## Notes
