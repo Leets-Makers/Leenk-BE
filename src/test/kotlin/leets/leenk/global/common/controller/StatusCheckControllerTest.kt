@@ -1,7 +1,7 @@
 package leets.leenk.global.common.controller
 
 import com.ninjasquad.springmockk.MockkBean
-import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.core.spec.style.StringSpec
 import io.kotest.extensions.spring.SpringExtension
 import leets.leenk.global.auth.application.property.OauthProperty
 import leets.leenk.global.auth.domain.handler.CustomAccessDeniedHandler
@@ -24,17 +24,13 @@ class StatusCheckControllerTest(
     @MockkBean private val oauthProperty: OauthProperty,
     @MockkBean private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
     @MockkBean private val customAccessDeniedHandler: CustomAccessDeniedHandler,
-) : DescribeSpec({
+) : StringSpec({
         extensions(SpringExtension)
 
-        describe("헬스 체크") {
-            context("헬스 체크 요청 시") {
-                it("Security 필터가 활성화된 상태에서 인증 없이 접근 가능해야 한다") {
-                    mockMvc
-                        .perform(get("/health-check"))
-                        .andExpect(status().isOk)
-                        .andExpect(content().string("OK"))
-                }
-            }
+        "헬스 체크 요청 시 Security 필터가 활성화된 상태에서 인증 없이 접근 가능해야 한다" {
+            mockMvc
+                .perform(get("/health-check"))
+                .andExpect(status().isOk)
+                .andExpect(content().string("OK"))
         }
     })
