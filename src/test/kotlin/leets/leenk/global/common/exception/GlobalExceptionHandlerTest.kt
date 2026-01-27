@@ -18,7 +18,7 @@ class GlobalExceptionHandlerTest :
         describe("GlobalExceptionHandler") {
             context("BaseException 처리") {
                 it("BaseException을 처리하여 에러 응답을 반환해야 한다") {
-                    val exception = HandlerTestException(ErrorCode.INTERNAL_SERVER_ERROR)
+                    val exception = HandlerTestException(CommonErrorCode.INTERNAL_SERVER_ERROR)
 
                     val response = handler.handleException(exception)
 
@@ -33,7 +33,8 @@ class GlobalExceptionHandlerTest :
             context("BaseException with custom message 처리") {
                 it("커스텀 메시지를 포함한 에러 응답을 반환해야 한다") {
                     val customMessage = "커스텀 에러 메시지"
-                    val exception = HandlerTestExceptionWithMessage(ErrorCode.INTERNAL_SERVER_ERROR, customMessage)
+                    val exception =
+                        HandlerTestExceptionWithMessage(CommonErrorCode.INTERNAL_SERVER_ERROR, customMessage)
 
                     val response = handler.handleException(exception)
 
@@ -146,7 +147,7 @@ class GlobalExceptionHandlerTest :
 
             context("HttpMessageNotReadableException with BaseException cause 처리") {
                 it("cause의 ErrorCode를 사용해야 한다") {
-                    val cause = HandlerTestException(ErrorCode.INVALID_ARGUMENT)
+                    val cause = HandlerTestException(CommonErrorCode.INVALID_ARGUMENT)
                     val exception =
                         HttpMessageNotReadableException(
                             "JSON parse error",

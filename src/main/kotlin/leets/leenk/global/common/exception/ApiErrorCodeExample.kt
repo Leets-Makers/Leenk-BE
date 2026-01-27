@@ -1,12 +1,9 @@
-package leets.leenk.global.common.exception;
+package leets.leenk.global.common.exception
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import kotlin.reflect.KClass
 
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ApiErrorCodeExample {
-    Class<? extends ErrorCodeInterface>[] value();
-}
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ApiErrorCodeExample(
+    vararg val value: KClass<out ErrorCodeInterface>,
+)

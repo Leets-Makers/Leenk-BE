@@ -25,32 +25,32 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidation(e: MethodArgumentNotValidException): ResponseEntity<CommonResponse<List<ValidErrorResponse>>> {
-        val errorCode = ErrorCode.INVALID_ARGUMENT
+        val commonErrorCode = CommonErrorCode.INVALID_ARGUMENT
         val errors =
             e.bindingResult.fieldErrors.map {
                 ValidErrorResponse.of(it.field, it.defaultMessage ?: "Validation failed", it.rejectedValue)
             }
 
         return ResponseEntity
-            .status(errorCode.status)
-            .body(CommonResponse.error(errorCode, errors))
+            .status(commonErrorCode.status)
+            .body(CommonResponse.error(commonErrorCode, errors))
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgument(e: IllegalArgumentException): ResponseEntity<CommonResponse<Void?>> =
-        ErrorCode.INVALID_ARGUMENT.let { errorCode ->
+        CommonErrorCode.INVALID_ARGUMENT.let { errorCode ->
             ResponseEntity.status(errorCode.status).body(CommonResponse.error(errorCode))
         }
 
     @ExceptionHandler(NoResourceFoundException::class)
     fun handleNoResourceFound(e: NoResourceFoundException): ResponseEntity<CommonResponse<Void?>> =
-        ErrorCode.RESOURCE_NOT_FOUND.let { errorCode ->
+        CommonErrorCode.RESOURCE_NOT_FOUND.let { errorCode ->
             ResponseEntity.status(errorCode.status).body(CommonResponse.error(errorCode))
         }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
     fun handleMethodNotAllowed(e: HttpRequestMethodNotSupportedException): ResponseEntity<CommonResponse<Void?>> =
-        ErrorCode.METHOD_NOT_ALLOWED.let { errorCode ->
+        CommonErrorCode.METHOD_NOT_ALLOWED.let { errorCode ->
             ResponseEntity.status(errorCode.status).body(CommonResponse.error(errorCode))
         }
 
@@ -64,20 +64,20 @@ class GlobalExceptionHandler {
             }
 
             else -> {
-                val errorCode = ErrorCode.JSON_PARSE_ERROR
+                val commonErrorCode = CommonErrorCode.JSON_PARSE_ERROR
                 ResponseEntity
-                    .status(errorCode.status)
-                    .body(CommonResponse.error(errorCode, ex.message ?: errorCode.message))
+                    .status(commonErrorCode.status)
+                    .body(CommonResponse.error(commonErrorCode, ex.message ?: commonErrorCode.message))
             }
         }
 
     @ExceptionHandler(Exception::class)
     fun handleAll(e: Exception): ResponseEntity<CommonResponse<Void?>> {
-        val errorCode = ErrorCode.INTERNAL_SERVER_ERROR
-        val body = CommonResponse.error(errorCode, e.message ?: errorCode.message)
+        val commonErrorCode = CommonErrorCode.INTERNAL_SERVER_ERROR
+        val body = CommonResponse.error(commonErrorCode, e.message ?: commonErrorCode.message)
 
         return ResponseEntity
-            .status(errorCode.status)
+            .status(commonErrorCode.status)
             .body(body)
     }
 }

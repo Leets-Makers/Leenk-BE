@@ -1,13 +1,9 @@
-package leets.leenk.global.common.exception;
+package leets.leenk.global.common.exception
 
-import io.swagger.v3.oas.models.examples.Example;
-import lombok.Builder;
-import lombok.Getter;
+import io.swagger.v3.oas.models.examples.Example
 
-@Getter
-@Builder
-public class ExampleHolder {
-    private Example holder;
-    private String name;
-    private int code;
-}
+data class ExampleHolder(
+    val holder: Example,
+    val name: String?,
+    val code: Int,
+)

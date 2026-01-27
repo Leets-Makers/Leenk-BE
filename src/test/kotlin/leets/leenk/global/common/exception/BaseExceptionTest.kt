@@ -10,26 +10,26 @@ class BaseExceptionTest :
         describe("BaseException") {
             context("ErrorCodeInterface만으로 생성 시") {
                 it("ErrorCode의 메시지를 사용해야 한다") {
-                    val exception = SimpleTestException(ErrorCode.INTERNAL_SERVER_ERROR)
+                    val exception = SimpleTestException(CommonErrorCode.INTERNAL_SERVER_ERROR)
 
-                    exception.message shouldBe ErrorCode.INTERNAL_SERVER_ERROR.message
-                    exception.errorCode shouldBe ErrorCode.INTERNAL_SERVER_ERROR
+                    exception.message shouldBe CommonErrorCode.INTERNAL_SERVER_ERROR.message
+                    exception.errorCode shouldBe CommonErrorCode.INTERNAL_SERVER_ERROR
                 }
             }
 
             context("ErrorCodeInterface와 커스텀 메시지로 생성 시") {
                 it("커스텀 메시지를 사용해야 한다") {
                     val customMessage = "커스텀 에러 메시지"
-                    val exception = SimpleTestExceptionWithMessage(ErrorCode.INTERNAL_SERVER_ERROR, customMessage)
+                    val exception = SimpleTestExceptionWithMessage(CommonErrorCode.INTERNAL_SERVER_ERROR, customMessage)
 
                     exception.message shouldBe customMessage
-                    exception.errorCode shouldBe ErrorCode.INTERNAL_SERVER_ERROR
+                    exception.errorCode shouldBe CommonErrorCode.INTERNAL_SERVER_ERROR
                 }
             }
 
             context("ErrorCodeInterface의 속성 접근") {
                 it("ErrorCode의 모든 속성에 접근할 수 있어야 한다") {
-                    val exception = SimpleTestException(ErrorCode.INVALID_ARGUMENT)
+                    val exception = SimpleTestException(CommonErrorCode.INVALID_ARGUMENT)
 
                     exception.errorCode.code shouldBe 4001
                     exception.errorCode.status shouldBe HttpStatus.BAD_REQUEST

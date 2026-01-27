@@ -9,7 +9,7 @@ class ResourceLockedExceptionTest :
         "ResourceLockedException은 RESOURCE_LOCKED 에러 코드를 사용해야 한다" {
             val exception = ResourceLockedException()
 
-            exception.errorCode shouldBe ErrorCode.RESOURCE_LOCKED
+            exception.errorCode shouldBe CommonErrorCode.RESOURCE_LOCKED
             exception.errorCode.code shouldBe 3003
             exception.errorCode.status shouldBe HttpStatus.CONFLICT
         }
