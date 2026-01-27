@@ -210,10 +210,17 @@ public class FeedUsecase {
                 .toList();
     }
 
+    /**
+     * 피드에 공감을 추가
+     * 비관적 락(PESSIMISTIC_WRITE)을 사용하여 동시성 문제를 해결
+     * @see leets.leenk.domain.feed.domain.repository.FeedRepository#findByIdWithPessimisticLock
+     * @see leets.leenk.domain.user.domain.repository.UserRepository#findByIdWithPessimisticLock
+     */
     @Transactional
     public void reactToFeed(long userId, long feedId, ReactionRequest request) {
+        Feed feed = feedGetService.findByIdWithLock(feedId); // !락 순서 중요!
         User user = userGetService.findById(userId);
-        Feed feed = feedGetService.findById(feedId);
+
         validateReaction(feed, user);
 
         Reaction reaction = reactionGetService.findByFeedAndUser(feed, user)
@@ -225,6 +232,7 @@ public class FeedUsecase {
 
         long previousReactionCount = reaction.getReactionCount();
 
+        // Feed를 가져올 때 Fetch Join으로 작성자를 함께 가져와 락이 함께 걸리므로 별도의 락 필요 없음.
         feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
         feedNotificationUsecase.saveFirstReactionNotification(reaction);
 

@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.jpa") version "2.3.0"
     id("org.springframework.boot") version "3.5.9"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
 
 group = "leets"
@@ -59,6 +60,7 @@ dependencies {
     testImplementation("org.testcontainers:mysql")
     testImplementation("org.testcontainers:mongodb")
     testImplementation("io.mockk:mockk:1.14.7")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
     // Kotest
@@ -83,5 +85,19 @@ tasks.withType<KotlinCompile> {
     compilerOptions {
         freeCompilerArgs.set(listOf("-Xjsr305=strict"))
         jvmTarget.set(JvmTarget.JVM_21)
+    }
+}
+
+// ktlint 설정
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    version.set("1.8.0")
+    android.set(false)
+    outputToConsole.set(true)
+    outputColorName.set("RED")
+    ignoreFailures.set(false)
+
+    filter {
+        exclude("**/generated/**")
+        exclude("**/build/**")
     }
 }

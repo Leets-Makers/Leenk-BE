@@ -1,10 +1,14 @@
 package leets.leenk.domain.user.domain.repository;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
 import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
@@ -13,6 +17,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    /**
+     * 비관적 락을 사용하여 유저 조회
+     * 동시 수정이 발생할 수 있는 경우 (공감하기 등) 사용
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "2000"))
+    @Query("SELECT u FROM User u WHERE u.id = :userId AND u.leaveDate IS NULL AND u.deleteDate IS NULL")
+    Optional<User> findByIdWithPessimisticLock(@Param("userId") long userId);
 
     Optional<User> findByIdAndLeaveDateIsNullAndDeleteDateIsNull(long userId);
 

@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class SelfReactionNotAllowedException extends BaseException {
     public SelfReactionNotAllowedException() {
-        super(ErrorCode.SELF_REACTION);
+        super(FeedErrorCode.SELF_REACTION);
     }
 }

@@ -7,11 +7,13 @@ import jakarta.validation.Valid;
 import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest;
 import leets.leenk.domain.birthday.application.dto.response.BirthdayUsersResponse;
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse;
-import leets.leenk.domain.birthday.application.dto.response.UpcomingBirthdayUserResponse;
 import leets.leenk.domain.birthday.application.dto.response.UpcomingBirthdayUsersResponse;
+import leets.leenk.domain.birthday.application.exception.BirthdayErrorCode;
 import leets.leenk.domain.birthday.application.usecase.BirthdayLetterUseCase;
 import leets.leenk.domain.birthday.application.usecase.BirthdayUsecase;
+import leets.leenk.domain.user.application.exception.UserErrorCode;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
+import leets.leenk.global.common.exception.ApiErrorCodeExample;
 import leets.leenk.global.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "BIRTHDAY")
+@ApiErrorCodeExample({BirthdayErrorCode.class,  UserErrorCode.class})
 @RestController
 @RequestMapping("/birthday")
 @RequiredArgsConstructor

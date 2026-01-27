@@ -4,6 +4,6 @@ import leets.leenk.global.common.exception.BaseException;
 
 public class FeedDeleteNotAllowedException extends BaseException {
     public FeedDeleteNotAllowedException() {
-        super(ErrorCode.FEED_DELETE_NOT_ALLOWED);
+        super(FeedErrorCode.FEED_DELETE_NOT_ALLOWED);
     }
 }
