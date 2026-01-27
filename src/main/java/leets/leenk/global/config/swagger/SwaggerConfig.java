@@ -16,22 +16,19 @@ import leets.leenk.global.common.exception.ErrorCodeInterface;
 import leets.leenk.global.common.exception.ExampleHolder;
 import leets.leenk.global.common.response.CommonResponse;
 import org.springdoc.core.customizers.OperationCustomizer;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.groupingBy;
 
 @Configuration
 public class SwaggerConfig {
     private static final String JWT_SCHEME = "jwtAuth";
-
-    public SwaggerConfig(ApplicationContext applicationContext) {
-    }
 
     @Bean
     public OpenAPI openAPI() {
@@ -81,11 +78,11 @@ public class SwaggerConfig {
                             try {
                                 String enumName = ((Enum<?>) errorCode).name();
 
-                                return ExampleHolder.builder()
-                                        .holder(getSwaggerExample(errorCode.getExplainError(), errorCode))
-                                        .code(errorCode.getStatus().value())
-                                        .name("[" + enumName + "] " + errorCode.getMessage()) // 한글로된 드롭다운을 만들기 위해 예외 메시지를 이름으로 사용
-                                        .build();
+                                return new ExampleHolder(
+                                        getSwaggerExample(errorCode.getExplainError(), errorCode),
+                                        "[" + enumName + "] " + errorCode.getMessage(), // 한글로된 드롭다운을 만들기 위해 예외 메시지를 이름으로 사용
+                                        Objects.requireNonNull(errorCode.getStatus()).value()
+                                );
                             } catch (NoSuchFieldException e) {
                                 throw new RuntimeException(e);
                             }

@@ -60,6 +60,7 @@ dependencies {
     testImplementation("org.testcontainers:mysql")
     testImplementation("org.testcontainers:mongodb")
     testImplementation("io.mockk:mockk:1.14.7")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
     // Kotest
