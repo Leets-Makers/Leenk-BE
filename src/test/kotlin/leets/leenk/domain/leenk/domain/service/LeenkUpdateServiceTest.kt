@@ -1,6 +1,5 @@
 package leets.leenk.domain.leenk.domain.service
 
-import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -50,43 +49,44 @@ class LeenkUpdateServiceTest :
         )
 
         // 최대 참여자 수 검증 로직을 테스트
-        Given("현재 참여자가 5명인 링크") {
+        Given("링크 현재 참여자 5명, 최대 참여자를 8명으로 변경하는 경우") {
+            val leenk = createLeenk()
+            val location = leenk.location
 
-            When("최대 참여자를 현재 참여자보다 많은 8명으로 변경하면") {
-                val leenk = createLeenk() // current: 5명
-                val location = leenk.location
+            val request = updateRequest(maxParticipants = 8L)
 
-                val request = updateRequest(maxParticipants = 8L)
+            When("최대 참여자를 현재 참여자보다 많게 변경하면") {
+                leenkUpdateService.updateLeenk(leenk, location, request)
 
-                Then("예외 없이 최대 참여자가 요청한 값으로 변경된다") {
-                    shouldNotThrow<MaxParticipantsTooLowException> {
-                        leenkUpdateService.updateLeenk(leenk, location, request)
-                    }
+                Then("최대 참여자가 요청한 값으로 변경된다") {
                     leenk.maxParticipants shouldBe request.maxParticipants
                 }
             }
+        }
 
-            When("최대 참여자를 현재 참여자와 같은 5명으로 변경하면") {
-                val leenk = createLeenk() // current: 5명
-                val location = leenk.location
+        Given("링크 현재 참여자 5명, 최대 참여자를 5명으로 변경하는 경우") {
+            val leenk = createLeenk()
+            val location = leenk.location
 
-                val request = updateRequest(maxParticipants = 5L)
+            val request = updateRequest(maxParticipants = 5L)
 
-                Then("예외 없이 최대 참여자가 요청한 값으로 변경된다") {
-                    shouldNotThrow<MaxParticipantsTooLowException> {
-                        leenkUpdateService.updateLeenk(leenk, location, request)
-                    }
+            When("최대 참여자를 현재 참여자와 같게 변경하면") {
+                leenkUpdateService.updateLeenk(leenk, location, request)
+
+                Then("최대 참여자가 요청한 값으로 변경된다") {
                     leenk.maxParticipants shouldBe request.maxParticipants
                 }
             }
+        }
 
-            When("최대 참여자를 현재 참여자보다 적은 3명으로 변경하려 하면") {
-                val leenk = createLeenk() // current: 5명
-                val location = leenk.location
+        Given("링크 현재 참여자 5명, 최대 참여자를 3명으로 변경하는 경우") {
+            val leenk = createLeenk()
+            val location = leenk.location
 
-                val request = updateRequest(maxParticipants = 3L)
+            val request = updateRequest(maxParticipants = 3L)
 
-                Then("MaxParticipantsTooLowException이 발생하고 변경되지 않는다") {
+            When("최대 참여자를 현재 참여자보다 적게 변경하면") {
+                Then("MaxParticipantsTooLowException이 발생한다") {
                     shouldThrow<MaxParticipantsTooLowException> {
                         leenkUpdateService.updateLeenk(leenk, location, request)
                     }
