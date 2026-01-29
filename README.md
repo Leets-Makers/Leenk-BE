@@ -50,10 +50,12 @@ Leenk는 이런 순간을 자연스럽게 연결해주는 서비스예요.
   <tr>
     <td align="center"><img src="https://github.com/dalzzy.png" width="160"></td>
     <td align="center"><img src="https://github.com/JIN921.png" width="160"></td>
+    <td align="center"><img src="https://github.com/nabbang6.png" width="160"></td>
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/dalzzy">계다현</td>
     <td align="center"><a href="https://github.com/JIN921">이유진</td>
+    <td align="center"><a href="https://github.com/nabbang6">서나영</td>
   </tr>
 </table>
 
@@ -139,3 +141,4 @@ Leenk는 이런 순간을 자연스럽게 연결해주는 서비스예요.
 ## 📦 깃허브 주소
 - [GitHub FE Repo](https://github.com/Leets-Makers/Leenk-MOBILE.git)
 - [GitHub BE Repo](https://github.com/Leets-Makers/Leenk-BE.git)
+
