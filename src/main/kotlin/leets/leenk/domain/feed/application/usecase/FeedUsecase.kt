@@ -36,20 +36,16 @@ import leets.leenk.domain.feed.domain.service.LinkedUserSaveService
 import leets.leenk.domain.feed.domain.service.ReactionGetService
 import leets.leenk.domain.feed.domain.service.ReactionSaveService
 import leets.leenk.domain.media.application.mapper.MediaMapper
-import leets.leenk.domain.media.domain.entity.Media
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
 import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase
 import leets.leenk.domain.user.domain.entity.User
-import leets.leenk.domain.user.domain.entity.UserBlock
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.blockuser.UserBlockService
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -90,13 +86,7 @@ class FeedUsecase(
 ) {
 
     @Transactional(readOnly = true)
-    fun getFeeds(
-        userId: Long,
-
-        pageNumber: Int,
-
-        pageSize: Int,
-    ): FeedListResponse {
+    fun getFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
         val user = userGetService.findById(userId)
         val blockedUsers = userBlockService.findAllByBlocker(user)
 
@@ -122,15 +112,7 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getFeedNavigation(
-        feedId: Long,
-
-        currentUserId: Long,
-
-        prevSize: Int?,
-
-        nextSize: Int?,
-    ): FeedNavigationResponse {
+    fun getFeedNavigation(feedId: Long, currentUserId: Long, prevSize: Int?, nextSize: Int?): FeedNavigationResponse {
         // 파라미터 검증 및 기본값 설정
         val validatedPrevSize = validateSize(prevSize, DEFAULT_NAVIGATION_SIZE, MAX_NAVIGATION_SIZE)
         val validatedNextSize = validateSize(nextSize, DEFAULT_NAVIGATION_SIZE, MAX_NAVIGATION_SIZE)
@@ -192,13 +174,7 @@ class FeedUsecase(
         )
     }
 
-    private fun validateSize(
-        size: Int?,
-
-        defaultValue: Int,
-
-        maxValue: Int,
-    ): Int {
+    private fun validateSize(size: Int?, defaultValue: Int, maxValue: Int): Int {
         if (size == null) {
             return defaultValue
         }
@@ -212,11 +188,7 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun uploadFeed(
-        userId: Long,
-
-        request: FeedUploadRequest,
-    ) {
+    fun uploadFeed(userId: Long, request: FeedUploadRequest) {
         val author = userGetService.findById(userId)
         val feed = feedMapper.toFeed(author, request.description)
         feedSaveService.save(feed)
@@ -233,13 +205,7 @@ class FeedUsecase(
         feedNotificationUsecase.saveTagNotification(feed, linkedUsers, author)
     }
 
-    private fun getLinkedUsers(
-        author: User,
-
-        userIds: List<Long>,
-
-        feed: Feed,
-    ): List<LinkedUser> {
+    private fun getLinkedUsers(author: User, userIds: List<Long>, feed: Feed): List<LinkedUser> {
         val users = userGetService.findAll(userIds).toMutableSet()
         users.add(author) // 중복 자동 제거
 
@@ -255,13 +221,7 @@ class FeedUsecase(
      * @see leets.leenk.domain.user.domain.repository.UserRepository.findByIdWithPessimisticLock
      */
     @Transactional
-    fun reactToFeed(
-        userId: Long,
-
-        feedId: Long,
-
-        request: ReactionRequest,
-    ) {
+    fun reactToFeed(userId: Long, feedId: Long, request: ReactionRequest) {
         val feed = feedGetService.findByIdWithLock(feedId) // !락 순서 중요!
         val user = userGetService.findById(userId)
 
@@ -285,13 +245,7 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun writeComment(
-        userId: Long,
-
-        feedId: Long,
-
-        request: CommentWriteRequest,
-    ) {
+    fun writeComment(userId: Long, feedId: Long, request: CommentWriteRequest) {
         val user = userGetService.findById(userId)
         val feed = feedGetService.findById(feedId)
 
@@ -300,11 +254,7 @@ class FeedUsecase(
         commentSaveService.saveComment(comment)
     }
 
-    private fun validateReaction(
-        feed: Feed,
-
-        user: User,
-    ) {
+    private fun validateReaction(feed: Feed, user: User) {
         if (feed.user == user) {
             throw SelfReactionNotAllowedException()
         }
@@ -319,13 +269,7 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun updateFeed(
-        userId: Long,
-
-        feedId: Long,
-
-        request: FeedUpdateRequest,
-    ) {
+    fun updateFeed(userId: Long, feedId: Long, request: FeedUpdateRequest) {
         val feed = feedGetService.findById(feedId)
         val author = userGetService.findById(userId)
 
@@ -349,34 +293,19 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getMyFeeds(
-        userId: Long,
-
-        pageNumber: Int,
-
-        pageSize: Int,
-    ): FeedListResponse {
+    fun getMyFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
         return getFeedsByUser(userId, pageNumber, pageSize, true)
     }
 
     @Transactional(readOnly = true)
-    fun getOthersFeeds(
-        userId: Long,
-
-        pageNumber: Int,
-
-        pageSize: Int,
-    ): FeedListResponse {
+    fun getOthersFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
         return getFeedsByUser(userId, pageNumber, pageSize, false)
     }
 
     private fun getFeedsByUser(
         userId: Long,
-
         pageNumber: Int,
-
         pageSize: Int,
-
         includeTotalReaction: Boolean,
     ): FeedListResponse {
         val pageable = PageRequest.of(pageNumber, pageSize)
@@ -391,13 +320,7 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getLinkedFeeds(
-        userId: Long,
-
-        pageNumber: Int,
-
-        pageSize: Int,
-    ): FeedListResponse {
+    fun getLinkedFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
         val user = userGetService.findById(userId)
         val pageable = PageRequest.of(pageNumber, pageSize)
 
@@ -417,11 +340,7 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getUsers(
-        pageNumber: Int,
-
-        pageSize: Int,
-    ): FeedUserListResponse {
+    fun getUsers(pageNumber: Int, pageSize: Int): FeedUserListResponse {
         val pageable = PageRequest.of(pageNumber, pageSize)
         val slice = userGetService.findAll(pageable)
 
@@ -429,11 +348,7 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun deleteFeed(
-        userId: Long,
-
-        feedId: Long,
-    ) {
+    fun deleteFeed(userId: Long, feedId: Long) {
         val feed = feedGetService.findById(feedId)
         val user = userGetService.findById(userId)
 
@@ -445,11 +360,7 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun deleteComment(
-        userId: Long,
-
-        commentId: Long,
-    ) {
+    fun deleteComment(userId: Long, commentId: Long) {
         val user = userGetService.findById(userId)
         val comment = commentGetService.findCommentByIdNotDeleted(commentId)
 
@@ -461,13 +372,7 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun reportFeed(
-        userId: Long,
-
-        feedId: Long,
-
-        request: FeedReportRequest,
-    ) {
+    fun reportFeed(userId: Long, feedId: Long, request: FeedReportRequest) {
         val user = userGetService.findById(userId)
         val feed = feedGetService.findById(feedId)
 
@@ -475,13 +380,7 @@ class FeedUsecase(
         slackWebhookService.sendFeedReport(request.report)
     }
 
-    private fun notifyIfReachedReactionMilestone(
-        previous: Long,
-
-        current: Long,
-
-        feed: Feed,
-    ) {
+    private fun notifyIfReachedReactionMilestone(previous: Long, current: Long, feed: Feed) {
         val milestones = longArrayOf(5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000)
 
         for (milestone in milestones) {
@@ -491,11 +390,7 @@ class FeedUsecase(
         }
     }
 
-    private fun checkAuthor(
-        user: User,
-
-        feed: Feed,
-    ) {
+    private fun checkAuthor(user: User, feed: Feed) {
         if (feed.user != user) {
             throw FeedUpdateNotAllowedException()
         }
