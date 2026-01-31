@@ -22,7 +22,6 @@ import leets.leenk.domain.feed.application.mapper.ReactionMapper
 import leets.leenk.domain.feed.domain.entity.Comment
 import leets.leenk.domain.feed.domain.entity.Feed
 import leets.leenk.domain.feed.domain.entity.LinkedUser
-import leets.leenk.domain.feed.domain.entity.Reaction
 import leets.leenk.domain.feed.domain.service.CommentDeleteService
 import leets.leenk.domain.feed.domain.service.CommentGetService
 import leets.leenk.domain.feed.domain.service.CommentSaveService
