@@ -53,33 +53,29 @@ class FeedGetService(
      * ASC로 조회한 결과를 최신순(DESC)으로 역정렬하여 반환
      * 한 번의 쿼리로 피드 목록과 추가 피드 존재 여부를 함께 반환
      */
-    fun findPrevFeedsWithHasMore(currentFeed: Feed, blockedUsers: List<UserBlock>, size: Int): FeedNavigationResult? {
+    fun findPrevFeedsWithHasMore(currentFeed: Feed, blockedUsers: List<UserBlock>, size: Int): FeedNavigationResult {
         val blockedUserIds = extractBlockedUserIds(blockedUsers)
 
         // size+1 개를 조회하여 hasMore 판단
         val pageable = PageRequest.of(0, size + 1)
-        var feeds = blockedUserIds.ifEmpty { null }?.let {
-            feedRepository.findPrevFeeds(
-                currentFeed.createDate!!,
-                it,
-                pageable,
-            )
-        }
+        var feeds = feedRepository.findPrevFeeds(
+            currentFeed.createDate!!,
+            blockedUserIds.takeIf { it.isNotEmpty() },
+            pageable,
+        )
 
         // hasMore 판단
-        val hasMore = feeds?.let { it.size > size }
+        val hasMore = feeds.size > size
 
         // size보다 많으면 잘라내기
-        if (hasMore == true) {
+        if (hasMore) {
             feeds = feeds.subList(0, size)
         }
 
         // ASC로 조회했으므로 최신순으로 역정렬
-        if (feeds != null) {
-            feeds = feeds.reversed()
-        }
+        feeds = feeds.reversed()
 
-        return feeds?.let { FeedNavigationResult(it, hasMore == true) }
+        return FeedNavigationResult(feeds, hasMore)
     }
 
     /**
@@ -87,28 +83,26 @@ class FeedGetService(
      * DESC로 조회하므로 그대로 반환
      * 한 번의 쿼리로 피드 목록과 추가 피드 존재 여부를 함께 반환
      */
-    fun findNextFeedsWithHasMore(currentFeed: Feed, blockedUsers: List<UserBlock>, size: Int): FeedNavigationResult? {
+    fun findNextFeedsWithHasMore(currentFeed: Feed, blockedUsers: List<UserBlock>, size: Int): FeedNavigationResult {
         val blockedUserIds = extractBlockedUserIds(blockedUsers)
 
         // size+1 개를 조회하여 hasMore 판단
         val pageable = PageRequest.of(0, size + 1)
-        var feeds = blockedUserIds.ifEmpty { null }?.let {
-            feedRepository.findNextFeeds(
-                currentFeed.createDate!!,
-                it,
-                pageable,
-            )
-        }
+        var feeds = feedRepository.findNextFeeds(
+            currentFeed.createDate!!,
+            blockedUserIds.takeIf { it.isNotEmpty() },
+            pageable,
+        )
 
         // hasMore 판단
-        val hasMore = feeds?.let { it.size > size }
+        val hasMore = feeds.size > size
 
         // size보다 많으면 잘라내기
-        if (hasMore == true) {
+        if (hasMore) {
             feeds = feeds.subList(0, size)
         }
 
-        return feeds?.let { FeedNavigationResult(it, hasMore == true) }
+        return FeedNavigationResult(feeds, hasMore)
     }
 
     private fun extractBlockedUserIds(blockedUsers: List<UserBlock>): List<Long> {

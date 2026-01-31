@@ -59,7 +59,7 @@ interface FeedRepository : JpaRepository<Feed, Long> {
     )
     fun findPrevFeeds(
         @Param("currentCreateDate") currentCreateDate: LocalDateTime,
-        @Param("blockedUserIds") blockedUserIds: List<Long>,
+        @Param("blockedUserIds") blockedUserIds: List<Long>?,
         pageable: Pageable,
     ): List<Feed>
 
@@ -76,7 +76,7 @@ interface FeedRepository : JpaRepository<Feed, Long> {
     )
     fun findNextFeeds(
         @Param("currentCreateDate") currentCreateDate: LocalDateTime,
-        @Param("blockedUserIds") blockedUserIds: List<Long>,
+        @Param("blockedUserIds") blockedUserIds: List<Long>?,
         pageable: Pageable,
     ): List<Feed>
 }
