@@ -19,5 +19,5 @@ data class FeedUploadRequest(
     val media: List<FeedMediaRequest>,
 
     @field:Schema(description = "함께한 사용자 목록")
-    val userIds: List<Long>?,
+    val userIds: List<Long>,
 )
