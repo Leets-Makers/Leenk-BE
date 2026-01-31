@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class FeedDeleteService {
-
     fun delete(feed: Feed) {
         feed.delete()
     }

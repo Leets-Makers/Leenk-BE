@@ -8,7 +8,6 @@ enum class ResponseCode(
     private val status: HttpStatus,
     private val message: String,
 ) : ResponseCodeInterface {
-
     GET_ALL_FEED(1200, HttpStatus.OK, "전체 피드 조회에 성공했습니다."),
     GET_FEED_DETAIL(1201, HttpStatus.OK, "피드 상세 조회에 성공했습니다."),
     UPLOAD_FEED(1202, HttpStatus.OK, "피드 업로드에 성공했습니다."),
@@ -28,6 +27,8 @@ enum class ResponseCode(
     ;
 
     override fun getCode(): Int = code
+
     override fun getStatus(): HttpStatus = status
+
     override fun getMessage(): String = message
 }

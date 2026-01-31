@@ -9,13 +9,20 @@ import org.springframework.stereotype.Service
 
 @Service
 class FeedUpdateService {
-
-    fun update(feed: Feed, request: FeedUpdateRequest) {
+    fun update(
+        feed: Feed,
+        request: FeedUpdateRequest,
+    ) {
         val normalized = normalizeDescription(request.description)
         normalized?.let { feed.updateDescription(it) }
     }
 
-    fun updateTotalReaction(feed: Feed, reaction: Reaction, user: User, reactionCount: Long) {
+    fun updateTotalReaction(
+        feed: Feed,
+        reaction: Reaction,
+        user: User,
+        reactionCount: Long,
+    ) {
         feed.increaseTotalReactionCount(reactionCount)
         reaction.increaseReactionCount(reactionCount)
         user.increaseTotalReactionCount(reactionCount)

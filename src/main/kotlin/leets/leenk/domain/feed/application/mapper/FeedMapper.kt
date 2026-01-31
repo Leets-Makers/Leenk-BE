@@ -23,8 +23,10 @@ import org.springframework.stereotype.Component
 class FeedMapper(
     private val userProfileMapper: UserProfileMapper,
 ) {
-
-    fun toFeedListResponse(slice: Slice<Feed>, mediaMap: Map<Long, List<Media>>): FeedListResponse {
+    fun toFeedListResponse(
+        slice: Slice<Feed>,
+        mediaMap: Map<Long, List<Media>>,
+    ): FeedListResponse {
         val responses = toFeedListResponse(slice.content, mediaMap)
 
         return FeedListResponse(
@@ -49,31 +51,37 @@ class FeedMapper(
         )
     }
 
-    private fun toFeedListResponse(feeds: List<Feed>, mediaMap: Map<Long, List<Media>>): List<FeedResponse> {
-        return feeds.map { feed ->
+    private fun toFeedListResponse(
+        feeds: List<Feed>,
+        mediaMap: Map<Long, List<Media>>,
+    ): List<FeedResponse> =
+        feeds.map { feed ->
             val medias = mediaMap.getOrDefault(feed.id, emptyList())
             val thumbnail = medias.firstOrNull()
 
             toFeedResponse(feed, thumbnail)
         }
-    }
 
-    fun toFeedResponse(feed: Feed, thumbNail: Media?): FeedResponse {
-        return FeedResponse(
+    fun toFeedResponse(
+        feed: Feed,
+        thumbNail: Media?,
+    ): FeedResponse =
+        FeedResponse(
             feedId = feed.id!!,
             author = toFeedAuthorResponse(feed),
             thumbNail = thumbNail!!.thumbnailUrl,
             totalReactionCount = feed.totalReactionCount,
         )
-    }
 
-    fun toFeedAuthorResponse(feed: Feed): FeedAuthorResponse {
-        return FeedAuthorResponse(
+    fun toFeedAuthorResponse(feed: Feed): FeedAuthorResponse =
+        FeedAuthorResponse(
             author = userProfileMapper.toProfile(feed.user),
         )
-    }
 
-    fun toFeed(user: User, description: String?): Feed {
+    fun toFeed(
+        user: User,
+        description: String?,
+    ): Feed {
         val normalizedDescription = normalizeDescription(description)
 
         return Feed(
@@ -87,8 +95,8 @@ class FeedMapper(
         medias: List<Media>,
         linkedUsers: List<LinkedUser>,
         comments: List<Comment>,
-    ): FeedDetailResponse {
-        return FeedDetailResponse(
+    ): FeedDetailResponse =
+        FeedDetailResponse(
             feedId = feed.id!!,
             author = toFeedAuthorResponse(feed),
             description = feed.description,
@@ -99,29 +107,29 @@ class FeedMapper(
             linkedUser = toLinkedUserResponses(linkedUsers, feed),
             comments = toGetCommentsResponses(comments),
         )
-    }
 
-    private fun toFeedMediaResponses(medias: List<Media>): List<FeedMediaResponse> {
-        return medias.map { media ->
+    private fun toFeedMediaResponses(medias: List<Media>): List<FeedMediaResponse> =
+        medias.map { media ->
             FeedMediaResponse(
                 position = media.position,
                 mediaUrl = media.mediaUrl,
                 mediaType = media.mediaType,
             )
         }
-    }
 
-    private fun toLinkedUserResponses(linkedUsers: List<LinkedUser>, feed: Feed): List<LinkedUserResponse> {
-        return linkedUsers.map { linkedUser ->
+    private fun toLinkedUserResponses(
+        linkedUsers: List<LinkedUser>,
+        feed: Feed,
+    ): List<LinkedUserResponse> =
+        linkedUsers.map { linkedUser ->
             LinkedUserResponse(
                 user = userProfileMapper.toProfile(linkedUser.user),
                 isAuthor = linkedUser.user.id == feed.user.id,
             )
         }
-    }
 
-    private fun toGetCommentsResponses(comments: List<Comment>): List<FeedCommentResponse> {
-        return comments.map { comment ->
+    private fun toGetCommentsResponses(comments: List<Comment>): List<FeedCommentResponse> =
+        comments.map { comment ->
             FeedCommentResponse(
                 commentId = comment.commentId!!,
                 user = userProfileMapper.toProfile(comment.user),
@@ -129,7 +137,6 @@ class FeedMapper(
                 createdAt = comment.createDate!!,
             )
         }
-    }
 
     fun toFeedNavigationResponse(
         currentFeed: Feed,
@@ -141,30 +148,33 @@ class FeedMapper(
         hasMorePrev: Boolean,
         hasMoreNext: Boolean,
     ): FeedNavigationResponse {
-        val current = toFeedDetailResponse(
-            currentFeed,
-            mediaMap.getOrDefault(currentFeed.id, emptyList()),
-            linkedUserMap.getOrDefault(currentFeed.id, emptyList()),
-            commentsMap.getOrDefault(currentFeed.id, emptyList()),
-        )
-
-        val prevFeedResponses = prevFeeds.map { feed ->
+        val current =
             toFeedDetailResponse(
-                feed,
-                mediaMap.getOrDefault(feed.id, emptyList()),
-                linkedUserMap.getOrDefault(feed.id, emptyList()),
-                commentsMap.getOrDefault(feed.id, emptyList()),
+                currentFeed,
+                mediaMap.getOrDefault(currentFeed.id, emptyList()),
+                linkedUserMap.getOrDefault(currentFeed.id, emptyList()),
+                commentsMap.getOrDefault(currentFeed.id, emptyList()),
             )
-        }
 
-        val nextFeedResponses = nextFeeds.map { feed ->
-            toFeedDetailResponse(
-                feed,
-                mediaMap.getOrDefault(feed.id, emptyList()),
-                linkedUserMap.getOrDefault(feed.id, emptyList()),
-                commentsMap.getOrDefault(feed.id, emptyList()),
-            )
-        }
+        val prevFeedResponses =
+            prevFeeds.map { feed ->
+                toFeedDetailResponse(
+                    feed,
+                    mediaMap.getOrDefault(feed.id, emptyList()),
+                    linkedUserMap.getOrDefault(feed.id, emptyList()),
+                    commentsMap.getOrDefault(feed.id, emptyList()),
+                )
+            }
+
+        val nextFeedResponses =
+            nextFeeds.map { feed ->
+                toFeedDetailResponse(
+                    feed,
+                    mediaMap.getOrDefault(feed.id, emptyList()),
+                    linkedUserMap.getOrDefault(feed.id, emptyList()),
+                    commentsMap.getOrDefault(feed.id, emptyList()),
+                )
+            }
 
         return FeedNavigationResponse(
             current = current,

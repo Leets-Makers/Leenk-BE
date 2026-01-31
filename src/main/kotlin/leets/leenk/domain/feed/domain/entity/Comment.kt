@@ -20,22 +20,17 @@ class Comment(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     val commentId: Long? = null,
-
     @Column(name = "comments")
     var comment: String? = null,
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "feed_id", nullable = false, updatable = false)
     val feed: Feed,
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     val user: User,
-
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null,
 ) : BaseEntity() {
-
     fun deleteComment() {
         this.deletedAt = LocalDateTime.now()
     }

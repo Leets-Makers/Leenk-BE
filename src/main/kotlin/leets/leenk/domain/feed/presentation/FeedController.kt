@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController
 class FeedController(
     private val feedUsecase: FeedUsecase,
 ) {
-
     @GetMapping
     @Operation(summary = "피드 조회 API - 무한 스크롤")
     fun getFeeds(
@@ -54,7 +53,9 @@ class FeedController(
 
     @GetMapping("/{feedId}")
     @Operation(summary = "피드 상세 조회 API")
-    fun getFeedDetail(@PathVariable @Positive feedId: Long): CommonResponse<FeedDetailResponse> {
+    fun getFeedDetail(
+        @PathVariable @Positive feedId: Long,
+    ): CommonResponse<FeedDetailResponse> {
         val response = feedUsecase.getFeedDetail(feedId)
 
         return CommonResponse.success(ResponseCode.GET_FEED_DETAIL, response)
@@ -63,8 +64,9 @@ class FeedController(
     @GetMapping("/{feedId}/navigation")
     @Operation(
         summary = "피드 네비게이션 조회 API (커서 기반 페이지네이션)",
-        description = "현재 피드를 중심으로 이전/다음 피드의 상세 정보를 함께 조회합니다. " +
-            "인스타그램/유튜브 쇼츠와 같은 무한 스크롤 구현에 사용됩니다.",
+        description =
+            "현재 피드를 중심으로 이전/다음 피드의 상세 정보를 함께 조회합니다. " +
+                "인스타그램/유튜브 쇼츠와 같은 무한 스크롤 구현에 사용됩니다.",
     )
     fun getFeedNavigation(
         @PathVariable @Positive feedId: Long,
@@ -72,12 +74,13 @@ class FeedController(
         @RequestParam(required = false) @Parameter(description = "이전 피드 개수 (0~3)", example = "1") prevSize: Int?,
         @RequestParam(required = false) @Parameter(description = "다음 피드 개수 (0~3)", example = "1") nextSize: Int?,
     ): CommonResponse<FeedNavigationResponse> {
-        val response = feedUsecase.getFeedNavigation(
-            feedId,
-            userId,
-            prevSize,
-            nextSize,
-        )
+        val response =
+            feedUsecase.getFeedNavigation(
+                feedId,
+                userId,
+                prevSize,
+                nextSize,
+            )
 
         return CommonResponse.success(ResponseCode.GET_FEED_NAVIGATION, response)
     }
@@ -119,7 +122,9 @@ class FeedController(
 
     @GetMapping("/{feedId}/reactions")
     @Operation(summary = "피드 공감 유저 목록 조회 API")
-    fun getLikedUsers(@PathVariable @Positive feedId: Long): CommonResponse<List<ReactionUserResponse>> {
+    fun getLikedUsers(
+        @PathVariable @Positive feedId: Long,
+    ): CommonResponse<List<ReactionUserResponse>> {
         val response = feedUsecase.getReactionUser(feedId)
 
         return CommonResponse.success(ResponseCode.GET_REACTED_USERS, response)

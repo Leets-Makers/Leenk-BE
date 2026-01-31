@@ -12,12 +12,10 @@ import org.springframework.stereotype.Service
 class LinkedUserGetService(
     private val linkedUserRepository: LinkedUserRepository,
 ) {
+    fun findAll(feed: Feed): List<LinkedUser> = linkedUserRepository.findAllByFeed(feed)
 
-    fun findAll(feed: Feed): List<LinkedUser> {
-        return linkedUserRepository.findAllByFeed(feed)
-    }
-
-    fun findAllByUser(user: User, pageable: Pageable): Slice<Feed> {
-        return linkedUserRepository.findFeedsByLinkedUser(user, pageable)
-    }
+    fun findAllByUser(
+        user: User,
+        pageable: Pageable,
+    ): Slice<Feed> = linkedUserRepository.findFeedsByLinkedUser(user, pageable)
 }

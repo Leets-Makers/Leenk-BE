@@ -14,23 +14,24 @@ import org.springframework.stereotype.Component
 class FeedUserMapper(
     private val userProfileMapper: UserProfileMapper,
 ) {
-
-    fun toLinkedUser(user: User, feed: Feed): LinkedUser {
-        return LinkedUser(
+    fun toLinkedUser(
+        user: User,
+        feed: Feed,
+    ): LinkedUser =
+        LinkedUser(
             feed = feed,
             user = user,
         )
-    }
 
-    fun toFeedUserResponse(user: User): FeedUserResponse {
-        return FeedUserResponse(
+    fun toFeedUserResponse(user: User): FeedUserResponse =
+        FeedUserResponse(
             user = userProfileMapper.toProfile(user),
         )
-    }
 
     fun toFeedUserListResponse(slice: Slice<User>): FeedUserListResponse {
-        val responses = slice.content
-            .map { toFeedUserResponse(it) }
+        val responses =
+            slice.content
+                .map { toFeedUserResponse(it) }
 
         return FeedUserListResponse(
             users = responses,

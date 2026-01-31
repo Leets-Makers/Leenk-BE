@@ -8,8 +8,5 @@ import org.springframework.stereotype.Service
 class ReactionSaveService(
     private val reactionRepository: ReactionRepository,
 ) {
-
-    fun save(reaction: Reaction): Reaction {
-        return reactionRepository.save(reaction)
-    }
+    fun save(reaction: Reaction): Reaction = reactionRepository.save(reaction)
 }

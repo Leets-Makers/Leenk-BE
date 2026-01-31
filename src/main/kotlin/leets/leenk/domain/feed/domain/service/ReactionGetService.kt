@@ -11,12 +11,10 @@ import java.util.Optional
 class ReactionGetService(
     private val reactionRepository: ReactionRepository,
 ) {
+    fun findByFeedAndUser(
+        feed: Feed,
+        user: User,
+    ): Optional<Reaction> = reactionRepository.findByFeedAndUser(feed, user)
 
-    fun findByFeedAndUser(feed: Feed, user: User): Optional<Reaction> {
-        return reactionRepository.findByFeedAndUser(feed, user)
-    }
-
-    fun findAll(feed: Feed): List<Reaction> {
-        return reactionRepository.findAllByFeed(feed)
-    }
+    fun findAll(feed: Feed): List<Reaction> = reactionRepository.findAllByFeed(feed)
 }

@@ -10,7 +10,6 @@ data class ReactionUserResponse(
     @field:JsonUnwrapped
     @field:Schema(implementation = UserProfileResponse::class)
     val user: UserProfileResponse,
-
     @field:Schema(description = "사용자별 공감 개수", example = "10")
     val reactionCount: Long,
 )

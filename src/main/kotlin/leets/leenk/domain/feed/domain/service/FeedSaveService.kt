@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 class FeedSaveService(
     private val feedRepository: FeedRepository,
 ) {
-
     fun save(feed: Feed) {
         feedRepository.save(feed)
     }

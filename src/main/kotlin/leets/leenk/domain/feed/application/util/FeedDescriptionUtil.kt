@@ -1,7 +1,6 @@
 package leets.leenk.domain.feed.application.util
 
-object  FeedDescriptionUtil {
-
+object FeedDescriptionUtil {
     @JvmStatic
     fun normalizeDescription(description: String?): String? {
         if (description == null) return null

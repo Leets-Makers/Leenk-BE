@@ -10,13 +10,11 @@ import org.springframework.stereotype.Service
 class CommentGetService(
     private val commentRepository: CommentRepository,
 ) {
-
-    fun findCommentByIdNotDeleted(commentId: Long): Comment {
-        return commentRepository.findByCommentIdAndDeletedAtIsNull(commentId)
+    fun findCommentByIdNotDeleted(commentId: Long): Comment =
+        commentRepository
+            .findByCommentIdAndDeletedAtIsNull(commentId)
             .orElseThrow { CommentNotFoundException() }
-    }
 
-    fun findAllByFeed(feed: Feed): List<Comment> {
-        return commentRepository.findAllByFeedAndDeletedAtIsNullOrderByCreateDateDesc(feed)
-    }
+    fun findAllByFeed(feed: Feed): List<Comment> =
+        commentRepository.findAllByFeedAndDeletedAtIsNullOrderByCreateDateDesc(feed)
 }

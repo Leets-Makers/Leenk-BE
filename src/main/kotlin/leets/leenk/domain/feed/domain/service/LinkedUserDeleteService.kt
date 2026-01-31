@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional
 class LinkedUserDeleteService(
     private val linkedUserRepository: LinkedUserRepository,
 ) {
-
     @Transactional
     fun deleteAllByFeed(feed: Feed) {
         linkedUserRepository.deleteAllByFeed(feed)

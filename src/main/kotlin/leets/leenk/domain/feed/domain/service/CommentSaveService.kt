@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 class CommentSaveService(
     private val commentRepository: CommentRepository,
 ) {
-
     fun saveComment(comment: Comment) {
         commentRepository.save(comment)
     }

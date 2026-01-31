@@ -5,12 +5,12 @@ import leets.leenk.domain.feed.application.dto.request.FeedReportRequest
 import leets.leenk.domain.feed.application.dto.request.FeedUpdateRequest
 import leets.leenk.domain.feed.application.dto.request.FeedUploadRequest
 import leets.leenk.domain.feed.application.dto.request.ReactionRequest
+import leets.leenk.domain.feed.application.dto.response.FeedDetailResponse
 import leets.leenk.domain.feed.application.dto.response.FeedListResponse
 import leets.leenk.domain.feed.application.dto.response.FeedNavigationResponse
 import leets.leenk.domain.feed.application.dto.response.FeedUserListResponse
 import leets.leenk.domain.feed.application.dto.response.FeedUserResponse
 import leets.leenk.domain.feed.application.dto.response.ReactionUserResponse
-import leets.leenk.domain.feed.application.dto.response.FeedDetailResponse
 import leets.leenk.domain.feed.application.exception.CommentDeleteNotAllowedException
 import leets.leenk.domain.feed.application.exception.FeedDeleteNotAllowedException
 import leets.leenk.domain.feed.application.exception.FeedUpdateNotAllowedException
@@ -54,38 +54,34 @@ class FeedUsecase(
     private val userBlockService: UserBlockService,
     private val slackWebhookService: SlackWebhookService,
     private val notionDatabaseService: NotionDatabaseService,
-
     private val feedGetService: FeedGetService,
     private val feedSaveService: FeedSaveService,
     private val feedUpdateService: FeedUpdateService,
     private val feedDeleteService: FeedDeleteService,
-
     private val mediaGetService: MediaGetService,
     private val mediaSaveService: MediaSaveService,
     private val mediaDeleteService: MediaDeleteService,
-
     private val linkedUserGetService: LinkedUserGetService,
     private val linkedUserSaveService: LinkedUserSaveService,
     private val linkedUserDeleteService: LinkedUserDeleteService,
-
     private val reactionGetService: ReactionGetService,
     private val reactionSaveService: ReactionSaveService,
-
     private val commentSaveService: CommentSaveService,
     private val commentGetService: CommentGetService,
     private val commentDeleteService: CommentDeleteService,
-
     private val feedNotificationUsecase: FeedNotificationUsecase,
-
     private val feedMapper: FeedMapper,
     private val mediaMapper: MediaMapper,
     private val feedUserMapper: FeedUserMapper,
     private val reactionMapper: ReactionMapper,
     private val commentMapper: CommentMapper,
 ) {
-
     @Transactional(readOnly = true)
-    fun getFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
+    fun getFeeds(
+        userId: Long,
+        pageNumber: Int,
+        pageSize: Int,
+    ): FeedListResponse {
         val user = userGetService.findById(userId)
         val blockedUsers = userBlockService.findAllByBlocker(user)
 
@@ -111,7 +107,12 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getFeedNavigation(feedId: Long, currentUserId: Long, prevSize: Int?, nextSize: Int?): FeedNavigationResponse {
+    fun getFeedNavigation(
+        feedId: Long,
+        currentUserId: Long,
+        prevSize: Int?,
+        nextSize: Int?,
+    ): FeedNavigationResponse {
         // 파라미터 검증 및 기본값 설정
         val validatedPrevSize = validateSize(prevSize, DEFAULT_NAVIGATION_SIZE, MAX_NAVIGATION_SIZE)
         val validatedNextSize = validateSize(nextSize, DEFAULT_NAVIGATION_SIZE, MAX_NAVIGATION_SIZE)
@@ -124,16 +125,18 @@ class FeedUsecase(
         val blockedUsers = userBlockService.findAllByBlocker(currentUser)
 
         // 이전/다음 피드 조회 (hasMore 정보 포함)
-        val prevResult = feedGetService.findPrevFeedsWithHasMore(
-            currentFeed,
-            blockedUsers,
-            validatedPrevSize,
-        )
-        val nextResult = feedGetService.findNextFeedsWithHasMore(
-            currentFeed,
-            blockedUsers,
-            validatedNextSize,
-        )
+        val prevResult =
+            feedGetService.findPrevFeedsWithHasMore(
+                currentFeed,
+                blockedUsers,
+                validatedPrevSize,
+            )
+        val nextResult =
+            feedGetService.findNextFeedsWithHasMore(
+                currentFeed,
+                blockedUsers,
+                validatedNextSize,
+            )
 
         val prevFeeds = prevResult.feeds
         val nextFeeds = nextResult.feeds
@@ -173,7 +176,11 @@ class FeedUsecase(
         )
     }
 
-    private fun validateSize(size: Int?, defaultValue: Int, maxValue: Int): Int {
+    private fun validateSize(
+        size: Int?,
+        defaultValue: Int,
+        maxValue: Int,
+    ): Int {
         if (size == null) {
             return defaultValue
         }
@@ -187,14 +194,18 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun uploadFeed(userId: Long, request: FeedUploadRequest) {
+    fun uploadFeed(
+        userId: Long,
+        request: FeedUploadRequest,
+    ) {
         val author = userGetService.findById(userId)
         val feed = feedMapper.toFeed(author, request.description)
         feedSaveService.save(feed)
 
-        val medias = request.media.map { mediaRequest ->
-            mediaMapper.toMedia(feed, mediaRequest)
-        }
+        val medias =
+            request.media.map { mediaRequest ->
+                mediaMapper.toMedia(feed, mediaRequest)
+            }
         mediaSaveService.saveAll(medias)
 
         val linkedUsers = getLinkedUsers(author, request.userIds, feed)
@@ -204,7 +215,11 @@ class FeedUsecase(
         feedNotificationUsecase.saveTagNotification(feed, linkedUsers, author)
     }
 
-    private fun getLinkedUsers(author: User, userIds: List<Long>, feed: Feed): List<LinkedUser> {
+    private fun getLinkedUsers(
+        author: User,
+        userIds: List<Long>,
+        feed: Feed,
+    ): List<LinkedUser> {
         val users = userGetService.findAll(userIds).toMutableSet()
         users.add(author) // 중복 자동 제거
 
@@ -220,18 +235,24 @@ class FeedUsecase(
      * @see leets.leenk.domain.user.domain.repository.UserRepository.findByIdWithPessimisticLock
      */
     @Transactional
-    fun reactToFeed(userId: Long, feedId: Long, request: ReactionRequest) {
+    fun reactToFeed(
+        userId: Long,
+        feedId: Long,
+        request: ReactionRequest,
+    ) {
         val feed = feedGetService.findByIdWithLock(feedId) // !락 순서 중요!
         val user = userGetService.findById(userId)
 
         validateReaction(feed, user)
 
-        val reaction = reactionGetService.findByFeedAndUser(feed, user)
-            .orElseGet {
-                reactionSaveService.save(
-                    reactionMapper.toReaction(user, feed, 0L),
-                )
-            }
+        val reaction =
+            reactionGetService
+                .findByFeedAndUser(feed, user)
+                .orElseGet {
+                    reactionSaveService.save(
+                        reactionMapper.toReaction(user, feed, 0L),
+                    )
+                }
 
         val previousReactionCount = reaction.reactionCount
 
@@ -244,7 +265,11 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun writeComment(userId: Long, feedId: Long, request: CommentWriteRequest) {
+    fun writeComment(
+        userId: Long,
+        feedId: Long,
+        request: CommentWriteRequest,
+    ) {
         val user = userGetService.findById(userId)
         val feed = feedGetService.findById(feedId)
 
@@ -253,7 +278,10 @@ class FeedUsecase(
         commentSaveService.saveComment(comment)
     }
 
-    private fun validateReaction(feed: Feed, user: User) {
+    private fun validateReaction(
+        feed: Feed,
+        user: User,
+    ) {
         if (feed.user == user) {
             throw SelfReactionNotAllowedException()
         }
@@ -268,7 +296,11 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun updateFeed(userId: Long, feedId: Long, request: FeedUpdateRequest) {
+    fun updateFeed(
+        userId: Long,
+        feedId: Long,
+        request: FeedUpdateRequest,
+    ) {
         val feed = feedGetService.findById(feedId)
         val author = userGetService.findById(userId)
 
@@ -278,9 +310,10 @@ class FeedUsecase(
 
         if (request.media != null) {
             mediaDeleteService.deleteAllByFeed(feed)
-            val newMedias = request.media.map { mediaRequest ->
-                mediaMapper.toMedia(feed, mediaRequest)
-            }
+            val newMedias =
+                request.media.map { mediaRequest ->
+                    mediaMapper.toMedia(feed, mediaRequest)
+                }
             mediaSaveService.saveAll(newMedias)
         }
 
@@ -292,14 +325,18 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getMyFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
-        return getFeedsByUser(userId, pageNumber, pageSize, true)
-    }
+    fun getMyFeeds(
+        userId: Long,
+        pageNumber: Int,
+        pageSize: Int,
+    ): FeedListResponse = getFeedsByUser(userId, pageNumber, pageSize, true)
 
     @Transactional(readOnly = true)
-    fun getOthersFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
-        return getFeedsByUser(userId, pageNumber, pageSize, false)
-    }
+    fun getOthersFeeds(
+        userId: Long,
+        pageNumber: Int,
+        pageSize: Int,
+    ): FeedListResponse = getFeedsByUser(userId, pageNumber, pageSize, false)
 
     private fun getFeedsByUser(
         userId: Long,
@@ -319,7 +356,11 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getLinkedFeeds(userId: Long, pageNumber: Int, pageSize: Int): FeedListResponse {
+    fun getLinkedFeeds(
+        userId: Long,
+        pageNumber: Int,
+        pageSize: Int,
+    ): FeedListResponse {
         val user = userGetService.findById(userId)
         val pageable = PageRequest.of(pageNumber, pageSize)
 
@@ -339,7 +380,10 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getUsers(pageNumber: Int, pageSize: Int): FeedUserListResponse {
+    fun getUsers(
+        pageNumber: Int,
+        pageSize: Int,
+    ): FeedUserListResponse {
         val pageable = PageRequest.of(pageNumber, pageSize)
         val slice = userGetService.findAll(pageable)
 
@@ -347,7 +391,10 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun deleteFeed(userId: Long, feedId: Long) {
+    fun deleteFeed(
+        userId: Long,
+        feedId: Long,
+    ) {
         val feed = feedGetService.findById(feedId)
         val user = userGetService.findById(userId)
 
@@ -359,7 +406,10 @@ class FeedUsecase(
     }
 
     @Transactional
-    fun deleteComment(userId: Long, commentId: Long) {
+    fun deleteComment(
+        userId: Long,
+        commentId: Long,
+    ) {
         val user = userGetService.findById(userId)
         val comment = commentGetService.findCommentByIdNotDeleted(commentId)
 
@@ -371,7 +421,11 @@ class FeedUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun reportFeed(userId: Long, feedId: Long, request: FeedReportRequest) {
+    fun reportFeed(
+        userId: Long,
+        feedId: Long,
+        request: FeedReportRequest,
+    ) {
         val user = userGetService.findById(userId)
         val feed = feedGetService.findById(feedId)
 
@@ -379,7 +433,11 @@ class FeedUsecase(
         slackWebhookService.sendFeedReport(request.report)
     }
 
-    private fun notifyIfReachedReactionMilestone(previous: Long, current: Long, feed: Feed) {
+    private fun notifyIfReachedReactionMilestone(
+        previous: Long,
+        current: Long,
+        feed: Feed,
+    ) {
         val milestones = longArrayOf(5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000)
 
         for (milestone in milestones) {
@@ -389,7 +447,10 @@ class FeedUsecase(
         }
     }
 
-    private fun checkAuthor(user: User, feed: Feed) {
+    private fun checkAuthor(
+        user: User,
+        feed: Feed,
+    ) {
         if (feed.user != user) {
             throw FeedUpdateNotAllowedException()
         }

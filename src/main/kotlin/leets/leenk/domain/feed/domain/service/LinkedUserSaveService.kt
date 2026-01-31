@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 class LinkedUserSaveService(
     private val linkedUserRepository: LinkedUserRepository,
 ) {
-
     fun save(linkedUser: LinkedUser) {
         linkedUserRepository.save(linkedUser)
     }

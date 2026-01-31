@@ -11,19 +11,20 @@ import org.springframework.stereotype.Component
 class ReactionMapper(
     private val userProfileMapper: UserProfileMapper,
 ) {
-
-    fun toResponse(reaction: Reaction): ReactionUserResponse {
-        return ReactionUserResponse(
+    fun toResponse(reaction: Reaction): ReactionUserResponse =
+        ReactionUserResponse(
             user = userProfileMapper.toProfile(reaction.user),
             reactionCount = reaction.reactionCount,
         )
-    }
 
-    fun toReaction(user: User, feed: Feed, reactionCount: Long): Reaction {
-        return Reaction(
+    fun toReaction(
+        user: User,
+        feed: Feed,
+        reactionCount: Long,
+    ): Reaction =
+        Reaction(
             user = user,
             feed = feed,
             reactionCount = reactionCount,
         )
-    }
 }

@@ -6,12 +6,9 @@ import org.springframework.http.HttpStatus
 
 enum class FeedErrorCode(
     private val code: Int,
-
     private val status: HttpStatus,
-
     private val message: String,
 ) : ErrorCodeInterface {
-
     @ExplainError("피드 ID로 조회했으나 해당 피드가 존재하지 않을 때 발생합니다.")
     FEED_NOT_FOUND(2200, HttpStatus.NOT_FOUND, "존재하지 않는 피드입니다."),
 
@@ -32,6 +29,8 @@ enum class FeedErrorCode(
     ;
 
     override fun getCode(): Int = code
+
     override fun getStatus(): HttpStatus = status
+
     override fun getMessage(): String = message
 }

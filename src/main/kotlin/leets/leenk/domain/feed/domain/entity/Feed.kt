@@ -28,20 +28,15 @@ class Feed(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-
     @Column(length = 100)
     var description: String? = null,
-
     @Column(nullable = false)
     var totalReactionCount: Long = 0,
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
     val user: User,
-
     var deletedAt: LocalDateTime? = null,
 ) : BaseEntity() {
-
     fun increaseTotalReactionCount(reactionCount: Long) {
         this.totalReactionCount += reactionCount
     }

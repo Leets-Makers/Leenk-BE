@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommentDeleteService {
-
     fun deleteComment(comment: Comment) {
         comment.deleteComment()
     }

@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component
 
 @Component
 class CommentMapper {
-
-    fun toComment(user: User, feed: Feed, request: CommentWriteRequest): Comment {
-        return Comment(
+    fun toComment(
+        user: User,
+        feed: Feed,
+        request: CommentWriteRequest,
+    ): Comment =
+        Comment(
             user = user,
             feed = feed,
             comment = request.comment,
         )
-    }
 }
