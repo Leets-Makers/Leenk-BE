@@ -1,12 +1,12 @@
-package leets.leenk.global.common.exception;
+package leets.leenk.global.common.exception
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus
 
-@Getter
-@AllArgsConstructor
-public enum CommonErrorCode implements ErrorCodeInterface {
+enum class CommonErrorCode(
+    override val code: Int,
+    override val status: HttpStatus,
+    override val message: String,
+) : ErrorCodeInterface {
     // 3000번대: 서버 에러
     @ExplainError("예상하지 못한 서버 내부 오류가 발생했을 때 발생합니다.")
     INTERNAL_SERVER_ERROR(3001, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
@@ -28,9 +28,5 @@ public enum CommonErrorCode implements ErrorCodeInterface {
     RESOURCE_NOT_FOUND(4003, HttpStatus.NOT_FOUND, "요청하신 리소스를 찾을 수 없습니다."),
 
     @ExplainError("해당 엔드포인트에서 지원하지 않는 HTTP 메서드로 요청했을 때 발생합니다.")
-    METHOD_NOT_ALLOWED(4004, HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP 메서드입니다.");
-
-    private final int code;
-    private final HttpStatus status;
-    private final String message;
+    METHOD_NOT_ALLOWED(4004, HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP 메서드입니다."),
 }
