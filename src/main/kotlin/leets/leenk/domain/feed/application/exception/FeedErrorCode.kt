@@ -5,9 +5,9 @@ import leets.leenk.global.common.exception.ExplainError
 import org.springframework.http.HttpStatus
 
 enum class FeedErrorCode(
-    private val code: Int,
-    private val status: HttpStatus,
-    private val message: String,
+    private val errorCode: Int,
+    private val errorStatus: HttpStatus,
+    private val errorMessage: String,
 ) : ErrorCodeInterface {
     @ExplainError("피드 ID로 조회했으나 해당 피드가 존재하지 않을 때 발생합니다.")
     FEED_NOT_FOUND(2200, HttpStatus.NOT_FOUND, "존재하지 않는 피드입니다."),
@@ -28,9 +28,9 @@ enum class FeedErrorCode(
     COMMENT_DELETE_NOT_ALLOWED(2206, HttpStatus.FORBIDDEN, "댓글 삭제는 댓글 작성자만 가능합니다."),
     ;
 
-    override fun getCode(): Int = code
+    override fun getCode(): Int = errorCode
 
-    override fun getStatus(): HttpStatus = status
+    override fun getStatus(): HttpStatus = errorStatus
 
-    override fun getMessage(): String = message
+    override fun getMessage(): String = errorMessage
 }

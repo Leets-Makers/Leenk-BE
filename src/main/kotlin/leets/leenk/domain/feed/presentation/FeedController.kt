@@ -90,7 +90,7 @@ class FeedController(
     fun uploadFeed(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
         @RequestBody @Valid request: FeedUploadRequest,
-    ): CommonResponse<Void> {
+    ): CommonResponse<Void?> {
         feedUsecase.uploadFeed(userId, request)
 
         return CommonResponse.success(ResponseCode.UPLOAD_FEED)
@@ -102,7 +102,7 @@ class FeedController(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
         @PathVariable @Positive feedId: Long,
         @RequestBody @Valid request: ReactionRequest,
-    ): CommonResponse<Void> {
+    ): CommonResponse<Void?> {
         feedUsecase.reactToFeed(userId, feedId, request)
 
         return CommonResponse.success(ResponseCode.CREATE_REACTION)
@@ -114,7 +114,7 @@ class FeedController(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
         @PathVariable @Positive feedId: Long,
         @RequestBody @Valid request: CommentWriteRequest,
-    ): CommonResponse<Void> {
+    ): CommonResponse<Void?> {
         feedUsecase.writeComment(userId, feedId, request)
 
         return CommonResponse.success(ResponseCode.WRITE_COMMENT)
@@ -136,7 +136,7 @@ class FeedController(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
         @PathVariable @Positive feedId: Long,
         @RequestBody @Valid request: FeedUpdateRequest,
-    ): CommonResponse<Void> {
+    ): CommonResponse<Void?> {
         feedUsecase.updateFeed(userId, feedId, request)
 
         return CommonResponse.success(ResponseCode.UPDATE_FEED)
@@ -223,7 +223,7 @@ class FeedController(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
         @PathVariable @Positive feedId: Long,
         @RequestBody @Valid request: FeedReportRequest,
-    ): CommonResponse<Void> {
+    ): CommonResponse<Void?> {
         feedUsecase.reportFeed(userId, feedId, request)
 
         return CommonResponse.success(ResponseCode.REPORT_FEED)
@@ -234,7 +234,7 @@ class FeedController(
     fun deleteFeed(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
         @PathVariable @Positive feedId: Long,
-    ): CommonResponse<Void> {
+    ): CommonResponse<Void?> {
         feedUsecase.deleteFeed(userId, feedId)
 
         return CommonResponse.success(ResponseCode.DELETE_FEED)
@@ -245,7 +245,7 @@ class FeedController(
     fun deleteComment(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
         @PathVariable @Positive commentId: Long,
-    ): CommonResponse<Void> {
+    ): CommonResponse<Void?> {
         feedUsecase.deleteComment(userId, commentId)
 
         return CommonResponse.success(ResponseCode.DELETE_COMMENT)
