@@ -4,9 +4,9 @@ import leets.leenk.global.common.response.ResponseCodeInterface
 import org.springframework.http.HttpStatus
 
 enum class ResponseCode(
-    private val responseCode: Int,
-    private val responseStatus: HttpStatus,
-    private val responseMessage: String,
+    override val code: Int,
+    override val status: HttpStatus,
+    override val message: String,
 ) : ResponseCodeInterface {
     GET_ALL_FEED(1200, HttpStatus.OK, "전체 피드 조회에 성공했습니다."),
     GET_FEED_DETAIL(1201, HttpStatus.OK, "피드 상세 조회에 성공했습니다."),
@@ -24,11 +24,4 @@ enum class ResponseCode(
     GET_FEED_NAVIGATION(1213, HttpStatus.OK, "피드 네비게이션 조회에 성공했습니다."),
     WRITE_COMMENT(1214, HttpStatus.OK, "댓글 작성에 성공했습니다."),
     DELETE_COMMENT(1215, HttpStatus.OK, "댓글 삭제에 성공했습니다."),
-    ;
-
-    override fun getCode(): Int = responseCode
-
-    override fun getStatus(): HttpStatus = responseStatus
-
-    override fun getMessage(): String = responseMessage
 }
