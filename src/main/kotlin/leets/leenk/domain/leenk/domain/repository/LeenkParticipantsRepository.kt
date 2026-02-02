@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.Optional
 
 @Repository
 interface LeenkParticipantsRepository : JpaRepository<LeenkParticipants, Long> {
@@ -25,5 +26,5 @@ interface LeenkParticipantsRepository : JpaRepository<LeenkParticipants, Long> {
     fun findByLeenkIdAndParticipantId(
         leenkId: Long,
         participantId: Long,
-    ): LeenkParticipants?
+    ): Optional<LeenkParticipants>
 }
