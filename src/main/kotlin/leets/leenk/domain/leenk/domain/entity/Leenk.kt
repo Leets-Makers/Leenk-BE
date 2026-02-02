@@ -1,95 +1,161 @@
-package leets.leenk.domain.leenk.domain.entity;
+package leets.leenk.domain.leenk.domain.entity
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
-import leets.leenk.domain.user.domain.entity.User;
-import leets.leenk.global.common.entity.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Index
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import jakarta.validation.constraints.Size
+import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
+import leets.leenk.domain.user.domain.entity.User
+import leets.leenk.global.common.entity.BaseEntity
+import java.time.LocalDateTime
 
-@Getter
 @Entity
-@SuperBuilder
 @Table(
-        name = "leenks",
-        indexes = {
-                @Index(name = "idx_leenks_status_start_time", columnList = "status, start_time")
-        }
+    name = "leenks",
+    indexes = [
+        Index(name = "idx_leenks_status_start_time", columnList = "status, start_time"),
+    ],
 )
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Leenk extends BaseEntity {
-
+class Leenk(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "leenk_id")
-    private Long id;
-
+    val id: Long? = null,
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    private User author;
-
+    val author: User,
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "location_id", nullable = false)
-    private Location location;
-
-    @Size(max = 30)
+    val location: Location,
+    @field:Size(max = 30)
     @Column(nullable = false, length = 30)
-    private String title;
-
-    @Size(max = 200)
+    var title: String,
+    @field:Size(max = 200)
     @Column(length = 200)
-    private String content;
-
+    var content: String? = null,
     @Column(nullable = false)
-    private LocalDateTime startTime;
-
+    var startTime: LocalDateTime,
     @Column(nullable = false)
-    private Long maxParticipants;
-
-    @Builder.Default
+    var maxParticipants: Long,
     @Column(nullable = false)
-    private Long currentParticipants = 1L;
-
-    @Builder.Default
+    var currentParticipants: Long = 1L,
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private LeenkStatus status = LeenkStatus.RECRUITING;
-
-    public void updateTitle(String title) {
-        this.title = title;
+    var status: LeenkStatus = LeenkStatus.RECRUITING,
+) : BaseEntity() {
+    fun updateTitle(title: String) {
+        this.title = title
     }
 
-    public void updateContent(String content) {
-        this.content = content;
+    fun updateContent(content: String?) {
+        this.content = content
     }
 
-    public void updateStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+    fun updateStartTime(startTime: LocalDateTime) {
+        this.startTime = startTime
     }
 
-    public void updateMaxParticipants(Long maxParticipants) {
-        this.maxParticipants = maxParticipants;
+    fun updateMaxParticipants(maxParticipants: Long) {
+        this.maxParticipants = maxParticipants
     }
 
-    public void changeStatusToClosed() {
-        this.status = LeenkStatus.CLOSED;
+    fun changeStatusToClosed() {
+        this.status = LeenkStatus.CLOSED
     }
 
-    public void changeStatusToFinished() {
-        this.status = LeenkStatus.FINISHED;
+    fun changeStatusToFinished() {
+        this.status = LeenkStatus.FINISHED
     }
 
-    public void increaseCurrentParticipants() {
-        this.currentParticipants++;
+    fun increaseCurrentParticipants() {
+        this.currentParticipants++
     }
 
-    public void decreaseCurrentParticipants() {
-        this.currentParticipants--;
+    fun decreaseCurrentParticipants() {
+        this.currentParticipants--
     }
 
+    companion object {
+        @JvmStatic
+        fun builder(): LeenkBuilder = LeenkBuilder()
+    }
+
+    class LeenkBuilder {
+        private var id: Long? = null
+        private var author: User? = null
+        private var location: Location? = null
+        private var title: String = ""
+        private var content: String? = null
+        private var startTime: LocalDateTime? = null
+        private var maxParticipants: Long = 0L
+        private var currentParticipants: Long = 1L
+        private var status: LeenkStatus = LeenkStatus.RECRUITING
+
+        fun id(id: Long?): LeenkBuilder {
+            this.id = id
+            return this
+        }
+
+        fun author(author: User): LeenkBuilder {
+            this.author = author
+            return this
+        }
+
+        fun location(location: Location): LeenkBuilder {
+            this.location = location
+            return this
+        }
+
+        fun title(title: String): LeenkBuilder {
+            this.title = title
+            return this
+        }
+
+        fun content(content: String?): LeenkBuilder {
+            this.content = content
+            return this
+        }
+
+        fun startTime(startTime: LocalDateTime): LeenkBuilder {
+            this.startTime = startTime
+            return this
+        }
+
+        fun maxParticipants(maxParticipants: Long): LeenkBuilder {
+            this.maxParticipants = maxParticipants
+            return this
+        }
+
+        fun currentParticipants(currentParticipants: Long): LeenkBuilder {
+            this.currentParticipants = currentParticipants
+            return this
+        }
+
+        fun status(status: LeenkStatus): LeenkBuilder {
+            this.status = status
+            return this
+        }
+
+        fun build(): Leenk =
+            Leenk(
+                id = id,
+                author = author!!,
+                location = location!!,
+                title = title,
+                content = content,
+                startTime = startTime!!,
+                maxParticipants = maxParticipants,
+                currentParticipants = currentParticipants,
+                status = status,
+            )
+    }
 }
