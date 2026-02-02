@@ -1,27 +1,39 @@
-package leets.leenk.domain.leenk.domain.repository;
+package leets.leenk.domain.leenk.domain.repository
 
-import java.time.LocalDateTime;
-import java.util.List;
-import leets.leenk.domain.leenk.domain.entity.Leenk;
-import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import leets.leenk.domain.leenk.domain.entity.Leenk
+import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
-public interface LeenkRepository extends JpaRepository<Leenk, Long> {
+interface LeenkRepository : JpaRepository<Leenk, Long> {
+    fun findAllByStatus(
+        status: LeenkStatus,
+        pageable: Pageable,
+    ): Slice<Leenk>
 
-    Slice<Leenk> findAllByStatus(LeenkStatus status, Pageable pageable);
+    fun findAllByStatusIn(
+        statuses: List<LeenkStatus>,
+        pageable: Pageable,
+    ): Slice<Leenk>
 
-    Slice<Leenk> findAllByStatusIn(List<LeenkStatus> statuses, Pageable pageable);
+    fun findAllByStatusInAndStartTimeLessThanEqual(
+        statuses: List<LeenkStatus>,
+        startTime: LocalDateTime,
+    ): List<Leenk>
 
-    List<Leenk> findAllByStatusInAndStartTimeLessThanEqual(List<LeenkStatus> statuses,
-                                                                                       LocalDateTime startTime);
+    fun findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(
+        status: LeenkStatus,
+        startTimeAfter: LocalDateTime,
+        startTimeBefore: LocalDateTime,
+    ): List<Leenk>
 
-    List<Leenk> findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(LeenkStatus status, LocalDateTime startTimeAfter,
-                                                   LocalDateTime startTimeBefore);
-
-    List<Leenk> findAllByStatusInAndStartTimeGreaterThanAndStartTimeLessThanEqual(List<LeenkStatus> statuses,
-                                                     LocalDateTime now, LocalDateTime startTime);
+    fun findAllByStatusInAndStartTimeGreaterThanAndStartTimeLessThanEqual(
+        statuses: List<LeenkStatus>,
+        now: LocalDateTime,
+        startTime: LocalDateTime,
+    ): List<Leenk>
 }

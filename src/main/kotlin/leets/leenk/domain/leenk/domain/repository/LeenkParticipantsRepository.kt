@@ -1,23 +1,29 @@
-package leets.leenk.domain.leenk.domain.repository;
+package leets.leenk.domain.leenk.domain.repository
 
-import java.util.List;
-import java.util.Optional;
-import leets.leenk.domain.leenk.domain.entity.Leenk;
-import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
-import leets.leenk.domain.user.domain.entity.User;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import leets.leenk.domain.leenk.domain.entity.Leenk
+import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
+import leets.leenk.domain.user.domain.entity.User
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
 @Repository
-public interface LeenkParticipantsRepository extends JpaRepository<LeenkParticipants, Long> {
+interface LeenkParticipantsRepository : JpaRepository<LeenkParticipants, Long> {
+    fun findAllByLeenk(leenk: Leenk): List<LeenkParticipants>
 
-    List<LeenkParticipants> findAllByLeenk(Leenk leenk);
+    fun findAllByParticipantOrderByJoinedAtDesc(
+        user: User,
+        pageable: Pageable,
+    ): Slice<LeenkParticipants>
 
-    Slice<LeenkParticipants> findAllByParticipantOrderByJoinedAtDesc(User user, Pageable pageable);
+    fun existsByLeenkAndParticipant(
+        leenk: Leenk,
+        user: User,
+    ): Boolean
 
-    boolean existsByLeenkAndParticipant(Leenk leenk, User user);
-
-    Optional<LeenkParticipants> findByLeenkIdAndParticipantId(Long leenkId, Long participantId);
+    fun findByLeenkIdAndParticipantId(
+        leenkId: Long,
+        participantId: Long,
+    ): LeenkParticipants?
 }
