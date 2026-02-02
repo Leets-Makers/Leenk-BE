@@ -27,10 +27,10 @@ public class LeenkMapper {
         return Leenk.builder()
                 .author(author)
                 .location(location)
-                .title(request.title())
-                .content(request.content())
-                .startTime(request.startTime())
-                .maxParticipants(request.maxParticipants())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .startTime(request.getStartTime())
+                .maxParticipants(request.getMaxParticipants())
                 .build();
     }
 

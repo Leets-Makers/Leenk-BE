@@ -91,7 +91,7 @@ public class LeenkUsecase {
     public LeenkCreateResponse uploadLeenk(Long userId, LeenkUploadRequest request) {
         User author = userGetService.findById(userId);
 
-        Location location = locationMapper.toLocation(request.placeName());
+        Location location = locationMapper.toLocation(request.getPlaceName());
         locationSaveService.save(location);
 
         Leenk leenk = leenkMapper.toLeenk(author, location, request);
@@ -100,7 +100,7 @@ public class LeenkUsecase {
         LeenkParticipants hostParticipant = participantsMapper.toParticipants(leenk, author, LocalDateTime.now());
         leenkParticipantsSaveService.save(hostParticipant);
 
-        Optional.ofNullable(request.mediaUrl())
+        Optional.ofNullable(request.getMediaUrl())
                 .filter(StringUtils::hasText)
                 .ifPresent(url -> {
                     Media media = mediaMapper.toMedia(leenk, url);
@@ -130,7 +130,7 @@ public class LeenkUsecase {
 
         leenkUpdateService.updateLeenk(leenk, location, request);
 
-        String newUrl = request.mediaUrl();
+        String newUrl = request.getMediaUrl();
         if (newUrl == null || newUrl.isBlank()) {
             if (media != null) {
                 mediaDeleteService.delete(media);
@@ -150,8 +150,8 @@ public class LeenkUsecase {
         User user = userGetService.findById(userId);
         Leenk leenk = leenkGetService.findById(leenkId);
 
-        notionDatabaseService.sendLeenkReport(request.report(), user.getId(), leenk.getId());
-        slackWebhookService.sendLeenkReport(request.report());
+        notionDatabaseService.sendLeenkReport(request.getReport(), user.getId(), leenk.getId());
+        slackWebhookService.sendLeenkReport(request.getReport());
     }
 
     @Transactional(readOnly = true)

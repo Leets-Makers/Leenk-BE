@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 public class LeenkUpdateService {
 
     public void updateLeenk(Leenk leenk, Location location, LeenkUpdateRequest request) {
-        updateTitle(leenk, request.title());
-        updateContent(leenk, request.content());
-        updateStartTime(leenk, request.startTime());
-        updateMaxParticipants(leenk, request.maxParticipants());
-        updatePlaceName(location, request.placeName());
+        updateTitle(leenk, request.getTitle());
+        updateContent(leenk, request.getContent());
+        updateStartTime(leenk, request.getStartTime());
+        updateMaxParticipants(leenk, request.getMaxParticipants());
+        updatePlaceName(location, request.getPlaceName());
     }
 
     private void updateTitle(Leenk leenk, String title) {
