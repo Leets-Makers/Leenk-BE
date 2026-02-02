@@ -39,44 +39,4 @@ class LeenkParticipants(
     @Column(nullable = false)
     @CreatedDate
     var joinedAt: LocalDateTime? = null,
-) : BaseEntity() {
-    companion object {
-        @JvmStatic
-        fun builder(): LeenkParticipantsBuilder = LeenkParticipantsBuilder()
-    }
-
-    class LeenkParticipantsBuilder {
-        private var id: Long? = null
-        private var leenk: Leenk? = null
-        private var participant: User? = null
-        private var joinedAt: LocalDateTime? = null
-
-        fun id(id: Long?): LeenkParticipantsBuilder {
-            this.id = id
-            return this
-        }
-
-        fun leenk(leenk: Leenk): LeenkParticipantsBuilder {
-            this.leenk = leenk
-            return this
-        }
-
-        fun participant(participant: User): LeenkParticipantsBuilder {
-            this.participant = participant
-            return this
-        }
-
-        fun joinedAt(joinedAt: LocalDateTime?): LeenkParticipantsBuilder {
-            this.joinedAt = joinedAt
-            return this
-        }
-
-        fun build(): LeenkParticipants =
-            LeenkParticipants(
-                id = id,
-                leenk = leenk!!,
-                participant = participant!!,
-                joinedAt = joinedAt,
-            )
-    }
-}
+) : BaseEntity()

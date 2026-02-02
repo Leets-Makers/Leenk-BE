@@ -20,26 +20,4 @@ class Location(
     fun updatePlaceName(placeName: String) {
         this.placeName = placeName
     }
-
-    companion object {
-        @JvmStatic
-        fun builder(): LocationBuilder = LocationBuilder()
-    }
-
-    class LocationBuilder {
-        private var id: Long? = null
-        private var placeName: String = ""
-
-        fun id(id: Long?): LocationBuilder {
-            this.id = id
-            return this
-        }
-
-        fun placeName(placeName: String): LocationBuilder {
-            this.placeName = placeName
-            return this
-        }
-
-        fun build(): Location = Location(id = id, placeName = placeName)
-    }
 }
