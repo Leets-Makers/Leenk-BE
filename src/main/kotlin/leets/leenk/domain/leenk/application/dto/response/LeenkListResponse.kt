@@ -1,12 +1,8 @@
-package leets.leenk.domain.leenk.application.dto.response;
+package leets.leenk.domain.leenk.application.dto.response
 
-import java.util.List;
-import leets.leenk.global.common.dto.CommonPageableResponse;
-import lombok.Builder;
+import leets.leenk.global.common.dto.CommonPageableResponse
 
-@Builder
-public record LeenkListResponse(
-        List<LeenkResponse> leenks,
-        CommonPageableResponse pageable
-) {
-}
+data class LeenkListResponse(
+    val leenks: List<LeenkResponse>,
+    val pageable: CommonPageableResponse,
+)
