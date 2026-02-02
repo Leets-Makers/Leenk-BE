@@ -53,7 +53,7 @@ class LeenkMapper(
         return LeenkDetailResponse(
             id = leenk.id!!,
             author = toLeenkAuthorResponse(leenk),
-            kakaoId = leenk.author.getKakaoTalkId(),
+            kakaoId = leenk.author.kakaoTalkId,
             status = leenk.status,
             title = leenk.title,
             placeName = leenk.location.placeName,
@@ -62,8 +62,8 @@ class LeenkMapper(
             startTime = leenk.startTime,
             content = content,
             mediaUrl = mediaUrl,
-            createdAt = leenk.getCreateDate(),
-            updatedAt = leenk.getUpdateDate(),
+            createdAt = leenk.createDate,
+            updatedAt = leenk.updateDate,
             isParticipated = isParticipated,
         )
     }
@@ -82,7 +82,7 @@ class LeenkMapper(
         leenk: Leenk,
         representative: Media?,
     ): LeenkResponse {
-        val imageUrl = representative?.getThumbnailUrl()
+        val imageUrl = representative?.thumbnailUrl
 
         return LeenkResponse(
             leenkId = leenk.id!!,
@@ -91,8 +91,8 @@ class LeenkMapper(
             currentParticipants = leenk.currentParticipants,
             maxParticipants = leenk.maxParticipants,
             startTime = leenk.startTime,
-            createdAt = leenk.getCreateDate(),
-            updatedAt = leenk.getUpdateDate(),
+            createdAt = leenk.createDate,
+            updatedAt = leenk.updateDate,
             thumbNail = imageUrl,
         )
     }

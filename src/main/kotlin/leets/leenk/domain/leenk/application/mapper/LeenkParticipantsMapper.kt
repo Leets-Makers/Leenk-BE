@@ -37,11 +37,11 @@ class LeenkParticipantsMapper(
 
                 LeenkParticipantResponse(
                     participant = toLeenkAuthorResponse(participantUser),
-                    kakaoTalkId = participantUser.getKakaoTalkId(),
+                    kakaoTalkId = participantUser.kakaoTalkId,
                     currentParticipants = leenk.currentParticipants,
                     maxParticipants = leenk.maxParticipants,
                     joinedAt = leenkParticipants.joinedAt!!,
-                    isHost = participantUser.getId() == leenk.author.getId(),
+                    isHost = participantUser.id == leenk.author.id,
                 )
             }
 
