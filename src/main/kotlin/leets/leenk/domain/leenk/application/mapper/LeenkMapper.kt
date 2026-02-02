@@ -1,99 +1,99 @@
-package leets.leenk.domain.leenk.application.mapper;
+package leets.leenk.domain.leenk.application.mapper
 
-import java.util.List;
-import java.util.Map;
-
-import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest;
-import leets.leenk.domain.leenk.application.dto.response.LeenkAuthorResponse;
-import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse;
-import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse;
-import leets.leenk.domain.leenk.application.dto.response.LeenkResponse;
-import leets.leenk.domain.leenk.domain.entity.Leenk;
-import leets.leenk.domain.leenk.domain.entity.Location;
-import leets.leenk.domain.media.domain.entity.Media;
-import leets.leenk.domain.user.application.mapper.UserProfileMapper;
-import leets.leenk.domain.user.domain.entity.User;
-import leets.leenk.global.common.dto.PageableMapperUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Component;
+import leets.leenk.domain.leenk.application.dto.request.LeenkUploadRequest
+import leets.leenk.domain.leenk.application.dto.response.LeenkAuthorResponse
+import leets.leenk.domain.leenk.application.dto.response.LeenkDetailResponse
+import leets.leenk.domain.leenk.application.dto.response.LeenkListResponse
+import leets.leenk.domain.leenk.application.dto.response.LeenkResponse
+import leets.leenk.domain.leenk.domain.entity.Leenk
+import leets.leenk.domain.leenk.domain.entity.Location
+import leets.leenk.domain.media.domain.entity.Media
+import leets.leenk.domain.user.application.mapper.UserProfileMapper
+import leets.leenk.domain.user.domain.entity.User
+import leets.leenk.global.common.dto.PageableMapperUtil
+import org.springframework.data.domain.Slice
+import org.springframework.stereotype.Component
 
 @Component
-@RequiredArgsConstructor
-public class LeenkMapper {
-    private final UserProfileMapper userProfileMapper;
+class LeenkMapper(
+    private val userProfileMapper: UserProfileMapper,
+) {
+    fun toLeenk(
+        author: User,
+        location: Location,
+        request: LeenkUploadRequest,
+    ): Leenk =
+        Leenk(
+            author = author,
+            location = location,
+            title = request.title,
+            content = request.content,
+            startTime = request.startTime,
+            maxParticipants = request.maxParticipants,
+        )
 
-    public Leenk toLeenk(User author, Location location, LeenkUploadRequest request) {
-        return Leenk.builder()
-                .author(author)
-                .location(location)
-                .title(request.getTitle())
-                .content(request.getContent())
-                .startTime(request.getStartTime())
-                .maxParticipants(request.getMaxParticipants())
-                .build();
+    fun toLeenkAuthorResponse(leenk: Leenk): LeenkAuthorResponse =
+        LeenkAuthorResponse(userProfileMapper.toProfile(leenk.author))
+
+    fun toLeenkListResponse(
+        slice: Slice<Leenk>,
+        mediaMap: Map<Long, List<Media>>,
+    ): LeenkListResponse {
+        val responses = toLeenkResponses(slice.content, mediaMap)
+        return LeenkListResponse(responses, PageableMapperUtil.from(slice))
     }
 
-    public LeenkAuthorResponse toLeenkAuthorResponse(Leenk leenk) {
-        return LeenkAuthorResponse.builder()
-                .user(userProfileMapper.toProfile(leenk.getAuthor()))
-                .build();
+    fun toLeenkDetailResponse(
+        leenk: Leenk,
+        mediaUrl: String?,
+        isParticipated: Boolean,
+    ): LeenkDetailResponse {
+        val content = leenk.content ?: ""
+
+        return LeenkDetailResponse(
+            id = leenk.id!!,
+            author = toLeenkAuthorResponse(leenk),
+            kakaoId = leenk.author.getKakaoTalkId(),
+            status = leenk.status,
+            title = leenk.title,
+            placeName = leenk.location.placeName,
+            currentParticipants = leenk.currentParticipants,
+            maxParticipants = leenk.maxParticipants,
+            startTime = leenk.startTime,
+            content = content,
+            mediaUrl = mediaUrl,
+            createdAt = leenk.getCreateDate(),
+            updatedAt = leenk.getUpdateDate(),
+            isParticipated = isParticipated,
+        )
     }
 
-    public LeenkListResponse toLeenkListResponse(Slice<Leenk> slice, Map<Long, List<Media>> mediaMap) {
-        List<LeenkResponse> responses = toLeenkResponses(slice.getContent(), mediaMap);
+    private fun toLeenkResponses(
+        leenks: List<Leenk>,
+        mediaMap: Map<Long, List<Media>>,
+    ): List<LeenkResponse> =
+        leenks.map { leenk ->
+            val medias = mediaMap.getOrDefault(leenk.id, emptyList())
+            val representative = medias.firstOrNull()
+            toLeenkResponse(leenk, representative)
+        }
 
-        return LeenkListResponse.builder()
-                .leenks(responses)
-                .pageable(PageableMapperUtil.from(slice))
-                .build();
-    }
+    private fun toLeenkResponse(
+        leenk: Leenk,
+        representative: Media?,
+    ): LeenkResponse {
+        val imageUrl = representative?.getThumbnailUrl()
 
-    public LeenkDetailResponse toLeenkDetailResponse(Leenk leenk, String mediaUrl, boolean isParticipated) {
-
-        return LeenkDetailResponse.builder()
-                .id(leenk.getId())
-                .author(toLeenkAuthorResponse(leenk))
-                .kakaoId(leenk.getAuthor().getKakaoTalkId())
-                .status(leenk.getStatus())
-                .title(leenk.getTitle())
-                .placeName(leenk.getLocation().getPlaceName())
-                .currentParticipants(leenk.getCurrentParticipants())
-                .maxParticipants(leenk.getMaxParticipants())
-                .startTime(leenk.getStartTime())
-                .content(leenk.getContent())
-                .mediaUrl(mediaUrl)
-                .createdAt(leenk.getCreateDate())
-                .updatedAt(leenk.getUpdateDate())
-                .isParticipated(isParticipated)
-                .build();
-    }
-
-    private List<LeenkResponse> toLeenkResponses(List<Leenk> leenks, Map<Long, List<Media>> mediaMap) {
-        return leenks.stream()
-                .map(leenk -> {
-                    List<Media> medias = mediaMap.getOrDefault(leenk.getId(), List.of());
-                    Media representative = medias.stream().findFirst()
-                            .orElse(null);
-
-                    return toLeenkResponse(leenk, representative);
-                })
-                .toList();
-    }
-
-    private LeenkResponse toLeenkResponse(Leenk leenk, Media representative) {
-        String imageUrl = (representative != null) ? representative.getThumbnailUrl() : null;
-
-        return LeenkResponse.builder()
-                .leenkId(leenk.getId())
-                .author(toLeenkAuthorResponse(leenk))
-                .title(leenk.getTitle())
-                .currentParticipants(leenk.getCurrentParticipants())
-                .maxParticipants(leenk.getMaxParticipants())
-                .startTime(leenk.getStartTime())
-                .createdAt(leenk.getCreateDate())
-                .updatedAt(leenk.getUpdateDate())
-                .thumbNail(imageUrl)
-                .build();
+        return LeenkResponse(
+            leenkId = leenk.id!!,
+            author = toLeenkAuthorResponse(leenk),
+            title = leenk.title,
+            currentParticipants = leenk.currentParticipants,
+            maxParticipants = leenk.maxParticipants,
+            startTime = leenk.startTime,
+            createdAt = leenk.getCreateDate(),
+            updatedAt = leenk.getUpdateDate(),
+            thumbNail = imageUrl,
+        )
     }
 }
