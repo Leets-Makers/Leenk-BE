@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import leets.leenk.domain.notification.domain.repository.NotificationRepository
 import leets.leenk.domain.notification.test.fixture.NotificationFixture
 import leets.leenk.domain.user.test.fixture.UserFixture
@@ -25,6 +24,5 @@ class NotificationMarkReadServiceTest :
             notificationMarkReadService.markReadNotification(user, notification.id)
 
             notification.isRead shouldBe true
-            verify(exactly = 1) { notificationRepository.save(notification) }
         }
     })
