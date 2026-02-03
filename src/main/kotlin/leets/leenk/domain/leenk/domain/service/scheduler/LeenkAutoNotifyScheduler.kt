@@ -1,30 +1,27 @@
-package leets.leenk.domain.leenk.domain.service.scheduler;
+package leets.leenk.domain.leenk.domain.service.scheduler
 
-import org.springframework.transaction.annotation.Transactional;
-import leets.leenk.domain.leenk.application.usecase.LeenkSchedulerUsecase;
-import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import leets.leenk.domain.leenk.application.usecase.LeenkSchedulerUsecase
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Service
-@RequiredArgsConstructor
-public class LeenkAutoNotifyScheduler {
-
-    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
-
-    private final LeenkSchedulerUsecase leenkSchedulerUsecase;
-
+class LeenkAutoNotifyScheduler(
+    private val leenkSchedulerUsecase: LeenkSchedulerUsecase,
+) {
     @Transactional
     @Scheduled(cron = "0 0/30 * * * *", zone = "Asia/Seoul")
-    public void scheduleLeenkNotifications() {
-        LocalDateTime now = LocalDateTime.now(KST);
+    fun scheduleLeenkNotifications() {
+        val now = LocalDateTime.now(KST)
 
-        leenkSchedulerUsecase.notifyLeenksStartingWithin30Minutes(now);
+        leenkSchedulerUsecase.notifyLeenksStartingWithin30Minutes(now)
 
-        leenkSchedulerUsecase.notifyHostsOfUnclosedLeenks(now);
+        leenkSchedulerUsecase.notifyHostsOfUnclosedLeenks(now)
+    }
 
+    companion object {
+        private val KST = ZoneId.of("Asia/Seoul")
     }
 }
