@@ -1,53 +1,45 @@
-package leets.leenk.domain.leenk.application.usecase;
+package leets.leenk.domain.leenk.application.usecase
 
-import leets.leenk.domain.leenk.domain.entity.Leenk;
-import leets.leenk.domain.leenk.domain.service.LeenkGetService;
-import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import leets.leenk.domain.leenk.domain.service.LeenkGetService
+import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-@RequiredArgsConstructor
 @Service
-public class LeenkSchedulerUsecase {
-
-    private final LeenkGetService leenkGetService;
-
-    private final LeenkNotificationUsecase leenkNotificationUsecase;
-
+class LeenkSchedulerUsecase(
+    private val leenkGetService: LeenkGetService,
+    private val leenkNotificationUsecase: LeenkNotificationUsecase,
+) {
     @Transactional
-    public int finishDueLeenks(LocalDateTime now) {
-        List<Leenk> leenksToFinish = leenkGetService.findDueLeenks(now);
+    fun finishDueLeenks(now: LocalDateTime): Int {
+        val leenksToFinish = leenkGetService.findDueLeenks(now)
 
-        leenksToFinish.forEach(leenk -> {
-            leenk.changeStatusToFinished();
-            leenkNotificationUsecase.saveLeenkFinishedNotification(leenk);
-        });
-        return leenksToFinish.size();
+        leenksToFinish.forEach { leenk ->
+            leenk.changeStatusToFinished()
+            leenkNotificationUsecase.saveLeenkFinishedNotification(leenk)
+        }
+        return leenksToFinish.size
     }
 
-    public void notifyLeenksStartingWithin30Minutes(LocalDateTime now) {
-        List<Leenk> leenksToNotify = leenkGetService.findLeenksStartingWithin30Minutes(now);
+    fun notifyLeenksStartingWithin30Minutes(now: LocalDateTime) {
+        val leenksToNotify = leenkGetService.findLeenksStartingWithin30Minutes(now)
 
-        leenksToNotify.forEach(leenkNotificationUsecase::saveLeenkStartingSoonNotification);
-    }
-
-    @Transactional
-    public int notifyFinishedLeenks(LocalDateTime now) {
-        List<Leenk> leenksToNotify = leenkGetService.findUnnotifiedFinishedLeenks(now);
-
-        leenksToNotify.forEach(leenkNotificationUsecase::saveLeenkFinishedNotification);
-        return leenksToNotify.size();
+        leenksToNotify.forEach { leenkNotificationUsecase.saveLeenkStartingSoonNotification(it) }
     }
 
     @Transactional
-    public void notifyHostsOfUnclosedLeenks(LocalDateTime now) {
-        List<Leenk> leenksToNotify = leenkGetService.findOverdueRecruitingLeenksToNotify(now);
+    fun notifyFinishedLeenks(now: LocalDateTime): Int {
+        val leenksToNotify = leenkGetService.findUnnotifiedFinishedLeenks(now)
 
-        leenksToNotify.forEach(leenkNotificationUsecase::saveLeenkStartedHostReminderNotification);
+        leenksToNotify.forEach { leenkNotificationUsecase.saveLeenkFinishedNotification(it) }
+        return leenksToNotify.size
+    }
 
+    @Transactional
+    fun notifyHostsOfUnclosedLeenks(now: LocalDateTime) {
+        val leenksToNotify = leenkGetService.findOverdueRecruitingLeenksToNotify(now)
+
+        leenksToNotify.forEach { leenkNotificationUsecase.saveLeenkStartedHostReminderNotification(it) }
     }
 }
