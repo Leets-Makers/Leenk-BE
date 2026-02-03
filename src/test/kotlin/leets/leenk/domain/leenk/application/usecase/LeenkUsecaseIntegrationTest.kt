@@ -185,7 +185,7 @@ class LeenkUsecaseIntegrationTest(
                 it("링크 상태가 FINISHED로 변경된다") {
                     val leenk = persistLeenk(status = LeenkStatus.CLOSED)
 
-                    leenkUsecase.finishLeenk(host.id, leenk.id)
+                    leenkUsecase.finishLeenk(host.id!!, leenk.id!!)
 
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.status shouldBe LeenkStatus.FINISHED
@@ -197,7 +197,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.CLOSED)
 
                     shouldThrow<NotLeenkOwnerException> {
-                        leenkUsecase.finishLeenk(otherUser.id, leenk.id)
+                        leenkUsecase.finishLeenk(otherUser.id!!, leenk.id!!)
                     }
                 }
             }
@@ -206,7 +206,7 @@ class LeenkUsecaseIntegrationTest(
                 it("RECRUITING에서 FINISHED로 직접 전환된다") {
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
 
-                    leenkUsecase.finishLeenk(host.id, leenk.id)
+                    leenkUsecase.finishLeenk(host.id!!, leenk.id!!)
 
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.status shouldBe LeenkStatus.FINISHED
@@ -218,7 +218,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.FINISHED)
 
                     shouldThrow<LeenkAlreadyFinishedException> {
-                        leenkUsecase.finishLeenk(host.id, leenk.id)
+                        leenkUsecase.finishLeenk(host.id!!, leenk.id!!)
                     }
                 }
             }
@@ -228,11 +228,11 @@ class LeenkUsecaseIntegrationTest(
             context("호스트가 일반 참여자를 강퇴하는 경우") {
                 it("참여자가 제거되고 currentParticipants가 1 감소한다") {
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
-                    leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+                    leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
                     val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
                     val initialCount = updatedAfterParticipate.currentParticipants
 
-                    leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
+                    leenkUsecase.kickParticipant(host.id!!, leenk.id!!, otherUser.id!!)
 
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.currentParticipants shouldBe initialCount - 1
@@ -243,10 +243,10 @@ class LeenkUsecaseIntegrationTest(
                 it("NotLeenkOwnerException이 발생한다") {
                     val participant = persistUser(3L, "참여자")
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
-                    leenkUsecase.participateLeenk(participant.id, leenk.id)
+                    leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
 
                     shouldThrow<NotLeenkOwnerException> {
-                        leenkUsecase.kickParticipant(otherUser.id, leenk.id, participant.id)
+                        leenkUsecase.kickParticipant(otherUser.id!!, leenk.id!!, participant.id!!)
                     }
                 }
             }
@@ -256,7 +256,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
 
                     shouldThrow<CannotKickSelfException> {
-                        leenkUsecase.kickParticipant(host.id, leenk.id, host.id)
+                        leenkUsecase.kickParticipant(host.id!!, leenk.id!!, host.id!!)
                     }
                 }
             }
@@ -266,7 +266,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
 
                     shouldThrow<LeenkParticipantNotFoundException> {
-                        leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
+                        leenkUsecase.kickParticipant(host.id!!, leenk.id!!, otherUser.id!!)
                     }
                 }
             }
@@ -276,7 +276,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.CLOSED)
 
                     shouldThrow<LeenkNotRecruitingException> {
-                        leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
+                        leenkUsecase.kickParticipant(host.id!!, leenk.id!!, otherUser.id!!)
                     }
                 }
             }
@@ -286,7 +286,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.FINISHED)
 
                     shouldThrow<LeenkNotRecruitingException> {
-                        leenkUsecase.kickParticipant(host.id, leenk.id, otherUser.id)
+                        leenkUsecase.kickParticipant(host.id!!, leenk.id!!, otherUser.id!!)
                     }
                 }
             }
@@ -296,11 +296,11 @@ class LeenkUsecaseIntegrationTest(
             context("일반 참여자가 링크를 나가는 경우") {
                 it("정상적으로 나가지고 currentParticipants가 1 감소한다") {
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
-                    leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+                    leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
                     val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
                     val initialCount = updatedAfterParticipate.currentParticipants
 
-                    leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                    leenkUsecase.leaveLeenk(otherUser.id!!, leenk.id!!)
 
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.currentParticipants shouldBe initialCount - 1
@@ -312,7 +312,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
 
                     shouldThrow<CannotLeaveAsHostException> {
-                        leenkUsecase.leaveLeenk(host.id, leenk.id)
+                        leenkUsecase.leaveLeenk(host.id!!, leenk.id!!)
                     }
                 }
             }
@@ -322,7 +322,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
 
                     shouldThrow<LeenkParticipantNotFoundException> {
-                        leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                        leenkUsecase.leaveLeenk(otherUser.id!!, leenk.id!!)
                     }
                 }
             }
@@ -332,7 +332,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.CLOSED)
 
                     shouldThrow<LeenkNotRecruitingException> {
-                        leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                        leenkUsecase.leaveLeenk(otherUser.id!!, leenk.id!!)
                     }
                 }
             }
@@ -342,7 +342,7 @@ class LeenkUsecaseIntegrationTest(
                     val leenk = persistLeenk(status = LeenkStatus.FINISHED)
 
                     shouldThrow<LeenkNotRecruitingException> {
-                        leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                        leenkUsecase.leaveLeenk(otherUser.id!!, leenk.id!!)
                     }
                 }
             }
@@ -350,11 +350,11 @@ class LeenkUsecaseIntegrationTest(
             context("마지막 일반 참여자가 링크를 나가는 경우") {
                 it("호스트만 남고 currentParticipants가 1 감소한다") {
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
-                    leenkUsecase.participateLeenk(otherUser.id, leenk.id)
+                    leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
                     val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
                     val initialCount = updatedAfterParticipate.currentParticipants
 
-                    leenkUsecase.leaveLeenk(otherUser.id, leenk.id)
+                    leenkUsecase.leaveLeenk(otherUser.id!!, leenk.id!!)
 
                     val updated = leenkRepository.findById(leenk.id!!).get()
                     updated.currentParticipants shouldBe initialCount - 1
