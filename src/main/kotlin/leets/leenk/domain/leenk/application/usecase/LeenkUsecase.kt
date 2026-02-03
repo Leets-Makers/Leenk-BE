@@ -67,7 +67,10 @@ class LeenkUsecase(
     private val leenkNotificationUsecase: LeenkNotificationUsecase,
 ) {
     @Transactional
-    fun uploadLeenk(userId: Long, request: LeenkUploadRequest): LeenkCreateResponse {
+    fun uploadLeenk(
+        userId: Long,
+        request: LeenkUploadRequest,
+    ): LeenkCreateResponse {
         val author = userGetService.findById(userId)
 
         val location = locationMapper.toLocation(request.placeName)
@@ -90,7 +93,11 @@ class LeenkUsecase(
     }
 
     @Transactional
-    fun updateLeenk(userId: Long, leenkId: Long, request: LeenkUpdateRequest) {
+    fun updateLeenk(
+        userId: Long,
+        leenkId: Long,
+        request: LeenkUpdateRequest,
+    ) {
         userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
         val location = leenk.location
@@ -120,7 +127,11 @@ class LeenkUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun reportLeenk(userId: Long, leenkId: Long, request: LeenkReportRequest) {
+    fun reportLeenk(
+        userId: Long,
+        leenkId: Long,
+        request: LeenkReportRequest,
+    ) {
         val user = userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
 
@@ -129,7 +140,12 @@ class LeenkUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getLeenks(userId: Long, status: LeenkFilter, pageNumber: Int, pageSize: Int): LeenkListResponse {
+    fun getLeenks(
+        userId: Long,
+        status: LeenkFilter,
+        pageNumber: Int,
+        pageSize: Int,
+    ): LeenkListResponse {
         userGetService.findById(userId)
 
         val pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createDate").descending())
@@ -144,7 +160,10 @@ class LeenkUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getLeenkDetail(userId: Long, leenkId: Long): LeenkDetailResponse {
+    fun getLeenkDetail(
+        userId: Long,
+        leenkId: Long,
+    ): LeenkDetailResponse {
         val leenk = leenkGetService.findById(leenkId)
         val mediaUrl = mediaGetService.findMediaUrlByLeenk(leenk)
 
@@ -163,7 +182,11 @@ class LeenkUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getMyParticipatedLeenks(userId: Long, pageNumber: Int, pageSize: Int): LeenkListResponse {
+    fun getMyParticipatedLeenks(
+        userId: Long,
+        pageNumber: Int,
+        pageSize: Int,
+    ): LeenkListResponse {
         val user = userGetService.findById(userId)
         val pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createDate").descending())
         val participantsSlice = leenkParticipantsGetService.findSliceByParticipant(user, pageable)
@@ -178,7 +201,11 @@ class LeenkUsecase(
     }
 
     @Transactional(readOnly = true)
-    fun getUserParticipatedLeenks(userId: Long, pageNumber: Int, pageSize: Int): LeenkListResponse {
+    fun getUserParticipatedLeenks(
+        userId: Long,
+        pageNumber: Int,
+        pageSize: Int,
+    ): LeenkListResponse {
         val user = userGetService.findById(userId)
         val pageable = PageRequest.of(pageNumber, pageSize, Sort.by("joinedAt").descending())
         val participantsSlice = leenkParticipantsGetService.findSliceByParticipant(user, pageable)
@@ -193,7 +220,10 @@ class LeenkUsecase(
     }
 
     @Transactional
-    fun participateLeenk(userId: Long, leenkId: Long) {
+    fun participateLeenk(
+        userId: Long,
+        leenkId: Long,
+    ) {
         val user = userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
 
@@ -219,7 +249,10 @@ class LeenkUsecase(
     }
 
     @Transactional
-    fun closeLeenk(userId: Long, leenkId: Long) {
+    fun closeLeenk(
+        userId: Long,
+        leenkId: Long,
+    ) {
         userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
 
@@ -237,7 +270,10 @@ class LeenkUsecase(
     }
 
     @Transactional
-    fun finishLeenk(userId: Long, leenkId: Long) {
+    fun finishLeenk(
+        userId: Long,
+        leenkId: Long,
+    ) {
         userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
 
@@ -252,7 +288,11 @@ class LeenkUsecase(
     }
 
     @Transactional
-    fun kickParticipant(userId: Long, leenkId: Long, participantId: Long) {
+    fun kickParticipant(
+        userId: Long,
+        leenkId: Long,
+        participantId: Long,
+    ) {
         val leenk = leenkGetService.findById(leenkId)
 
         if (leenk.status != LeenkStatus.RECRUITING) {
@@ -276,7 +316,10 @@ class LeenkUsecase(
     }
 
     @Transactional
-    fun deleteLeenk(userId: Long, leenkId: Long) {
+    fun deleteLeenk(
+        userId: Long,
+        leenkId: Long,
+    ) {
         userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
         val participants = leenkParticipantsGetService.findAllByLeenk(leenk)
@@ -291,7 +334,10 @@ class LeenkUsecase(
     }
 
     @Transactional
-    fun leaveLeenk(userId: Long, leenkId: Long) {
+    fun leaveLeenk(
+        userId: Long,
+        leenkId: Long,
+    ) {
         val user = userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
 
