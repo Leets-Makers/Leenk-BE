@@ -1,17 +1,13 @@
-package leets.leenk.domain.leenk.domain.service;
+package leets.leenk.domain.leenk.domain.service
 
-import leets.leenk.domain.leenk.domain.entity.Location;
-import leets.leenk.domain.leenk.domain.repository.LocationRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import leets.leenk.domain.leenk.domain.entity.Location
+import leets.leenk.domain.leenk.domain.repository.LocationRepository
+import org.springframework.stereotype.Service
 
 @Service
-@RequiredArgsConstructor
-public class LocationSaveService {
-
-    private final LocationRepository locationRepository;
-
-    public Location save(Location location) {
-        return locationRepository.save(location);
-    }
+class LocationSaveService(
+    private val locationRepository: LocationRepository,
+) {
+    fun save(location: Location): Location =
+        locationRepository.save(location)
 }
