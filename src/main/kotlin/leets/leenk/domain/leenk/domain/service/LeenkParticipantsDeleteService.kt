@@ -1,25 +1,21 @@
-package leets.leenk.domain.leenk.domain.service;
+package leets.leenk.domain.leenk.domain.service
 
-import java.util.List;
-import leets.leenk.domain.leenk.domain.entity.LeenkParticipants;
-import leets.leenk.domain.leenk.domain.repository.LeenkParticipantsRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
+import leets.leenk.domain.leenk.domain.repository.LeenkParticipantsRepository
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-@RequiredArgsConstructor
-public class LeenkParticipantsDeleteService {
-
-    private final LeenkParticipantsRepository participantsRepository;
-
+class LeenkParticipantsDeleteService(
+    private val participantsRepository: LeenkParticipantsRepository,
+) {
     @Transactional
-    public void delete(LeenkParticipants participants) {
-        participantsRepository.delete(participants);
+    fun delete(participants: LeenkParticipants) {
+        participantsRepository.delete(participants)
     }
 
     @Transactional
-    public void deleteAll(List<LeenkParticipants> participants) {
-        participantsRepository.deleteAll(participants);
+    fun deleteAll(participants: List<LeenkParticipants>) {
+        participantsRepository.deleteAll(participants)
     }
 }
