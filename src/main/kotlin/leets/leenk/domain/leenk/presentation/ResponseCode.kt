@@ -1,14 +1,13 @@
-package leets.leenk.domain.leenk.presentation;
+package leets.leenk.domain.leenk.presentation
 
-import leets.leenk.global.common.response.ResponseCodeInterface;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.springframework.http.HttpStatus;
+import leets.leenk.global.common.response.ResponseCodeInterface
+import org.springframework.http.HttpStatus
 
-@Getter
-@AllArgsConstructor
-public enum ResponseCode implements ResponseCodeInterface {
-
+enum class ResponseCode(
+    override val code: Int,
+    override val status: HttpStatus,
+    override val message: String,
+) : ResponseCodeInterface {
     GET_ALL_LEENK(1400, HttpStatus.OK, "전체 링크 목록 조회에 성공했습니다."),
     GET_LEENK_DETAIL(1401, HttpStatus.OK, "링크 상세조회에 성공했습니다."),
     GET_LEENK_PARTICIPANTS(1402, HttpStatus.OK, "링크 참여자 목록 조회에 성공했습니다."),
@@ -22,9 +21,5 @@ public enum ResponseCode implements ResponseCodeInterface {
     REPORT_LEENK(1410, HttpStatus.OK, "링크 신고에 성공했습니다."),
     FINISH_LEENK(1411, HttpStatus.OK, "링크 종료에 성공했습니다."),
     GET_PARTICIPATED_LEENKS(1412, HttpStatus.OK, "내가 참여한 링크 목록 조회에 성공했습니다."),
-    GET_USER_PARTICIPATED_LEENKS(1413, HttpStatus.OK, "다른 유저가 참여한 링크 목록 조회에 성공했습니다.");
-
-    private final int code;
-    private final HttpStatus status;
-    private final String message;
+    GET_USER_PARTICIPATED_LEENKS(1413, HttpStatus.OK, "다른 유저가 참여한 링크 목록 조회에 성공했습니다."),
 }
