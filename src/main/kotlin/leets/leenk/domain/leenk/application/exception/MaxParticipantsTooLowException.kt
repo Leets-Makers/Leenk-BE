@@ -1,9 +1,5 @@
-package leets.leenk.domain.leenk.application.exception;
+package leets.leenk.domain.leenk.application.exception
 
-import leets.leenk.global.common.exception.BaseException;
+import leets.leenk.global.common.exception.BaseException
 
-public class MaxParticipantsTooLowException extends BaseException {
-    public MaxParticipantsTooLowException() {
-        super(LeenkErrorCode.MAX_PARTICIPANTS_TOO_LOW);
-    }
-}
+class MaxParticipantsTooLowException : BaseException(LeenkErrorCode.MAX_PARTICIPANTS_TOO_LOW)

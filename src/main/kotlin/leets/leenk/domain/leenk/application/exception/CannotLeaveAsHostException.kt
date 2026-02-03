@@ -1,9 +1,5 @@
-package leets.leenk.domain.leenk.application.exception;
+package leets.leenk.domain.leenk.application.exception
 
-import leets.leenk.global.common.exception.BaseException;
+import leets.leenk.global.common.exception.BaseException
 
-public class CannotLeaveAsHostException extends BaseException {
-    public CannotLeaveAsHostException() {
-        super(LeenkErrorCode.LEENK_CANNOT_LEAVE_AS_HOST);
-    }
-}
+class CannotLeaveAsHostException : BaseException(LeenkErrorCode.LEENK_CANNOT_LEAVE_AS_HOST)
