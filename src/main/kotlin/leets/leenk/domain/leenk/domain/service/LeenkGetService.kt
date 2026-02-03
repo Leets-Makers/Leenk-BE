@@ -1,70 +1,64 @@
-package leets.leenk.domain.leenk.domain.service;
+package leets.leenk.domain.leenk.domain.service
 
-import java.time.LocalDateTime;
-import java.util.List;
-import leets.leenk.domain.leenk.application.exception.LeenkNotFoundException;
-import leets.leenk.domain.leenk.domain.entity.Leenk;
-import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter;
-import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus;
-import leets.leenk.domain.leenk.domain.repository.LeenkRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Service;
+import leets.leenk.domain.leenk.application.exception.LeenkNotFoundException
+import leets.leenk.domain.leenk.domain.entity.Leenk
+import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter
+import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
+import leets.leenk.domain.leenk.domain.repository.LeenkRepository
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
+import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
-@RequiredArgsConstructor
-public class LeenkGetService {
+class LeenkGetService(
+    private val leenkRepository: LeenkRepository,
+) {
+    fun findById(leenkId: Long): Leenk =
+        leenkRepository.findById(leenkId)
+            .orElseThrow { LeenkNotFoundException() }
 
-    private static final List<LeenkStatus> ALL_STATUSES = List.of(
-            LeenkStatus.RECRUITING, LeenkStatus.CLOSED
-    );
-    private final LeenkRepository leenkRepository;
+    fun findAll(pageable: Pageable): Slice<Leenk> =
+        leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable)
 
-    public Leenk findById(Long leenkId) {
-        return leenkRepository.findById(leenkId)
-                .orElseThrow(LeenkNotFoundException::new);
-    }
+    fun findByStatus(status: LeenkStatus, pageable: Pageable): Slice<Leenk> =
+        leenkRepository.findAllByStatus(status, pageable)
 
-    public Slice<Leenk> findAll(Pageable pageable) {
-
-        return leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable);
-    }
-
-    public Slice<Leenk> findByStatus(LeenkStatus status, Pageable pageable) {
-
-        return leenkRepository.findAllByStatus(status, pageable);
-    }
-
-    public Slice<Leenk> findByStatusParam(LeenkFilter filter, Pageable pageable) {
+    fun findByStatusParam(filter: LeenkFilter, pageable: Pageable): Slice<Leenk> =
         if (filter == LeenkFilter.ALL) {
-            return leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable);
+            leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable)
+        } else {
+            leenkRepository.findAllByStatus(filter.leenkStatus!!, pageable)
         }
 
-        return leenkRepository.findAllByStatus(filter.getLeenkStatus(), pageable);
-    }
+    fun findLeenksStartingWithin30Minutes(now: LocalDateTime): List<Leenk> =
+        leenkRepository.findAllByStatusInAndStartTimeGreaterThanAndStartTimeLessThanEqual(
+            listOf(LeenkStatus.RECRUITING, LeenkStatus.CLOSED),
+            now,
+            now.plusMinutes(30),
+        )
 
-    public List<Leenk> findLeenksStartingWithin30Minutes(LocalDateTime now) {
-        return leenkRepository.findAllByStatusInAndStartTimeGreaterThanAndStartTimeLessThanEqual(
-                List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now, now.plusMinutes(30));
-    }
+    fun findDueLeenks(now: LocalDateTime): List<Leenk> =
+        leenkRepository.findAllByStatusInAndStartTimeLessThanEqual(
+            listOf(LeenkStatus.RECRUITING, LeenkStatus.CLOSED),
+            now.minusHours(1),
+        )
 
-    public List<Leenk> findDueLeenks(LocalDateTime now) {
-        return leenkRepository.findAllByStatusInAndStartTimeLessThanEqual(
-                List.of(LeenkStatus.RECRUITING, LeenkStatus.CLOSED), now.minusHours(1));
-    }
+    fun findUnnotifiedFinishedLeenks(now: LocalDateTime): List<Leenk> =
+        leenkRepository.findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(
+            LeenkStatus.FINISHED,
+            now.minusHours(25),
+            now.minusHours(1),
+        )
 
-    public List<Leenk> findUnnotifiedFinishedLeenks(LocalDateTime now) {
-        return leenkRepository.findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(
-                LeenkStatus.FINISHED, now.minusHours(25), now.minusHours(1));
-    }
+    fun findOverdueRecruitingLeenksToNotify(now: LocalDateTime): List<Leenk> =
+        leenkRepository.findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(
+            LeenkStatus.RECRUITING,
+            now.minusMinutes(30),
+            now,
+        )
 
-    public List<Leenk> findOverdueRecruitingLeenksToNotify(LocalDateTime now) {
-        return leenkRepository.findAllByStatusAndStartTimeGreaterThanAndStartTimeLessThanEqual(
-                LeenkStatus.RECRUITING,
-                now.minusMinutes(30),
-                now
-        );
+    companion object {
+        private val ALL_STATUSES = listOf(LeenkStatus.RECRUITING, LeenkStatus.CLOSED)
     }
-
 }

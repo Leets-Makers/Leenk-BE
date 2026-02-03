@@ -1,60 +1,57 @@
-package leets.leenk.domain.leenk.domain.service;
+package leets.leenk.domain.leenk.domain.service
 
-import java.time.LocalDateTime;
-import leets.leenk.domain.leenk.application.dto.request.LeenkUpdateRequest;
-import leets.leenk.domain.leenk.application.exception.MaxParticipantsTooLowException;
-import leets.leenk.domain.leenk.domain.entity.Leenk;
-import leets.leenk.domain.leenk.domain.entity.Location;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import leets.leenk.domain.leenk.application.dto.request.LeenkUpdateRequest
+import leets.leenk.domain.leenk.application.exception.MaxParticipantsTooLowException
+import leets.leenk.domain.leenk.domain.entity.Leenk
+import leets.leenk.domain.leenk.domain.entity.Location
+import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
-@RequiredArgsConstructor
-public class LeenkUpdateService {
-
-    public void updateLeenk(Leenk leenk, Location location, LeenkUpdateRequest request) {
-        updateTitle(leenk, request.getTitle());
-        updateContent(leenk, request.getContent());
-        updateStartTime(leenk, request.getStartTime());
-        updateMaxParticipants(leenk, request.getMaxParticipants());
-        updatePlaceName(location, request.getPlaceName());
+class LeenkUpdateService {
+    fun updateLeenk(leenk: Leenk, location: Location, request: LeenkUpdateRequest) {
+        updateTitle(leenk, request.title)
+        updateContent(leenk, request.content)
+        updateStartTime(leenk, request.startTime)
+        updateMaxParticipants(leenk, request.maxParticipants)
+        updatePlaceName(location, request.placeName)
     }
 
-    private void updateTitle(Leenk leenk, String title) {
-        if (title != null && !title.isBlank()) {
-            leenk.updateTitle(title);
+    private fun updateTitle(leenk: Leenk, title: String?) {
+        if (!title.isNullOrBlank()) {
+            leenk.updateTitle(title)
         }
     }
 
-    private void updateContent(Leenk leenk, String content) {
-        if (content != null && !content.isBlank()) {
-            leenk.updateContent(content);
+    private fun updateContent(leenk: Leenk, content: String?) {
+        if (!content.isNullOrBlank()) {
+            leenk.updateContent(content)
         }
     }
 
-    private void updateStartTime(Leenk leenk, LocalDateTime startTime) {
+    private fun updateStartTime(leenk: Leenk, startTime: LocalDateTime?) {
         if (startTime != null) {
-            leenk.updateStartTime(startTime);
+            leenk.updateStartTime(startTime)
         }
     }
 
-    private void updateMaxParticipants(Leenk leenk, Long maxParticipants) {
+    private fun updateMaxParticipants(leenk: Leenk, maxParticipants: Long?) {
         if (maxParticipants == null) {
-            return;
+            return
         }
 
-        long currentCount = leenk.getCurrentParticipants();
+        val currentCount = leenk.currentParticipants
 
         if (maxParticipants < currentCount) {
-            throw new MaxParticipantsTooLowException();
+            throw MaxParticipantsTooLowException()
         }
 
-        leenk.updateMaxParticipants(maxParticipants);
+        leenk.updateMaxParticipants(maxParticipants)
     }
 
-    private void updatePlaceName(Location location, String placeName) {
-        if (location != null && placeName != null && !placeName.isBlank()) {
-            location.updatePlaceName(placeName);
+    private fun updatePlaceName(location: Location?, placeName: String?) {
+        if (location != null && !placeName.isNullOrBlank()) {
+            location.updatePlaceName(placeName)
         }
     }
 }
