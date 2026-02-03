@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service
 class LocationSaveService(
     private val locationRepository: LocationRepository,
 ) {
-    fun save(location: Location): Location =
-        locationRepository.save(location)
+    fun save(location: Location): Location = locationRepository.save(location)
 }

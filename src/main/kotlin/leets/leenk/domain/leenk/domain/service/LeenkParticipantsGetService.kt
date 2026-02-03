@@ -13,16 +13,23 @@ import org.springframework.stereotype.Service
 class LeenkParticipantsGetService(
     private val leenkParticipantsRepository: LeenkParticipantsRepository,
 ) {
-    fun findAllByLeenk(leenk: Leenk): List<LeenkParticipants> =
-        leenkParticipantsRepository.findAllByLeenk(leenk)
+    fun findAllByLeenk(leenk: Leenk): List<LeenkParticipants> = leenkParticipantsRepository.findAllByLeenk(leenk)
 
-    fun findSliceByParticipant(user: User, pageable: Pageable): Slice<LeenkParticipants> =
-        leenkParticipantsRepository.findAllByParticipantOrderByJoinedAtDesc(user, pageable)
+    fun findSliceByParticipant(
+        user: User,
+        pageable: Pageable,
+    ): Slice<LeenkParticipants> = leenkParticipantsRepository.findAllByParticipantOrderByJoinedAtDesc(user, pageable)
 
-    fun existsByLeenkAndParticipant(leenk: Leenk, user: User): Boolean =
-        leenkParticipantsRepository.existsByLeenkAndParticipant(leenk, user)
+    fun existsByLeenkAndParticipant(
+        leenk: Leenk,
+        user: User,
+    ): Boolean = leenkParticipantsRepository.existsByLeenkAndParticipant(leenk, user)
 
-    fun findByLeenkAndParticipantId(leenkId: Long, participantId: Long): LeenkParticipants =
-        leenkParticipantsRepository.findByLeenkIdAndParticipantId(leenkId, participantId)
+    fun findByLeenkAndParticipantId(
+        leenkId: Long,
+        participantId: Long,
+    ): LeenkParticipants =
+        leenkParticipantsRepository
+            .findByLeenkIdAndParticipantId(leenkId, participantId)
             .orElseThrow { LeenkParticipantNotFoundException() }
 }

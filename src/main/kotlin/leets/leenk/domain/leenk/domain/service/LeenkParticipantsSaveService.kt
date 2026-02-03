@@ -8,6 +8,5 @@ import org.springframework.stereotype.Service
 class LeenkParticipantsSaveService(
     private val participantsRepository: LeenkParticipantsRepository,
 ) {
-    fun save(participants: LeenkParticipants): LeenkParticipants =
-        participantsRepository.save(participants)
+    fun save(participants: LeenkParticipants): LeenkParticipants = participantsRepository.save(participants)
 }

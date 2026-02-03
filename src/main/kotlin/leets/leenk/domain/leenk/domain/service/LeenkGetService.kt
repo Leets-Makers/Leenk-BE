@@ -15,16 +15,21 @@ class LeenkGetService(
     private val leenkRepository: LeenkRepository,
 ) {
     fun findById(leenkId: Long): Leenk =
-        leenkRepository.findById(leenkId)
+        leenkRepository
+            .findById(leenkId)
             .orElseThrow { LeenkNotFoundException() }
 
-    fun findAll(pageable: Pageable): Slice<Leenk> =
-        leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable)
+    fun findAll(pageable: Pageable): Slice<Leenk> = leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable)
 
-    fun findByStatus(status: LeenkStatus, pageable: Pageable): Slice<Leenk> =
-        leenkRepository.findAllByStatus(status, pageable)
+    fun findByStatus(
+        status: LeenkStatus,
+        pageable: Pageable,
+    ): Slice<Leenk> = leenkRepository.findAllByStatus(status, pageable)
 
-    fun findByStatusParam(filter: LeenkFilter, pageable: Pageable): Slice<Leenk> =
+    fun findByStatusParam(
+        filter: LeenkFilter,
+        pageable: Pageable,
+    ): Slice<Leenk> =
         if (filter == LeenkFilter.ALL) {
             leenkRepository.findAllByStatusIn(ALL_STATUSES, pageable)
         } else {
