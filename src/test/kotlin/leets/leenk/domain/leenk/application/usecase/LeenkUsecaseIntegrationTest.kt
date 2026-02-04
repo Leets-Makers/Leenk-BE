@@ -44,6 +44,7 @@ class LeenkUsecaseIntegrationTest(
 
     private lateinit var host: User
     private lateinit var otherUser: User
+    private lateinit var participant: User
 
     private fun persistUser(
         id: Long,
@@ -68,10 +69,13 @@ class LeenkUsecaseIntegrationTest(
         ),
     )
 
+    private fun refreshLeenk(leenkId: Long) = leenkRepository.findById(leenkId).get()
+
     init {
         beforeEach {
             host = persistUser(id = 1L, name = "호스트")
             otherUser = persistUser(id = 2L, name = "다른 사용자")
+            participant = persistUser(id = 3L, name = "참여자")
         }
 
         afterEach {
@@ -89,7 +93,7 @@ class LeenkUsecaseIntegrationTest(
 
                     leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.currentParticipants shouldBe initialCount + 1
                 }
             }
@@ -131,7 +135,7 @@ class LeenkUsecaseIntegrationTest(
 
                     leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.currentParticipants shouldBe updated.maxParticipants
                 }
             }
@@ -144,7 +148,7 @@ class LeenkUsecaseIntegrationTest(
 
                     leenkUsecase.closeLeenk(host.id!!, leenk.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.status shouldBe LeenkStatus.CLOSED
                 }
             }
@@ -187,7 +191,7 @@ class LeenkUsecaseIntegrationTest(
 
                     leenkUsecase.finishLeenk(host.id!!, leenk.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.status shouldBe LeenkStatus.FINISHED
                 }
             }
@@ -208,7 +212,7 @@ class LeenkUsecaseIntegrationTest(
 
                     leenkUsecase.finishLeenk(host.id!!, leenk.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.status shouldBe LeenkStatus.FINISHED
                 }
             }
@@ -229,19 +233,17 @@ class LeenkUsecaseIntegrationTest(
                 it("참여자가 제거되고 currentParticipants가 1 감소한다") {
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
                     leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
-                    val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
-                    val initialCount = updatedAfterParticipate.currentParticipants
+                    val initialCount = refreshLeenk(leenk.id!!).currentParticipants
 
                     leenkUsecase.kickParticipant(host.id!!, leenk.id!!, otherUser.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.currentParticipants shouldBe initialCount - 1
                 }
             }
 
             context("호스트가 아닌 사용자가 참여자를 강퇴하는 경우") {
                 it("NotLeenkOwnerException이 발생한다") {
-                    val participant = persistUser(3L, "참여자")
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
                     leenkUsecase.participateLeenk(participant.id!!, leenk.id!!)
 
@@ -297,12 +299,11 @@ class LeenkUsecaseIntegrationTest(
                 it("정상적으로 나가지고 currentParticipants가 1 감소한다") {
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
                     leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
-                    val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
-                    val initialCount = updatedAfterParticipate.currentParticipants
+                    val initialCount = refreshLeenk(leenk.id!!).currentParticipants
 
                     leenkUsecase.leaveLeenk(otherUser.id!!, leenk.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.currentParticipants shouldBe initialCount - 1
                 }
             }
@@ -351,12 +352,11 @@ class LeenkUsecaseIntegrationTest(
                 it("호스트만 남고 currentParticipants가 1 감소한다") {
                     val leenk = persistLeenk(status = LeenkStatus.RECRUITING)
                     leenkUsecase.participateLeenk(otherUser.id!!, leenk.id!!)
-                    val updatedAfterParticipate = leenkRepository.findById(leenk.id!!).get()
-                    val initialCount = updatedAfterParticipate.currentParticipants
+                    val initialCount = refreshLeenk(leenk.id!!).currentParticipants
 
                     leenkUsecase.leaveLeenk(otherUser.id!!, leenk.id!!)
 
-                    val updated = leenkRepository.findById(leenk.id!!).get()
+                    val updated = refreshLeenk(leenk.id!!)
                     updated.currentParticipants shouldBe initialCount - 1
                 }
             }
