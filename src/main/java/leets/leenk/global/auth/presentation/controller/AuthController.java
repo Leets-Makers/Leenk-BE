@@ -1,5 +1,6 @@
 package leets.leenk.global.auth.presentation.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthUsecase authUsecase;
 
+    @Deprecated
+    @Hidden
     @PostMapping("/kakao/login")
     @Operation(summary = "카카오 login api [for mobile]")
     public CommonResponse<LoginResponse> kakaoLogin(@RequestHeader("Kakao-Access-Token") String kakaoAccessToken) {
@@ -55,6 +58,8 @@ public class AuthController {
         return CommonResponse.success(ResponseCode.REFRESH_TOKEN_SUCCESS, response);
     }
 
+    @Deprecated
+    @Hidden
     @PostMapping("/login")
     @Operation(summary = "로그인 API")
     public CommonResponse<LoginResponse> login(@Valid @RequestBody UsernamePasswordLoginRequest request) {
