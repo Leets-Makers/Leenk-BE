@@ -26,4 +26,9 @@ enum class AuthErrorCode(
 
     @ExplainError("애플 로그인 관련 문제가 일어난 경우 발생합니다. 서버 오류일 수 있습니다.")
     APPLE_AUTH_ERROR(2005, HttpStatus.UNAUTHORIZED, "애플 로그인에 실패했습니다."),
+
+    @ExplainError("잘못된 토큰이 입력되는 경우 발생합니다.")
+    INVALID_TOKEN(2006, HttpStatus.BAD_REQUEST, "올바르지 않은 토큰입니다."),
+
+    EXPIRED_TOKEN(2007, HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
 }

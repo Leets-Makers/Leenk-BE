@@ -2,6 +2,7 @@ package leets.leenk.global.config;
 
 
 import leets.leenk.global.auth.application.property.OauthProperty;
+import leets.leenk.global.auth.domain.filter.JwtAuthenticationFilter;
 import leets.leenk.global.auth.domain.handler.CustomAccessDeniedHandler;
 import leets.leenk.global.auth.domain.handler.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -29,6 +31,7 @@ public class SecurityConfig {
     private final OauthProperty oauthProperty;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,12 +45,8 @@ public class SecurityConfig {
                         exceptionHandling
                                 .authenticationEntryPoint(authenticationEntryPoint)
                                 .accessDeniedHandler(accessDeniedHandler))
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .jwt(jwt -> jwt
-                                .decoder(jwtDecoder())
-                        )
-                )
+                // JWT 인증 필터 추가
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(permitUrlConfig.getPublicUrl()).permitAll()
                         .anyRequest().authenticated()
