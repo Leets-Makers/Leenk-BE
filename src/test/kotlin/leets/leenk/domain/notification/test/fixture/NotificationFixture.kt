@@ -10,4 +10,12 @@ object NotificationFixture {
             .isRead(false)
             .userId(1L)
             .build()
+
+    fun notificationForUser(userId: Long): Notification =
+        Notification
+            .builder()
+            .id("101")
+            .isRead(false)
+            .userId(userId)
+            .build()
 }
