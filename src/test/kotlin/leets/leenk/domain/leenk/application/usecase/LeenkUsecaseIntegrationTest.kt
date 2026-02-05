@@ -46,10 +46,7 @@ class LeenkUsecaseIntegrationTest(
     private lateinit var otherUser: User
     private lateinit var participant: User
 
-    private fun persistUser(
-        id: Long,
-        name: String = "테스트유저",
-    ): User = userRepository.save(UserTestFixture.createUser(id = id, name = name))
+    private fun persistUser(name: String = "테스트유저"): User = userRepository.save(UserTestFixture.createUser(name = name))
 
     private fun persistLocation() = locationRepository.save(LocationTestFixture.createLocation(id = null, "서울"))
 
@@ -73,9 +70,9 @@ class LeenkUsecaseIntegrationTest(
 
     init {
         beforeEach {
-            host = persistUser(id = 1L, name = "호스트")
-            otherUser = persistUser(id = 2L, name = "다른 사용자")
-            participant = persistUser(id = 3L, name = "참여자")
+            host = persistUser(name = "호스트")
+            otherUser = persistUser(name = "다른 사용자")
+            participant = persistUser(name = "참여자")
         }
 
         afterEach {
