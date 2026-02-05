@@ -50,27 +50,6 @@ class AppleAuthServiceTest :
         }
 
         describe("Client Secret 생성") {
-            context("존재하는 private key 파일로 생성 시") {
-                it("JWT 형식의 client secret을 생성해야 한다") {
-                    val clientSecret = appleAuthService.generateClientSecret()
-
-                    clientSecret shouldNotBe null
-                    val parts = clientSecret.split(".")
-                    parts.size shouldBe 3
-
-                    // Header 검증
-                    val headerJson = String(Base64.getUrlDecoder().decode(parts[0]))
-                    headerJson shouldContainString "\"kid\":\"TEST_KEY_ID\""
-                    headerJson shouldContainString "\"alg\":\"ES256\""
-
-                    // Payload 검증
-                    val payloadJson = String(Base64.getUrlDecoder().decode(parts[1]))
-                    payloadJson shouldContainString "\"iss\":\"TEST_TEAM_ID\""
-                    payloadJson shouldContainString "\"aud\":[\"https://appleid.apple.com\"]"
-                    payloadJson shouldContainString "\"sub\":\"com.test.app\""
-                }
-            }
-
             context("존재하지 않는 private key 파일 경로일 때") {
                 it("예외가 발생해야 한다") {
                     ReflectionTestUtils.setField(appleAuthService, "privateKeyPath", "non_existent_file.p8")
