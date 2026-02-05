@@ -55,6 +55,7 @@ class JwtTokenProvider(
         return Jwts
             .builder()
             .subject(userId.toString())
+            .claim(USER_ID_CLAIM, userId)
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(secretKey, Jwts.SIG.HS256)
