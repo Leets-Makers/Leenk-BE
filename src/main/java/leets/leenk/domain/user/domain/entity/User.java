@@ -2,6 +2,8 @@ package leets.leenk.domain.user.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
@@ -27,15 +29,20 @@ public class User extends BaseEntity {
     private static final String LEAVE_USER_NAME = "(알수없음)";
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
+    @Size(max = 255)
+    @Column
+    private String appleId;
+
     @Size(max = 10)
-    @Column(length = 10, nullable = false)
+    @Column(length = 10)
     private String name;
 
-    @Column(nullable = false)
-    private int cardinal;
+    @Column
+    private Integer cardinal;
 
     private String profileImage;
 
@@ -53,6 +60,9 @@ public class User extends BaseEntity {
     private String introduction;
 
     private String fcmToken;
+
+    @Column(length = 512)
+    private String refreshToken;
 
     @Size(max = 20)
     @Column(length = 20)
@@ -100,6 +110,10 @@ public class User extends BaseEntity {
         this.mbti = mbti;
     }
 
+    public void updateCardinal(Integer cardinal) {
+        this.cardinal = cardinal;
+    }
+
     public void updateAgreement(boolean termsService, boolean privacyPolicy) {
         this.termsAgreement = termsService;
         this.privacyAgreement = privacyPolicy;
@@ -107,6 +121,10 @@ public class User extends BaseEntity {
 
     public void updateFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public void increaseTotalReactionCount(long reactionCount) {
@@ -142,7 +160,8 @@ public class User extends BaseEntity {
         this.name = LEAVE_USER_NAME;
         this.profileImage = null;
         this.thumbnail = null;
-        this.cardinal = 0;
+        this.cardinal = null;
+        this.refreshToken = null;
         this.mbti = null;
         this.introduction = null;
         this.kakaoTalkId = null;
@@ -170,6 +189,14 @@ public class User extends BaseEntity {
         this.deleteDate = null;
         this.name = userInfo.name();
         this.cardinal = userInfo.cardinal();
+    }
+
+    public void reRegisterFromApple(String name) {
+        this.leaveDate = null;
+        this.deleteDate = null;
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
     }
 
     public boolean isAgree() {
