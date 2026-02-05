@@ -111,7 +111,7 @@ public class CommentRepositoryTest {
     }
 
     private User persistUser() {
-        User user = UserTestFixture.createUser(1L, "me");
+        User user = UserTestFixture.createUser("me");
         em.persist(user);
         return user;
     }

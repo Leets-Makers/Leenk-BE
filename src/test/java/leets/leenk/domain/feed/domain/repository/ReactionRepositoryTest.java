@@ -35,8 +35,8 @@ public class ReactionRepositoryTest {
     @DisplayName("findByFeedAndUser 테스트")
     void findByFeedAndUser() {
         // given
-        User author = persistUser(1L, "author");
-        User me = persistUser(2L, "me");
+        User author = persistUser("author");
+        User me = persistUser("me");
 
         Feed feed = persistFeed(author);
 
@@ -56,10 +56,10 @@ public class ReactionRepositoryTest {
     @DisplayName("findAllByFeed 테스트")
     void findAllByFeed() {
         // given
-        User author = persistUser(1L, "author");
-        User u1 = persistUser(2L, "u1");
-        User u2 = persistUser(3L, "u2");
-        User u3 = persistUser(4L, "u3");
+        User author = persistUser("author");
+        User u1 = persistUser("u1");
+        User u2 = persistUser("u2");
+        User u3 = persistUser("u3");
 
         Feed feed = persistFeed(author);
 
@@ -83,8 +83,8 @@ public class ReactionRepositoryTest {
         em.clear();
     }
 
-    private User persistUser(Long id, String name) {
-        User user = UserTestFixture.createUser(id, name);
+    private User persistUser(String name) {
+        User user = UserTestFixture.createUser(name);
         em.persist(user);
         return user;
     }
