@@ -76,14 +76,11 @@ class UserGetServiceTest : DescribeSpec({
     describe("findById") {
         context("when user exists") {
             it("should return user") {
-                // given
                 val user = UserTestFixture.createUser()
                 every { userRepository.findByIdAndDeletedAtIsNull(1L) } returns user
 
-                // when
                 val result = service.findById(1L)
 
-                // then
                 result shouldBe user
                 verify { userRepository.findByIdAndDeletedAtIsNull(1L) }
             }
@@ -91,10 +88,8 @@ class UserGetServiceTest : DescribeSpec({
 
         context("when user does not exist") {
             it("should throw UserNotFoundException") {
-                // given
                 every { userRepository.findByIdAndDeletedAtIsNull(999L) } returns null
 
-                // when & then
                 shouldThrow<UserNotFoundException> {
                     service.findById(999L)
                 }
@@ -230,12 +225,10 @@ class UserControllerTest : DescribeSpec() {
         describe("POST /api/v1/users") {
             context("with valid request") {
                 it("should return 200 OK with created user") {
-                    // given
                     val request = CreateUserRequest(name = "John", email = "john@example.com")
                     val response = UserResponse(id = 1L, name = "John")
                     every { createUserUsecase.execute(any()) } returns response
 
-                    // when & then
                     mockMvc.perform(
                         post("/api/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
