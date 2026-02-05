@@ -75,8 +75,20 @@ public class AuthUsecase {
 
     @Transactional
     public LoginResponse appleLogin(AppleLoginRequest request) {
+        String idToken;
+
+        // 0. authCode가 있으면 토큰 교환 먼저 진행 (로컬 테스트용)
+        if (request.authCode() != null && !request.authCode().isBlank()) {
+            var tokenResponse = appleAuthService.getAppleToken(request.authCode());
+            idToken = tokenResponse.getId_token();
+        } else if (request.idToken() != null && !request.idToken().isBlank()) {
+            idToken = request.idToken();
+        } else {
+            throw new IllegalArgumentException("idToken 또는 authCode 중 하나는 필수입니다");
+        }
+
         // 1. Apple ID Token 검증 및 사용자 정보 추출 (Weeth 없이)
-        AppleUserInfo tokenUserInfo = appleAuthService.verifyAndDecodeIdToken(request.idToken());
+        AppleUserInfo tokenUserInfo = appleAuthService.verifyAndDecodeIdToken(idToken);
 
         // 2. 클라이언트에서 받은 이름 반영 (최초 로그인 시에만 Apple이 제공)
         AppleUserInfo appleUserInfo = new AppleUserInfo(

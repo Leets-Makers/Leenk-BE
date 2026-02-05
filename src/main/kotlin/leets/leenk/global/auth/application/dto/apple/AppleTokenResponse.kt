@@ -1,9 +1,9 @@
 package leets.leenk.global.auth.application.dto.apple
 
 data class AppleTokenResponse(
-    val accessToken: String?,
-    val tokenType: String?,
-    val expiresIn: Long?,
-    val refreshToken: String?,
-    val idToken: String?,
+    val access_token: String?,
+    val token_type: String?,
+    val expires_in: Long?,
+    val refresh_token: String?,
+    val id_token: String?,
 )
