@@ -11,15 +11,16 @@ import leets.leenk.domain.user.domain.service.user.UserSaveService;
 import leets.leenk.domain.user.domain.service.userbackup.UserBackupInfoDeleteService;
 import leets.leenk.domain.user.domain.service.userbackup.UserBackupInfoGetService;
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingSaveService;
+import leets.leenk.global.auth.application.dto.apple.AppleUserInfo;
+import leets.leenk.global.auth.application.dto.request.AppleLoginRequest;
 import leets.leenk.global.auth.application.dto.request.RefreshTokenRequest;
 import leets.leenk.global.auth.application.dto.request.UsernamePasswordLoginRequest;
 import leets.leenk.global.auth.application.dto.response.LoginResponse;
 import leets.leenk.global.auth.application.dto.response.OauthTokenResponse;
 import leets.leenk.global.auth.application.dto.response.OauthUserInfoResponse;
+import leets.leenk.global.auth.application.exception.RefreshTokenException;
 import leets.leenk.global.auth.application.mapper.LoginMapper;
-import leets.leenk.global.auth.domain.service.AppleOauthApiService;
-import leets.leenk.global.auth.domain.service.KakaoOauthApiService;
-import leets.leenk.global.auth.domain.service.OauthApiService;
+import leets.leenk.global.auth.domain.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -37,6 +38,7 @@ public class AuthUsecase {
     private final UserGetService userGetService;
     private final UserSaveService userSaveService;
     private final UserSettingSaveService userSettingSaveService;
+    private final leets.leenk.domain.user.domain.service.user.UserUpdateService userUpdateService;
     private final KakaoOauthApiService kakaoOauthApiService;
     private final AppleOauthApiService appleOauthApiService;
     private final OauthApiService oauthApiService;
@@ -48,6 +50,8 @@ public class AuthUsecase {
     private final UserSettingMapper userSettingMapper;
 
     private final JwtDecoder jwtDecoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AppleAuthService appleAuthService;
 
     @Value("${token.access_token}")
     private String accessToken;
@@ -70,15 +74,96 @@ public class AuthUsecase {
     }
 
     @Transactional
-    public LoginResponse appleLogin(String appleIdToken) {
-        OauthTokenResponse response = appleOauthApiService.getOauthToken(appleIdToken);
+    public LoginResponse appleLogin(AppleLoginRequest request) {
+        // 1. Apple ID Token 검증 및 사용자 정보 추출 (Weeth 없이)
+        AppleUserInfo tokenUserInfo = appleAuthService.verifyAndDecodeIdToken(request.idToken());
 
-        long userId = parseUserId(response);
-        Optional<User> optionalUser = userGetService.existById(userId);
+        // 2. 클라이언트에서 받은 이름 반영 (최초 로그인 시에만 Apple이 제공)
+        AppleUserInfo appleUserInfo = new AppleUserInfo(
+                tokenUserInfo.getAppleId(),
+                request.name() != null ? request.name() : tokenUserInfo.getName(),
+                tokenUserInfo.getEmail(),
+                tokenUserInfo.getEmailVerified()
+        );
 
-        return getUserLoginResponse(optionalUser, response);
+        // 3. Apple ID로 기존 사용자 조회
+        Optional<User> optionalUser = userGetService.findByAppleId(appleUserInfo.getAppleId());
+
+        return getAppleUserLoginResponse(optionalUser, appleUserInfo);
     }
 
+    /**
+     * Apple 로그인 전용 응답 처리
+     */
+    private LoginResponse getAppleUserLoginResponse(Optional<User> optionalUser, AppleUserInfo appleUserInfo) {
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            // 자체 JWT 발급
+            String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+
+            // Refresh Token 저장
+            userUpdateService.updateRefreshToken(user, refreshToken);
+
+            // 탈퇴한 사용자 재가입 처리
+            if (user.isDeleted()) {
+                return reRegisterAppleUser(user, appleUserInfo, accessToken, refreshToken);
+            }
+
+            // 나간 사용자 복구 처리
+            if (user.isLeft()) {
+                restoreLeavedUser(user);
+            }
+
+            // 약관 동의 안한 사용자는 추가 정보 포함하여 반환 (온보딩 필요)
+            if (!user.isAgree()) {
+                return loginMapper.toLoginResponseForApple(user, appleUserInfo, accessToken, refreshToken);
+            }
+
+            return loginMapper.toLoginResponse(accessToken, refreshToken);
+        }
+
+        // 신규 사용자 등록
+        return saveNewAppleUser(appleUserInfo);
+    }
+
+    /**
+     * Apple 로그인 신규 사용자 저장
+     */
+    private LoginResponse saveNewAppleUser(AppleUserInfo appleUserInfo) {
+        User user = userMapper.toUserFromApple(appleUserInfo);
+        UserSetting userSetting = userSettingMapper.toDefaultSetting(user);
+
+        userSaveService.save(user);
+        userSettingSaveService.save(userSetting);
+
+        // 자체 JWT 발급
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+
+        // Refresh Token 저장
+        userUpdateService.updateRefreshToken(user, refreshToken);
+
+        return loginMapper.toLoginResponseForApple(user, appleUserInfo, accessToken, refreshToken);
+    }
+
+    /**
+     * Apple 로그인 탈퇴 사용자 재가입 처리
+     */
+    private LoginResponse reRegisterAppleUser(User user, AppleUserInfo appleUserInfo,
+                                              String accessToken, String refreshToken) {
+        user.reRegisterFromApple(appleUserInfo.getName());
+
+        return loginMapper.toLoginResponseForApple(user, appleUserInfo, accessToken, refreshToken);
+    }
+
+    /**
+     * @deprecated Weeth OAuth 서버 의존 - 카카오 로그인 전용
+     * @apiNote 2026-Q2 제거 예정 (Apple 로그인 전환 완료 후)
+     * @see #appleLogin(AppleLoginRequest)
+     */
+    @Deprecated(since = "2.0", forRemoval = true)
     private LoginResponse getUserLoginResponse(Optional<User> optionalUser, OauthTokenResponse response) {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -116,6 +201,12 @@ public class AuthUsecase {
         return Long.parseLong(jwt.getClaimAsString(JWT_USER_ID_CLAIM));
     }
 
+    /**
+     * @deprecated Weeth OAuth 서버 의존 - 카카오 로그인 전용
+     * @apiNote 2026-Q2 제거 예정 (Apple 로그인 전환 완료 후)
+     * @see #saveNewAppleUser(AppleUserInfo)
+     */
+    @Deprecated(since = "2.0", forRemoval = true)
     private LoginResponse saveNewUser(OauthTokenResponse response) {
         OauthUserInfoResponse userInfo = oauthApiService.getUserInfo(response.access_token());
         User user = userMapper.toUser(userInfo);
@@ -134,6 +225,12 @@ public class AuthUsecase {
         userBackupInfoDeleteService.delete(backupInfo);
     }
 
+    /**
+     * @deprecated Weeth OAuth 서버 의존 - 카카오 로그인 전용
+     * @apiNote 2026-Q2 제거 예정 (Apple 로그인 전환 완료 후)
+     * @see #reRegisterAppleUser(User, AppleUserInfo, String, String)
+     */
+    @Deprecated(since = "2.0", forRemoval = true)
     private LoginResponse reRegisterUser(User user, OauthTokenResponse response) {
         OauthUserInfoResponse userInfo = oauthApiService.getUserInfo(response.access_token());
         user.reRegister(userInfo);
@@ -142,9 +239,33 @@ public class AuthUsecase {
     }
 
     public LoginResponse reissueToken(RefreshTokenRequest request) {
-        OauthTokenResponse response = kakaoOauthApiService.reissueOauthToken(request.refreshToken());
+        String refreshToken = request.refreshToken();
 
-        return loginMapper.toLoginResponse(response.access_token(), response.refresh_token());
+        // 리프레시 토큰 검증
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new RefreshTokenException();
+        }
+
+        // userId 추출
+        Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+        if (userId == null) {
+            throw new RefreshTokenException();
+        }
+
+        // 사용자 존재 확인 및 저장된 토큰과 비교
+        User user = userGetService.findById(userId);
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            throw new RefreshTokenException();
+        }
+
+        // 새 토큰 발급
+        String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
+
+        // 새 Refresh Token 저장
+        userUpdateService.updateRefreshToken(user, newRefreshToken);
+
+        return loginMapper.toLoginResponse(newAccessToken, newRefreshToken);
     }
 
     public LoginResponse login(UsernamePasswordLoginRequest request) {

@@ -32,28 +32,28 @@ import java.util.*
 class AppleAuthService {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${auth.providers.apple.client_id}")
+    @Value($$"${auth.oauth2.apple.client-id}")
     private lateinit var appleClientId: String
 
-    @Value("\${auth.providers.apple.team_id}")
+    @Value($$"${auth.oauth2.apple.team_id}")
     private lateinit var appleTeamId: String
 
-    @Value("\${auth.providers.apple.key_id}")
+    @Value($$"${auth.oauth2.apple.key_id}")
     private lateinit var appleKeyId: String
 
-    @Value("\${auth.providers.apple.redirect_uri}")
+    @Value($$"${auth.oauth2.apple.redirect_uri}")
     private lateinit var redirectUri: String
 
-    @Value("\${auth.providers.apple.token_uri}")
+    @Value($$"${auth.oauth2.apple.token_uri}")
     private lateinit var tokenUri: String
 
-    @Value("\${auth.providers.apple.keys_uri}")
+    @Value($$"${auth.oauth2.apple.keys_uri}")
     private lateinit var keysUri: String
 
-    @Value("\${auth.providers.apple.private_key_path}")
+    @Value($$"${auth.oauth2.apple.private_key_path}")
     private lateinit var privateKeyPath: String
 
-    @Value("\${auth.providers.apple.allowed_audiences}")
+    @Value($$"${auth.oauth2.apple.allowed_audiences}")
     private lateinit var allowedAudiences: List<String>
 
     private val restClient: RestClient = RestClient.create()
@@ -122,15 +122,18 @@ class AppleAuthService {
             validateClaims(claims)
 
             // 6. 사용자 정보 추출
-            val appleId = claims.subject
+            val appleId =
+                claims.subject
+                    ?: throw AppleAuthenticationException()
+            val name: String? = claims["name"] as? String
             val email: String? = claims["email"] as? String
-            val emailVerified: Boolean? = claims["email_verified"] as? Boolean
+            val emailVerified: Boolean = (claims["email_verified"] as? Boolean) ?: false
 
             return AppleUserInfo(
                 appleId = appleId,
-                name = null,
+                name = name,
                 email = email,
-                emailVerified = emailVerified ?: false,
+                emailVerified = emailVerified,
             )
         } catch (e: Exception) {
             log.error("애플 ID Token 검증 실패", e)
