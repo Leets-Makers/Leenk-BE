@@ -61,4 +61,12 @@ public class UserGetService {
         return userRepository.findByProfileImage(profileImage)
                 .orElseThrow(UserNotFoundException::new);
     }
+
+    public Optional<User> findByAppleId(String appleId) {
+        return userRepository.findByAppleId(appleId);
+    }
+
+    public boolean existsByAppleId(String appleId) {
+        return userRepository.existsByAppleId(appleId);
+    }
 }
