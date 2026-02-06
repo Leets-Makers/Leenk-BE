@@ -1,10 +1,6 @@
 package leets.leenk.global.auth.domain.service
 
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
-import io.jsonwebtoken.UnsupportedJwtException
+import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import leets.leenk.global.auth.application.exception.ExpiredTokenException
@@ -13,9 +9,8 @@ import leets.leenk.global.auth.application.property.JwtProperty
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
-import java.util.Date
+import java.util.*
 import javax.crypto.SecretKey
-import kotlin.jvm.java
 
 @Component
 class JwtTokenProvider(
@@ -38,7 +33,6 @@ class JwtTokenProvider(
         return Jwts
             .builder()
             .subject(userId.toString())
-            .claim(USER_ID_CLAIM, userId)
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(secretKey, Jwts.SIG.HS256)
@@ -55,7 +49,6 @@ class JwtTokenProvider(
         return Jwts
             .builder()
             .subject(userId.toString())
-            .claim(USER_ID_CLAIM, userId)
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(secretKey, Jwts.SIG.HS256)
@@ -66,34 +59,48 @@ class JwtTokenProvider(
      * 토큰에서 userId 추출
      */
     @Suppress("UNCHECKED_CAST")
-    fun getUserIdFromToken(token: String): Long? =
-        try {
-            val claims = getClaims(token)
-            claims.get(USER_ID_CLAIM, java.lang.Long::class.java)?.toLong()
-        } catch (e: Exception) {
-            when (e) {
-                is ExpiredJwtException -> throw ExpiredTokenException()
-                else -> throw InvalidTokenException()
-            }
-        }
+    fun getUserIdFromToken(token: String): Long? {
+        val claims = validateToken(token)
+        return claims.subject?.toLong()
+    }
 
     /**
-     * 토큰 검증
+     * 토큰 검증 및 Claims 반환
      */
-    fun validateToken(token: String): Boolean =
+    private fun validateToken(token: String): Claims =
         try {
             getClaims(token)
-            true
         } catch (e: Exception) {
             when (e) {
-                is SignatureException -> log.error("유효하지 않은 JWT 서명", e)
-                is MalformedJwtException -> log.error("잘못된 JWT 토큰", e)
-                is ExpiredJwtException -> log.error("만료된 JWT 토큰", e)
-                is UnsupportedJwtException -> log.error("지원하지 않는 JWT 토큰", e)
-                is IllegalArgumentException -> log.error("JWT claims가 비어있음", e)
-                else -> throw e
+                is SignatureException -> {
+                    log.error("유효하지 않은 JWT 서명", e)
+                    throw InvalidTokenException()
+                }
+
+                is MalformedJwtException -> {
+                    log.error("잘못된 JWT 토큰", e)
+                    throw InvalidTokenException()
+                }
+
+                is ExpiredJwtException -> {
+                    log.error("만료된 JWT 토큰", e)
+                    throw ExpiredTokenException()
+                }
+
+                is UnsupportedJwtException -> {
+                    log.error("지원하지 않는 JWT 토큰", e)
+                    throw InvalidTokenException()
+                }
+
+                is IllegalArgumentException -> {
+                    log.error("JWT claims가 비어있음", e)
+                    throw InvalidTokenException()
+                }
+
+                else -> {
+                    throw e
+                }
             }
-            false
         }
 
     /**

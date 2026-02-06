@@ -250,15 +250,11 @@ public class AuthUsecase {
         return loginMapper.toLoginResponse(user, userInfo, response.access_token(), response.refresh_token());
     }
 
+    @Transactional
     public LoginResponse reissueToken(RefreshTokenRequest request) {
         String refreshToken = request.refreshToken();
 
-        // 리프레시 토큰 검증
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new RefreshTokenException();
-        }
-
-        // userId 추출
+        // 리프레시 토큰 검증 & userId 추출
         Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
         if (userId == null) {
             throw new RefreshTokenException();

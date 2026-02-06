@@ -31,7 +31,8 @@ class JwtAuthenticationFilter(
         try {
             val token = extractTokenFromRequest(request)
 
-            if (token != null && jwtTokenProvider.validateToken(token)) {
+            if (token != null) {
+                // token 검증 & userId 추출
                 val userId = jwtTokenProvider.getUserIdFromToken(token)
 
                 if (userId != null) {

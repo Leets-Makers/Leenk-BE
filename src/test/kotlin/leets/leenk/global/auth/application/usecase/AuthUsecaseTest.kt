@@ -15,6 +15,7 @@ import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.domain.user.domain.service.user.UserUpdateService
 import leets.leenk.global.auth.application.dto.request.RefreshTokenRequest
+import leets.leenk.global.auth.application.exception.InvalidTokenException
 import leets.leenk.global.auth.application.exception.RefreshTokenException
 import leets.leenk.global.auth.application.mapper.LoginMapper
 import leets.leenk.global.auth.domain.service.JwtTokenProvider
@@ -69,7 +70,6 @@ class AuthUsecaseTest :
 
                     val request = RefreshTokenRequest(oldRefreshToken)
 
-                    every { jwtTokenProvider.validateToken(oldRefreshToken) } returns true
                     every { jwtTokenProvider.getUserIdFromToken(oldRefreshToken) } returns userId
                     every { userGetService.findById(userId) } returns user
                     every { jwtTokenProvider.generateAccessToken(userId) } returns newAccessToken
@@ -89,8 +89,6 @@ class AuthUsecaseTest :
                     response.refreshToken shouldBe newRefreshToken
 
                     verify(exactly = 1) {
-                        jwtTokenProvider.validateToken(oldRefreshToken)
-                        jwtTokenProvider.getUserIdFromToken(oldRefreshToken)
                         userGetService.findById(userId)
                         jwtTokenProvider.generateAccessToken(userId)
                         jwtTokenProvider.generateRefreshToken(userId)
@@ -100,21 +98,14 @@ class AuthUsecaseTest :
             }
 
             context("유효하지 않은 refresh token이 주어지면") {
-                it("RefreshTokenException을 던져야 한다") {
+                it("InvalidTokenException을 던져야 한다") {
                     val invalidRefreshToken = "invalid.refresh.token"
                     val request = RefreshTokenRequest(invalidRefreshToken)
 
-                    every { jwtTokenProvider.validateToken(invalidRefreshToken) } returns false
+                    every { jwtTokenProvider.getUserIdFromToken(invalidRefreshToken) } throws InvalidTokenException()
 
-                    shouldThrow<RefreshTokenException> {
+                    shouldThrow<InvalidTokenException> {
                         authUsecase.reissueToken(request)
-                    }
-
-                    verify(exactly = 1) {
-                        jwtTokenProvider.validateToken(invalidRefreshToken)
-                    }
-                    verify(exactly = 0) {
-                        jwtTokenProvider.getUserIdFromToken(any())
                     }
                 }
             }
@@ -124,17 +115,12 @@ class AuthUsecaseTest :
                     val refreshToken = "token.without.userId"
                     val request = RefreshTokenRequest(refreshToken)
 
-                    every { jwtTokenProvider.validateToken(refreshToken) } returns true
                     every { jwtTokenProvider.getUserIdFromToken(refreshToken) } returns null
 
                     shouldThrow<RefreshTokenException> {
                         authUsecase.reissueToken(request)
                     }
 
-                    verify(exactly = 1) {
-                        jwtTokenProvider.validateToken(refreshToken)
-                        jwtTokenProvider.getUserIdFromToken(refreshToken)
-                    }
                     verify(exactly = 0) {
                         userGetService.findById(any())
                     }
@@ -147,7 +133,6 @@ class AuthUsecaseTest :
                     val refreshToken = "valid.refresh.token"
                     val request = RefreshTokenRequest(refreshToken)
 
-                    every { jwtTokenProvider.validateToken(refreshToken) } returns true
                     every { jwtTokenProvider.getUserIdFromToken(refreshToken) } returns userId
                     every { userGetService.findById(userId) } throws UserNotFoundException()
 
@@ -156,8 +141,6 @@ class AuthUsecaseTest :
                     }
 
                     verify(exactly = 1) {
-                        jwtTokenProvider.validateToken(refreshToken)
-                        jwtTokenProvider.getUserIdFromToken(refreshToken)
                         userGetService.findById(userId)
                     }
                 }
@@ -179,7 +162,6 @@ class AuthUsecaseTest :
 
                     val request = RefreshTokenRequest(requestRefreshToken)
 
-                    every { jwtTokenProvider.validateToken(requestRefreshToken) } returns true
                     every { jwtTokenProvider.getUserIdFromToken(requestRefreshToken) } returns userId
                     every { userGetService.findById(userId) } returns user
 
@@ -188,8 +170,6 @@ class AuthUsecaseTest :
                     }
 
                     verify(exactly = 1) {
-                        jwtTokenProvider.validateToken(requestRefreshToken)
-                        jwtTokenProvider.getUserIdFromToken(requestRefreshToken)
                         userGetService.findById(userId)
                     }
                     verify(exactly = 0) {
@@ -214,7 +194,6 @@ class AuthUsecaseTest :
 
                     val request = RefreshTokenRequest(refreshToken)
 
-                    every { jwtTokenProvider.validateToken(refreshToken) } returns true
                     every { jwtTokenProvider.getUserIdFromToken(refreshToken) } returns userId
                     every { userGetService.findById(userId) } returns user
 
@@ -223,8 +202,6 @@ class AuthUsecaseTest :
                     }
 
                     verify(exactly = 1) {
-                        jwtTokenProvider.validateToken(refreshToken)
-                        jwtTokenProvider.getUserIdFromToken(refreshToken)
                         userGetService.findById(userId)
                     }
                 }

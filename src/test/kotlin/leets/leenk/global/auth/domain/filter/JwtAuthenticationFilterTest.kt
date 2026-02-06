@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import jakarta.servlet.FilterChain
+import leets.leenk.global.auth.application.exception.InvalidTokenException
 import leets.leenk.global.auth.domain.service.JwtTokenProvider
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
@@ -39,7 +40,6 @@ class JwtAuthenticationFilterTest :
 
                     val response = MockHttpServletResponse()
 
-                    every { jwtTokenProvider.validateToken(validToken) } returns true
                     every { jwtTokenProvider.getUserIdFromToken(validToken) } returns userId
 
                     jwtAuthenticationFilter.doFilter(request, response, filterChain)
@@ -61,7 +61,7 @@ class JwtAuthenticationFilterTest :
 
                     val response = MockHttpServletResponse()
 
-                    every { jwtTokenProvider.validateToken(invalidToken) } returns false
+                    every { jwtTokenProvider.getUserIdFromToken(invalidToken) } throws InvalidTokenException()
 
                     jwtAuthenticationFilter.doFilter(request, response, filterChain)
 
@@ -109,7 +109,7 @@ class JwtAuthenticationFilterTest :
 
                     val response = MockHttpServletResponse()
 
-                    every { jwtTokenProvider.validateToken("") } returns false
+                    every { jwtTokenProvider.getUserIdFromToken("") } throws InvalidTokenException()
 
                     jwtAuthenticationFilter.doFilter(request, response, filterChain)
 
@@ -120,7 +120,7 @@ class JwtAuthenticationFilterTest :
                 }
             }
 
-            context("토큰 검증은 성공하지만 userId 추출에 실패한 경우") {
+            context("토큰 검증은 성공하지만 subject가 없는 경우") {
                 it("SecurityContext에 인증 정보를 설정하지 않아야 한다") {
                     val validToken = "valid.but.no.userId.token"
                     val request = MockHttpServletRequest()
@@ -128,7 +128,6 @@ class JwtAuthenticationFilterTest :
 
                     val response = MockHttpServletResponse()
 
-                    every { jwtTokenProvider.validateToken(validToken) } returns true
                     every { jwtTokenProvider.getUserIdFromToken(validToken) } returns null
 
                     jwtAuthenticationFilter.doFilter(request, response, filterChain)
@@ -148,7 +147,7 @@ class JwtAuthenticationFilterTest :
 
                     val response = MockHttpServletResponse()
 
-                    every { jwtTokenProvider.validateToken(validToken) } throws RuntimeException("Test exception")
+                    every { jwtTokenProvider.getUserIdFromToken(validToken) } throws RuntimeException("Test exception")
 
                     jwtAuthenticationFilter.doFilter(request, response, filterChain)
 

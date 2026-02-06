@@ -50,7 +50,6 @@ class JwtTokenProviderTest :
                             .payload
 
                     claims.subject shouldBe userId.toString()
-                    claims.get(JwtTokenProvider.USER_ID_CLAIM, Long::class.javaObjectType).toLong() shouldBe userId
                     claims.issuedAt.shouldNotBeNull()
                     claims.expiration.shouldNotBeNull()
                     claims.expiration.time shouldBeGreaterThan claims.issuedAt.time
@@ -151,79 +150,4 @@ class JwtTokenProviderTest :
             }
         }
 
-        describe("validateToken") {
-            context("유효한 토큰이 주어지면") {
-                it("true를 반환해야 한다") {
-                    val userId = 1L
-                    val token = jwtTokenProvider.generateAccessToken(userId)
-
-                    val isValid = jwtTokenProvider.validateToken(token)
-
-                    isValid shouldBe true
-                }
-            }
-
-            context("잘못된 형식의 토큰이 주어지면") {
-                it("false를 반환해야 한다") {
-                    val invalidToken = "invalid.token.format"
-
-                    val isValid = jwtTokenProvider.validateToken(invalidToken)
-
-                    isValid shouldBe false
-                }
-            }
-
-            context("만료된 토큰이 주어지면") {
-                it("false를 반환해야 한다") {
-                    val now = Date()
-                    val expiredDate = Date(now.time - 1000)
-                    val secretKey = Keys.hmacShaKeyFor(testSecret.toByteArray(StandardCharsets.UTF_8))
-
-                    val expiredToken =
-                        Jwts
-                            .builder()
-                            .subject("1")
-                            .claim(JwtTokenProvider.USER_ID_CLAIM, 1L)
-                            .issuedAt(Date(now.time - 2000))
-                            .expiration(expiredDate)
-                            .signWith(secretKey, Jwts.SIG.HS256)
-                            .compact()
-
-                    val isValid = jwtTokenProvider.validateToken(expiredToken)
-
-                    isValid shouldBe false
-                }
-            }
-
-            context("다른 secret으로 서명된 토큰이 주어지면") {
-                it("false를 반환해야 한다") {
-                    val wrongSecret = "wrong-secret-key-for-jwt-token-generation-minimum-256-bits-required-x"
-                    val wrongSecretKey = Keys.hmacShaKeyFor(wrongSecret.toByteArray(StandardCharsets.UTF_8))
-
-                    val wrongToken =
-                        Jwts
-                            .builder()
-                            .subject("1")
-                            .claim(JwtTokenProvider.USER_ID_CLAIM, 1L)
-                            .issuedAt(Date())
-                            .expiration(Date(System.currentTimeMillis() + 3600000))
-                            .signWith(wrongSecretKey, Jwts.SIG.HS256)
-                            .compact()
-
-                    val isValid = jwtTokenProvider.validateToken(wrongToken)
-
-                    isValid shouldBe false
-                }
-            }
-
-            context("빈 문자열이 주어지면") {
-                it("false를 반환해야 한다") {
-                    val emptyToken = ""
-
-                    val isValid = jwtTokenProvider.validateToken(emptyToken)
-
-                    isValid shouldBe false
-                }
-            }
-        }
     })
