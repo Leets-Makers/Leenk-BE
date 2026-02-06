@@ -66,4 +66,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             SELECT t.* FROM t WHERE DATEDIFF(t.next_birthday, :today) BETWEEN 1 AND :days ORDER BY DATEDIFF(t.next_birthday, :today) ASC
             """, nativeQuery = true)
     List<User> findUpcomingBirthdays(@Param("today") LocalDate today, @Param("days") int days);
+
+    Optional<User> findByAppleId(String appleId);
+
+    boolean existsByAppleId(String appleId);
 }

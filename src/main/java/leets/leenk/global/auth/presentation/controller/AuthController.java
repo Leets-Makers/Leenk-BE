@@ -1,8 +1,10 @@
 package leets.leenk.global.auth.presentation.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import leets.leenk.global.auth.application.dto.request.AppleLoginRequest;
 import leets.leenk.global.auth.application.dto.request.RefreshTokenRequest;
 import leets.leenk.global.auth.application.dto.request.UsernamePasswordLoginRequest;
 import leets.leenk.global.auth.application.dto.response.LoginResponse;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthUsecase authUsecase;
 
+    @Deprecated
+    @Hidden
     @PostMapping("/kakao/login")
     @Operation(summary = "카카오 login api [for mobile]")
     public CommonResponse<LoginResponse> kakaoLogin(@RequestHeader("Kakao-Access-Token") String kakaoAccessToken) {
@@ -37,8 +41,8 @@ public class AuthController {
 
     @PostMapping("/apple/login")
     @Operation(summary = "애플 login api [for mobile]")
-    public CommonResponse<LoginResponse> appleLogin(@RequestHeader("Apple-Identity-Token") String appleIdToken) {
-        LoginResponse response = authUsecase.appleLogin(appleIdToken);
+    public CommonResponse<LoginResponse> appleLogin(@Valid @RequestBody AppleLoginRequest request) {
+        LoginResponse response = authUsecase.appleLogin(request);
 
         if (response.userId() == null) {
             return CommonResponse.success(ResponseCode.LOGIN_SUCCESS, response);
@@ -55,6 +59,8 @@ public class AuthController {
         return CommonResponse.success(ResponseCode.REFRESH_TOKEN_SUCCESS, response);
     }
 
+    @Deprecated
+    @Hidden
     @PostMapping("/login")
     @Operation(summary = "로그인 API")
     public CommonResponse<LoginResponse> login(@Valid @RequestBody UsernamePasswordLoginRequest request) {

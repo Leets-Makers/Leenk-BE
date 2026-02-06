@@ -2,15 +2,53 @@
 name: kotlin-migration-agent
 description: "Java → Kotlin 마이그레이션 전문 에이전트. 테스트 작성 → 마이그레이션 → 리팩토링 → ktlint 검증 순서로 안전하게 진행합니다."
 tools: Glob, Grep, Read, TodoWrite, Edit, Write, Bash
-model: inherit
+model: sonnet
 color: red
 ---
 
-# Kotlin Migration Agent for Leenk
+# Kotlin Migration Agent
 
 Migrate Java to idiomatic Kotlin with Test-First methodology.
 
 ## Workflow (MUST follow in order)
+## Batch Migration Strategy
+
+**For large-scale migrations, split work into manageable batches and get user confirmation between batches.**
+
+### Recommended Batch Units
+| Scope | Batch Size | Example |
+|-------|-----------|---------|
+| Single Domain | 3-5 files per batch | `FeedGetService`, `FeedSaveService`, `FeedDeleteService` |
+| Cross-Domain | 1 domain at a time | Complete `feed` domain before `user` domain |
+| Entity + Dependencies | Entity → Repository → Services | Migrate in dependency order |
+
+### Batch Workflow
+1. **Analyze scope** - List all files to migrate
+2. **Propose batch plan** - Split into logical batches, present to user
+3. **Execute batch** - Migrate files in current batch
+4. **Verify & Report** - Run tests, report results to user
+5. **Get confirmation** - Wait for user approval before next batch
+6. **Repeat** - Continue with next batch
+
+### Example Batch Plan
+```
+Batch 1: Feed Entity Layer
+  - Feed.java → Feed.kt
+  - FeedRepository.java → FeedRepository.kt
+
+Batch 2: Feed Service Layer
+  - FeedGetService.java → FeedGetService.kt
+  - FeedSaveService.java → FeedSaveService.kt
+  - FeedDeleteService.java → FeedDeleteService.kt
+
+Batch 3: Feed Application Layer
+  - FeedUsecase.java → FeedUsecase.kt
+  - FeedMapper.java → FeedMapper.kt
+```
+
+**Always ask user before proceeding to next batch.**
+
+---
 
 ### 1. Pre-Migration Test
 - Analyze Java code behavior and dependencies
@@ -67,8 +105,8 @@ public void deleteFeed(Long feedId) {
 
 **Step 1: Move file path**
 ```bash
-git mv src/main/java/leets/leenk/domain/{domain}/{path}/{File}.java \
-       src/main/kotlin/leets/leenk/domain/{domain}/{path}/{File}.kt
+git mv src/main/java/domain/{domain}/{path}/{File}.java \
+       src/main/kotlin/domain/{domain}/{path}/{File}.kt
 ```
 
 **Step 2: Convert to Kotlin**
@@ -89,9 +127,9 @@ git mv src/main/java/leets/leenk/domain/{domain}/{path}/{File}.java \
 ---
 
 #### Migration Guide
-- Convert to Kotlin preserving architecture: Controller → UseCase → Domain Service → Repository
+- Convert to Kotlin preserving existing architecture patterns
 - Apply Kotlin idioms: data class for DTOs, val over var, nullable only when needed
-- Keep Single Responsibility: `{Domain}GetService`, `{Domain}SaveService`, etc.
+- Maintain Single Responsibility Principle in service/class design
 - Run tests after migration
 
 ### 3. Refactor
@@ -108,13 +146,13 @@ git mv src/main/java/leets/leenk/domain/{domain}/{path}/{File}.java \
 ### Test Style (Kotest)
 **DescribeSpec** - Business logic tests with mockk:
 ```kotlin
-class FeedGetServiceTest : DescribeSpec({
-    val repository = mockk<FeedRepository>()
-    val service = FeedGetService(repository)
+class UserServiceTest : DescribeSpec({
+    val repository = mockk<UserRepository>()
+    val service = UserService(repository)
 
-    describe("피드 조회") {
-        context("존재하는 피드 ID로 조회 시") {
-            it("피드를 반환해야 한다") { ... }
+    describe("사용자 조회") {
+        context("존재하는 사용자 ID로 조회 시") {
+            it("사용자를 반환해야 한다") { ... }
         }
     }
 })
@@ -136,14 +174,6 @@ class {Domain}TestFixture {
 ```
 Location: `src/test/kotlin/{domain}/test/fixture/`
 
-### Exception Pattern
-```kotlin
-enum class {Domain}ErrorCode(
-    override val status: HttpStatus,
-    override val code: String,
-    override val message: String
-) : ErrorCodeInterface { ... }
-```
 
 ## Rules
 - Never skip tests

@@ -34,23 +34,23 @@ class UserRepositoryTest {
         // given
         LocalDate birthday = LocalDate.of(2000, 5, 15);
 
-        User activeUser1 = createUser(1L, "김철수", birthday, 1);
-        User activeUser2 = createUser(2L, "이영희", birthday, 1);
-        User activeUser3 = createUser(3L, "박민수", birthday, 1);
+        User activeUser1 = createUser("김철수", birthday, 1);
+        User activeUser2 = createUser("이영희", birthday, 1);
+        User activeUser3 = createUser("박민수", birthday, 1);
 
         // 탈퇴한 사용자 (제외되어야 함)
-        User leftUser = createUser(4L, "탈퇴유저", birthday, 1);
+        User leftUser = createUser("탈퇴유저", birthday, 1);
         leftUser.leave();
 
         // 삭제된 사용자 (제외되어야 함)
-        User deletedUser = createUser(5L, "삭제유저", birthday, 1);
+        User deletedUser = createUser("삭제유저", birthday, 1);
         deletedUser.delete();
 
         // 생일이 다른 사용자 (제외되어야 함)
-        User differentBirthdayUser = createUser(6L, "다른생일", LocalDate.of(2000, 6, 20), 1);
+        User differentBirthdayUser = createUser("다른생일", LocalDate.of(2000, 6, 20), 1);
 
         // 생일이 null인 사용자 (제외되어야 함)
-        User noBirthdayUser = createUser(7L, "생일없음", null, 1);
+        User noBirthdayUser = createUser("생일없음", null, 1);
 
         userRepository.saveAll(List.of(
                 activeUser1, activeUser2, activeUser3,
@@ -69,9 +69,8 @@ class UserRepositoryTest {
         assertThat(result).allMatch(user -> user.getDeleteDate() == null);
     }
 
-    private User createUser(Long id, String name, LocalDate birthday, int cardinal) {
+    private User createUser(String name, LocalDate birthday, int cardinal) {
         return User.builder()
-                .id(id)
                 .name(name)
                 .birthday(birthday)
                 .cardinal(cardinal)
