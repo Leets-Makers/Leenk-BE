@@ -130,7 +130,7 @@ public class AuthUsecase {
 
             // 약관 동의 안한 사용자는 추가 정보 포함하여 반환 (온보딩 필요)
             if (!user.isAgree()) {
-                return loginMapper.toLoginResponseForApple(user, appleUserInfo, accessToken, refreshToken);
+                return loginMapper.toLoginResponseForApple(user, accessToken, refreshToken);
             }
 
             return loginMapper.toLoginResponse(accessToken, refreshToken);
@@ -157,7 +157,7 @@ public class AuthUsecase {
         // Refresh Token 저장
         userUpdateService.updateRefreshToken(user, refreshToken);
 
-        return loginMapper.toLoginResponseForApple(user, appleUserInfo, accessToken, refreshToken);
+        return loginMapper.toLoginResponseForApple(user, accessToken, refreshToken);
     }
 
     /**
@@ -167,7 +167,7 @@ public class AuthUsecase {
                                               String accessToken, String refreshToken) {
         user.reRegisterFromApple(appleUserInfo.getName());
 
-        return loginMapper.toLoginResponseForApple(user, appleUserInfo, accessToken, refreshToken);
+        return loginMapper.toLoginResponseForApple(user, accessToken, refreshToken);
     }
 
     /**
