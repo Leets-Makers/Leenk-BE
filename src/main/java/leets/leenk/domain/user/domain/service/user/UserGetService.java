@@ -65,8 +65,4 @@ public class UserGetService {
     public Optional<User> findByAppleId(String appleId) {
         return userRepository.findByAppleId(appleId);
     }
-
-    public boolean existsByAppleId(String appleId) {
-        return userRepository.existsByAppleId(appleId);
-    }
 }

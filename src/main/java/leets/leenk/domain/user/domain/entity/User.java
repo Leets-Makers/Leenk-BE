@@ -34,7 +34,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @Size(max = 255)
-    @Column
+    @Column(unique = true)
     private String appleId;
 
     @Size(max = 10)
