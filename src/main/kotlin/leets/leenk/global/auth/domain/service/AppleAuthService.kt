@@ -15,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.io.FileInputStream
 import java.io.InputStream
 import java.math.BigInteger
@@ -62,7 +63,7 @@ class AppleAuthService {
      * Authorization code로 애플 토큰 요청
      * client_secret은 JWT로 생성 (ES256 알고리즘)
      */
-    fun getAppleToken(authCode: String): AppleTokenResponse? {
+    fun getAppleToken(authCode: String): AppleTokenResponse {
         val clientSecret = generateClientSecret()
 
         val body = LinkedMultiValueMap<String, String>()
@@ -78,7 +79,8 @@ class AppleAuthService {
             .body(body)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .retrieve()
-            .body(AppleTokenResponse::class.java)
+            .body<AppleTokenResponse>()
+            ?: throw AppleAuthenticationException()
     }
 
     /**
