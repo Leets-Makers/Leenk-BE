@@ -113,17 +113,21 @@ class LeenkUsecase(
 
         leenkUpdateService.updateLeenk(leenk, location, request)
 
-        val newUrl = request.mediaUrl
-        if (newUrl.isNullOrBlank()) {
+        // URL이 없으면 미디어 삭제 후 종료
+        if (request.mediaUrl.isNullOrBlank()) {
             media?.let { mediaDeleteService.delete(it) }
-        } else {
-            if (media != null) {
-                media.updateMediaUrl(newUrl)
-            } else {
-                val newMedia = mediaMapper.toMedia(leenk, newUrl)
-                mediaSaveService.save(newMedia)
-            }
+            return
         }
+
+        // 기존 미디어가 있으면 URL 업데이트
+        if (media != null) {
+            media.updateMediaUrl(request.mediaUrl)
+            return
+        }
+
+        // 새로운 미디어 생성
+        val newMedia = mediaMapper.toMedia(leenk, request.mediaUrl)
+        mediaSaveService.save(newMedia)
     }
 
     @Transactional(readOnly = true)
