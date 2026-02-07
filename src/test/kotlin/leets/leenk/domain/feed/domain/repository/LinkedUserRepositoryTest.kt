@@ -33,10 +33,10 @@ class LinkedUserRepositoryTest(
 
     init {
         Given("한 피드에 여러 사용자가 연결되어 있을 때") {
-            val author = persistUser(1L, "author")
-            val u1 = persistUser(2L, "u1")
-            val u2 = persistUser(3L, "u2")
-            val u3 = persistUser(4L, "u3")
+            val author = persistUser(null, "author")
+            val u1 = persistUser(null, "u1")
+            val u2 = persistUser(null, "u2")
+            val u3 = persistUser(null, "u3")
 
             val feed = persistFeed(author)
 
@@ -57,8 +57,8 @@ class LinkedUserRepositoryTest(
         }
 
         Given("사용자가 여러 피드에 연결되어 있고 일부는 삭제되었을 때") {
-            val me = persistUser(1L, "me")
-            val other = persistUser(2L, "other")
+            val me = persistUser(null, "me")
+            val other = persistUser(null, "other")
 
             val base = LocalDateTime.of(2025, 12, 22, 16, 0)
 
@@ -98,9 +98,9 @@ class LinkedUserRepositoryTest(
         }
 
         Given("여러 피드에 연결된 사용자가 있을 때") {
-            val author = persistUser(1L, "author")
-            val u1 = persistUser(2L, "u1")
-            val u2 = persistUser(3L, "u2")
+            val author = persistUser(null, "author")
+            val u1 = persistUser(null, "u1")
+            val u2 = persistUser(null, "u2")
 
             val f1 = persistFeed(author)
             val f2 = persistFeed(author)
@@ -143,7 +143,7 @@ class LinkedUserRepositoryTest(
     }
 
     private fun persistUser(
-        id: Long,
+        id: Long?,
         name: String,
     ): User {
         val user = UserTestFixture.createUser(id, name)
