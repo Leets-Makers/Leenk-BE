@@ -35,8 +35,8 @@ class FeedRepositoryTest(
 
     init {
         Given("여러 사용자의 피드가 있고 일부는 삭제되거나 차단되었을 때") {
-            val u1 = persistUser(1L, "me")
-            val u2 = persistUser(2L, "me2")
+            val u1 = persistUser(null, "me")
+            val u2 = persistUser(null, "me2")
 
             val base = LocalDateTime.of(2025, 12, 22, 15, 0)
 
@@ -76,8 +76,8 @@ class FeedRepositoryTest(
         }
 
         Given("특정 사용자의 피드가 여러 개 있고 일부는 삭제되었을 때") {
-            val me = persistUser(3L, "me")
-            val other = persistUser(4L, "me2")
+            val me = persistUser(null, "me")
+            val other = persistUser(null, "me2")
 
             val base = LocalDateTime.of(2025, 12, 22, 16, 0)
 
@@ -110,7 +110,7 @@ class FeedRepositoryTest(
         }
 
         Given("삭제되지 않은 피드와 삭제된 피드가 존재할 때") {
-            val me = persistUser(31L, "me")
+            val me = persistUser(null, "me")
 
             val base = LocalDateTime.of(2025, 12, 22, 16, 0)
 
@@ -136,8 +136,8 @@ class FeedRepositoryTest(
         }
 
         Given("기준 시간 이후의 피드들이 있고 일부는 삭제되거나 차단되었을 때") {
-            val me = persistUser(5L, "me")
-            val blockedUser = persistUser(6L, "blocked")
+            val me = persistUser(null, "me")
+            val blockedUser = persistUser(null, "blocked")
 
             val base = LocalDateTime.of(2025, 12, 22, 16, 0)
 
@@ -178,8 +178,8 @@ class FeedRepositoryTest(
         }
 
         Given("기준 시간 이전의 피드들이 있고 일부는 삭제되거나 차단되었을 때") {
-            val me = persistUser(5L, "me")
-            val blockedUser = persistUser(6L, "blocked")
+            val me = persistUser(null, "me")
+            val blockedUser = persistUser(null, "blocked")
 
             val base = LocalDateTime.of(2025, 12, 22, 16, 0)
 
@@ -234,7 +234,7 @@ class FeedRepositoryTest(
     }
 
     private fun persistUser(
-        id: Long,
+        id: Long?,
         name: String,
     ): User {
         val user = UserTestFixture.createUser(id, name)
