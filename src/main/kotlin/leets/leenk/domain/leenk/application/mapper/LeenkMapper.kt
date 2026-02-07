@@ -51,7 +51,7 @@ class LeenkMapper(
         val content = leenk.content ?: ""
 
         return LeenkDetailResponse(
-            id = leenk.id!!,
+            id = leenk.requireId,
             author = toLeenkAuthorResponse(leenk),
             kakaoId = leenk.author.kakaoTalkId,
             status = leenk.status,
@@ -85,7 +85,7 @@ class LeenkMapper(
         val imageUrl = representative?.thumbnailUrl
 
         return LeenkResponse(
-            leenkId = leenk.id!!,
+            leenkId = leenk.requireId,
             author = toLeenkAuthorResponse(leenk),
             title = leenk.title,
             currentParticipants = leenk.currentParticipants,

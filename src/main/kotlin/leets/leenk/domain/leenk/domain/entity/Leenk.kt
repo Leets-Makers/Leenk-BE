@@ -84,4 +84,8 @@ class Leenk(
         require(this.currentParticipants > 0) { "참가자 수는 0 미만이 될 수 없습니다" }
         this.currentParticipants--
     }
+
+    // 헬퍼 프로퍼티
+    val requireId: Long
+        get() = checkNotNull(id) { "영속화되지 않은 Leenk 엔티티입니다" }
 }
