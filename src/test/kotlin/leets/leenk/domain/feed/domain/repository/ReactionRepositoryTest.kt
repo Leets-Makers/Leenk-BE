@@ -30,8 +30,8 @@ class ReactionRepositoryTest(
 
     init {
         Given("피드와 사용자에 대한 리액션이 존재할 때") {
-            val author = persistUser(1L, "author")
-            val me = persistUser(2L, "me")
+            val author = persistUser(null, "author")
+            val me = persistUser(null, "me")
 
             val feed = persistFeed(author)
 
@@ -50,10 +50,10 @@ class ReactionRepositoryTest(
         }
 
         Given("한 피드에 여러 사용자의 리액션이 있을 때") {
-            val author = persistUser(1L, "author")
-            val u1 = persistUser(2L, "u1")
-            val u2 = persistUser(3L, "u2")
-            val u3 = persistUser(4L, "u3")
+            val author = persistUser(null, "author")
+            val u1 = persistUser(null, "u1")
+            val u2 = persistUser(null, "u2")
+            val u3 = persistUser(null, "u3")
 
             val feed = persistFeed(author)
 
@@ -80,7 +80,7 @@ class ReactionRepositoryTest(
     }
 
     private fun persistUser(
-        id: Long,
+        id: Long?,
         name: String,
     ): User {
         val user = UserTestFixture.createUser(id, name)
