@@ -7,7 +7,7 @@ import leets.leenk.config.MysqlTestConfig
 import leets.leenk.domain.feed.application.dto.request.ReactionRequest
 import leets.leenk.domain.feed.domain.repository.FeedRepository
 import leets.leenk.domain.feed.domain.repository.ReactionRepository
-import leets.leenk.domain.feed.test.fixture.FeedTestFixture
+import leets.leenk.domain.feed.test.FeedTestFixture
 import leets.leenk.domain.user.domain.repository.UserRepository
 import leets.leenk.domain.user.test.fixture.UserTestFixture
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
