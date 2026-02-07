@@ -38,10 +38,10 @@ public class LinkedUserRepositoryTest {
     @DisplayName("findAllByFeed 테스트")
     void findAllByFeed() {
         // given
-        User author = persistUser(1L, "author");
-        User u1 = persistUser(2L, "u1");
-        User u2 = persistUser(3L, "u2");
-        User u3 = persistUser(4L, "u3");
+        User author = persistUser("author");
+        User u1 = persistUser("u1");
+        User u2 = persistUser("u2");
+        User u3 = persistUser("u3");
 
         Feed feed = persistFeed(author);
 
@@ -64,8 +64,8 @@ public class LinkedUserRepositoryTest {
     @DisplayName(("findFeedsByLinkedUser 테스트"))
     void findFeedsByLinkedUser() {
         // given
-        User me = persistUser(1L, "me");
-        User other = persistUser(2L, "other");
+        User me = persistUser("me");
+        User other = persistUser("other");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -104,9 +104,9 @@ public class LinkedUserRepositoryTest {
     @DisplayName("deleteAllByFeed 테스트")
     void deleteAllByFeed() {
         // given
-        User author = persistUser(1L, "author");
-        User u1 = persistUser(2L, "u1");
-        User u2 = persistUser(3L, "u2");
+        User author = persistUser("author");
+        User u1 = persistUser("u1");
+        User u2 = persistUser("u2");
 
         Feed f1 = persistFeed(author);
         Feed f2 = persistFeed(author);
@@ -140,8 +140,8 @@ public class LinkedUserRepositoryTest {
         return saved;
     }
 
-    private User persistUser(Long id, String name) {
-        User user = UserTestFixture.createUser(id, name);
+    private User persistUser(String name) {
+        User user = UserTestFixture.createUser(name);
         em.persist(user);
         return user;
     }

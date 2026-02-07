@@ -37,8 +37,8 @@ public class FeedRepositoryTest {
     @DisplayName("findAllByDeletedAtIsNullWithUser 테스트")
     void findAllByDeletedAtIsNullWithUser() {
         // given
-        User u1 = persistUser(1L, "me");
-        User u2 = persistUser(2L, "me2");
+        User u1 = persistUser("me");
+        User u2 = persistUser("me2");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 15, 0);
 
@@ -81,8 +81,8 @@ public class FeedRepositoryTest {
     @DisplayName("findAllByUserAndDeletedAtIsNull 테스트")
     void findAllByUserAndDeletedAtIsNull() {
         //given
-        User me = persistUser(3L, "me");
-        User other = persistUser(4L, "me2");
+        User me = persistUser("me");
+        User other = persistUser("me2");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -117,7 +117,7 @@ public class FeedRepositoryTest {
     @DisplayName("findByDeletedAtIsNullAndId 테스트")
     void findByDeletedAtIsNullAndId() {
         // given
-        User me = persistUser(31L, "me");
+        User me = persistUser("me");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -143,8 +143,8 @@ public class FeedRepositoryTest {
     @DisplayName("findPrevFeeds 테스트")
     void findPrevFeeds() {
         // given
-        User me = persistUser(5L, "me");
-        User blockedUser = persistUser(6L, "blocked");
+        User me = persistUser("me");
+        User blockedUser = persistUser("blocked");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -187,8 +187,8 @@ public class FeedRepositoryTest {
     @DisplayName("findNextFeeds 테스트")
     void findNextFeeds(){
         // given
-        User me = persistUser(5L, "me");
-        User blockedUser = persistUser(6L, "blocked");
+        User me = persistUser("me");
+        User blockedUser = persistUser("blocked");
 
         LocalDateTime base = LocalDateTime.of(2025, 12, 22, 16, 0);
 
@@ -235,8 +235,8 @@ public class FeedRepositoryTest {
                 .executeUpdate();
     }
 
-    private User persistUser(Long id, String name) {
-        User user = UserTestFixture.createUser(id, name);
+    private User persistUser(String name) {
+        User user = UserTestFixture.createUser(name);
         em.persist(user);
         return user;
     }

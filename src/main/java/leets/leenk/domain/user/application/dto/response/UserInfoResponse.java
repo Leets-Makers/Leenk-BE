@@ -13,7 +13,7 @@ public record UserInfoResponse(
         @JsonUnwrapped
         @Schema(implementation = UserProfileResponse.class)
         UserProfileResponse user,
-        int cardinal,
+        Integer cardinal,
         LocalDate birthday,
         String kakaoTalkId,
         String introduction,

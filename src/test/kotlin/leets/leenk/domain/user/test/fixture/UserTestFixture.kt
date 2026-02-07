@@ -6,7 +6,7 @@ import java.time.LocalDate
 class UserTestFixture {
     companion object {
         fun createUser(
-            id: Long = 1L,
+            id: Long? = null,
             name: String = "테스트유저",
             cardinal: Int = 1,
             profileImage: String? = null,
@@ -19,22 +19,26 @@ class UserTestFixture {
             totalReactionCount: Long = 0L,
             termsAgreement: Boolean = true,
             privacyAgreement: Boolean = true,
-        ): User =
-            User
-                .builder()
-                .id(id)
-                .name(name)
-                .cardinal(cardinal)
-                .profileImage(profileImage)
-                .birthday(birthday)
-                .thumbnail(thumbnail)
-                .mbti(mbti)
-                .introduction(introduction)
-                .fcmToken(fcmToken)
-                .kakaoTalkId(kakaoTalkId)
-                .totalReactionCount(totalReactionCount)
-                .termsAgreement(termsAgreement)
-                .privacyAgreement(privacyAgreement)
-                .build()
+        ): User {
+            val builder =
+                User
+                    .builder()
+                    .name(name)
+                    .cardinal(cardinal)
+                    .profileImage(profileImage)
+                    .birthday(birthday)
+                    .thumbnail(thumbnail)
+                    .mbti(mbti)
+                    .introduction(introduction)
+                    .fcmToken(fcmToken)
+                    .kakaoTalkId(kakaoTalkId)
+                    .totalReactionCount(totalReactionCount)
+                    .termsAgreement(termsAgreement)
+                    .privacyAgreement(privacyAgreement)
+
+            id?.let { builder.id(it) }
+
+            return builder.build()
+        }
     }
 }
