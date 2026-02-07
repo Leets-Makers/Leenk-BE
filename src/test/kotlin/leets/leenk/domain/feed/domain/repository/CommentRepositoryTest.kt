@@ -47,8 +47,8 @@ class CommentRepositoryTest(
             flushAndClear()
 
             When("ID로 삭제되지 않은 댓글만 조회하면") {
-                val notDeletedComment = commentRepository.findByCommentIdAndDeletedAtIsNull(notDeleted.commentId!!)
-                val deletedComment = commentRepository.findByCommentIdAndDeletedAtIsNull(deleted.commentId!!)
+                val notDeletedComment = commentRepository.findByCommentIdAndDeletedAtIsNull(notDeleted.commentId)
+                val deletedComment = commentRepository.findByCommentIdAndDeletedAtIsNull(deleted.commentId)
 
                 Then("삭제되지 않은 댓글만 조회되어야 한다") {
                     notDeletedComment.shouldBePresent {
@@ -108,7 +108,7 @@ class CommentRepositoryTest(
     }
 
     private fun persistUser(): User {
-        val user = UserTestFixture.createUser(1L, "me")
+        val user = UserTestFixture.createUser(null, "me")
         em.persist(user)
         return user
     }
