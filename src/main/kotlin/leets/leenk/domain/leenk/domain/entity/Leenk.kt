@@ -88,4 +88,7 @@ class Leenk(
     // 헬퍼 프로퍼티
     val requireId: Long
         get() = checkNotNull(id) { "영속화되지 않은 Leenk 엔티티입니다" }
+
+    val isFull: Boolean
+        get() = currentParticipants >= maxParticipants
 }
