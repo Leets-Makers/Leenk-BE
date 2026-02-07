@@ -231,17 +231,18 @@ class LeenkUsecase(
         val user = userGetService.findById(userId)
         val leenk = leenkGetService.findById(leenkId)
 
-        if (leenk.status != LeenkStatus.RECRUITING) {
-            throw LeenkNotRecruitingException()
-        }
+        when {
+            leenk.status != LeenkStatus.RECRUITING -> {
+                throw LeenkNotRecruitingException()
+            }
 
-        val alreadyJoined = leenkParticipantsGetService.existsByLeenkAndParticipant(leenk, user)
-        if (alreadyJoined) {
-            throw AlreadyParticipatedException()
-        }
+            leenkParticipantsGetService.existsByLeenkAndParticipant(leenk, user) -> {
+                throw AlreadyParticipatedException()
+            }
 
-        if (leenk.currentParticipants >= leenk.maxParticipants) {
-            throw MaxParticipantsExceededException()
+            leenk.isFull -> {
+                throw MaxParticipantsExceededException()
+            }
         }
 
         val participant = participantsMapper.toParticipants(leenk, user, LocalDateTime.now())
