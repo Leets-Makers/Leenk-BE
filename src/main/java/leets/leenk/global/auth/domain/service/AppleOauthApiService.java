@@ -6,6 +6,10 @@ import leets.leenk.global.auth.application.property.OauthProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+/**
+ * @deprecated Weeth OAuth 서버 의존 - 카카오 로그인 전용
+ */
+@Deprecated
 @Service
 public class AppleOauthApiService extends AbstractOauthApiService {
     private final AppleOauthProperty appleOauthProperty;

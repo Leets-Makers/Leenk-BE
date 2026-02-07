@@ -61,4 +61,12 @@ public class UserUpdateService {
     public void updateFcmToken(User user, String fcmToken){
         user.updateFcmToken(fcmToken);
     }
+
+    public void updateCardinal(User user, Integer cardinal) {
+        user.updateCardinal(cardinal);
+    }
+
+    public void updateRefreshToken(User user, String refreshToken) {
+        user.updateRefreshToken(refreshToken);
+    }
 }

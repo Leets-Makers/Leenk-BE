@@ -16,6 +16,10 @@ import org.springframework.web.client.RestClient;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * @deprecated Weeth OAuth 서버 의존 - 카카오 로그인 전용
+ */
+@Deprecated
 @RequiredArgsConstructor
 public abstract class AbstractOauthApiService {
     protected static final String USER_INACTIVE_ERROR = "WAE-001";

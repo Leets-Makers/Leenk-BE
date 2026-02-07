@@ -20,7 +20,7 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(CurrentUserId.class)
                 && (parameter.getParameterType().equals(Long.class)
-                    || parameter.getParameterType().equals(Long.TYPE));
+                || parameter.getParameterType().equals(Long.TYPE));
     }
 
     @Override
@@ -30,10 +30,22 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
                                   WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
+        if (authentication == null || authentication.getPrincipal() == null) {
             throw new OauthException();
         }
 
-        return Long.valueOf(jwt.getClaimAsString(JWT_USER_ID_CLAIM));
+        // JWT 필터에서 설정한 principal(userId)을 반환
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof Long) {
+            return principal;
+        }
+
+        // 호환성: 기존 Jwt 객체도 지원
+        if (principal instanceof Jwt jwt) {
+            return Long.valueOf(jwt.getClaimAsString(JWT_USER_ID_CLAIM));
+        }
+
+        throw new OauthException();
     }
 }
