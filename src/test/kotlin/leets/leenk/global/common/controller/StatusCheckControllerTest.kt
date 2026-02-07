@@ -6,6 +6,7 @@ import io.kotest.extensions.spring.SpringExtension
 import leets.leenk.global.auth.application.property.OauthProperty
 import leets.leenk.global.auth.domain.handler.CustomAccessDeniedHandler
 import leets.leenk.global.auth.domain.handler.CustomAuthenticationEntryPoint
+import leets.leenk.global.auth.domain.service.JwtTokenProvider
 import leets.leenk.global.config.PermitUrlConfig
 import leets.leenk.global.config.SecurityConfig
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -24,6 +25,7 @@ class StatusCheckControllerTest(
     @MockkBean private val oauthProperty: OauthProperty,
     @MockkBean private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
     @MockkBean private val customAccessDeniedHandler: CustomAccessDeniedHandler,
+    @MockkBean private val jwtTokenProvider: JwtTokenProvider,
 ) : StringSpec({
         extensions(SpringExtension)
 

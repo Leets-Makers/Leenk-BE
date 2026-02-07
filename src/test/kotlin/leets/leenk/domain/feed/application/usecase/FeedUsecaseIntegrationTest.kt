@@ -20,13 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger
 private const val CONCURRENT_THREAD_COUNT = 10
 private const val ATTEMPT_COUNT = 5
 
-private const val FEED_AUTHOR_ID_100 = 100L
-private const val FEED_AUTHOR_ID_200 = 200L
-private const val FEED_AUTHOR_ID_300 = 300L
-
-private const val USER_ID_201 = 201L
-private const val USER_ID_BASE_300 = 300L
-
 @SpringBootTest
 @Import(MysqlTestConfig::class, MongoTestConfig::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -48,7 +41,7 @@ class FeedUsecaseIntegrationTest(
         Given("여러 사용자가 동시에 같은 피드에 공감하는 경우") {
             val feedAuthor =
                 userRepository.save(
-                    UserTestFixture.createUser(id = FEED_AUTHOR_ID_100, name = "피드작성자"),
+                    UserTestFixture.createUser(name = "피드작성자"),
                 )
 
             val feed =
@@ -59,7 +52,7 @@ class FeedUsecaseIntegrationTest(
             val users =
                 (1..CONCURRENT_THREAD_COUNT).map { i ->
                     userRepository.save(
-                        UserTestFixture.createUser(id = i.toLong(), name = "사용자$i"),
+                        UserTestFixture.createUser(name = "사용자$i"),
                     )
                 }
 
@@ -95,12 +88,12 @@ class FeedUsecaseIntegrationTest(
         Given("동일 사용자가 동시에 여러 번 공감하는 경우") {
             val feedAuthor =
                 userRepository.save(
-                    UserTestFixture.createUser(id = FEED_AUTHOR_ID_200, name = "피드작성자"),
+                    UserTestFixture.createUser(name = "피드작성자"),
                 )
 
             val user =
                 userRepository.save(
-                    UserTestFixture.createUser(id = USER_ID_201, name = "공감사용자"),
+                    UserTestFixture.createUser(name = "공감사용자"),
                 )
 
             val feed =
@@ -141,7 +134,7 @@ class FeedUsecaseIntegrationTest(
         Given("다른 사용자가 동일한 사용자의 다른 피드에 동시에 공감하는 경우 (고강도 테스트)") {
             val feedAuthor =
                 userRepository.saveAndFlush(
-                    UserTestFixture.createUser(id = FEED_AUTHOR_ID_300, name = "피드 작성자"),
+                    UserTestFixture.createUser(name = "피드 작성자"),
                 )
 
             val feed1 =
@@ -157,7 +150,7 @@ class FeedUsecaseIntegrationTest(
             val users =
                 (1..CONCURRENT_THREAD_COUNT).map { i ->
                     userRepository.saveAndFlush(
-                        UserTestFixture.createUser(id = USER_ID_BASE_300 + i, name = "사용자$i"),
+                        UserTestFixture.createUser(name = "사용자$i"),
                     )
                 }
 
