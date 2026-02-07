@@ -4,7 +4,7 @@ import leets.leenk.domain.user.domain.entity.User
 
 object UserTestFixture {
     fun createUser(
-        id: Long,
+        id: Long?,
         name: String,
     ): User =
         User
