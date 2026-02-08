@@ -1,6 +1,6 @@
 package leets.leenk.domain.notification.application.dto
 
-import leets.leenk.domain.notification.domain.enums.NotificationType
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 
 data class NotificationRequest(
     val userId: Long,

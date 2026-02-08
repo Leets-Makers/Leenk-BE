@@ -1,6 +1,6 @@
 package leets.leenk.domain.notification.application.policy
 
-import leets.leenk.domain.notification.domain.enums.NotificationType
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import org.springframework.stereotype.Component
 
 @Component

@@ -4,7 +4,7 @@ import leets.leenk.domain.feed.domain.event.FeedDomainEvent
 import leets.leenk.domain.feed.domain.event.FeedEventType
 import leets.leenk.domain.notification.application.dto.NotificationRequest
 import leets.leenk.domain.notification.application.port.NotificationPort
-import leets.leenk.domain.notification.domain.enums.NotificationType
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener

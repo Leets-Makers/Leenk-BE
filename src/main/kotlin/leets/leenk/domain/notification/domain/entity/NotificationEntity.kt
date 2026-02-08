@@ -1,6 +1,6 @@
 package leets.leenk.domain.notification.domain.entity
 
-import leets.leenk.domain.notification.domain.enums.NotificationType
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import leets.leenk.global.common.entity.MongoBaseEntity
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
