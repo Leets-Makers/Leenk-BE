@@ -1,4 +1,4 @@
-package leets.leenk.domain.notification.domain.enums
+package leets.leenk.domain.notification.domain.entity.enums
 
 enum class NotificationType(
     val title: String,
