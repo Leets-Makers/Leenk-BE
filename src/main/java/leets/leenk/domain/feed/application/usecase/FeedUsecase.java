@@ -22,6 +22,8 @@ import leets.leenk.domain.media.domain.service.MediaDeleteService;
 import leets.leenk.domain.media.domain.service.MediaGetService;
 import leets.leenk.domain.media.domain.service.MediaSaveService;
 import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase;
+import leets.leenk.domain.feed.domain.event.FeedDomainEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.entity.UserBlock;
 import leets.leenk.domain.user.domain.service.NotionDatabaseService;
@@ -71,6 +73,7 @@ public class FeedUsecase {
     private final CommentDeleteService commentDeleteService;
 
     private final FeedNotificationUsecase feedNotificationUsecase;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final FeedMapper feedMapper;
     private final MediaMapper mediaMapper;
@@ -232,12 +235,17 @@ public class FeedUsecase {
 
         long previousReactionCount = reaction.getReactionCount();
 
-        // Feed를 가져올 때 Fetch Join으로 작성자를 함께 가져와 락이 함께 걸리므로 별도의 락 필요 없음.
         feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
-        feedNotificationUsecase.saveFirstReactionNotification(reaction);
 
-        long updatedReactionCount = previousReactionCount + request.reactionCount();
-        notifyIfReachedReactionMilestone(previousReactionCount, updatedReactionCount, feed);
+        eventPublisher.publishEvent(
+            FeedDomainEvent.Companion.reacted(
+                feed.getId(),
+                feed.getUser().getId(),
+                user.getId(),
+                user.getName(),
+                (int) (previousReactionCount + request.reactionCount())
+            )
+        );
     }
 
     @Transactional
