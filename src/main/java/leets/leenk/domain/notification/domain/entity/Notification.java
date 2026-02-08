@@ -1,6 +1,6 @@
 package leets.leenk.domain.notification.domain.entity;
 
-import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
+import leets.leenk.domain.notification.domain.enums.NotificationType;
 import leets.leenk.global.common.entity.MongoBaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,6 +32,10 @@ public class Notification extends MongoBaseEntity {
 
     public void markRead() {
         this.isRead = true;
+    }
+
+    public NotificationContent getContent() {
+        return this.content;
     }
 
 }
