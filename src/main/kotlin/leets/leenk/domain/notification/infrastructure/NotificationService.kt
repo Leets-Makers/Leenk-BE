@@ -7,19 +7,21 @@ import leets.leenk.domain.notification.application.policy.NotificationPolicy
 import leets.leenk.domain.notification.application.port.NotificationPort
 import leets.leenk.domain.notification.domain.entity.NotificationEntity
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
+import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
 import org.springframework.stereotype.Component
 
 @Component
 class NotificationService(
     private val notificationSaveService: NotificationSaveService,
+    private val notificationEntityGetService: NotificationEntityGetService,
     private val notificationPublisher: NotificationPublisher,
-    private val notificationPolicy: NotificationPolicy
+    private val notificationPolicy: NotificationPolicy,
 ) : NotificationPort {
-
-    private val scope = CoroutineScope(
-        SupervisorJob() + Dispatchers.IO + CoroutineName("notification")
-    )
+    private val scope =
+        CoroutineScope(
+            SupervisorJob() + Dispatchers.IO + CoroutineName("notification"),
+        )
 
     override fun send(request: NotificationRequest) {
         scope.launch {
@@ -38,6 +40,42 @@ class NotificationService(
         }
     }
 
+    override fun sendOrUpdate(request: NotificationRequest) {
+        scope.launch {
+            sendOrUpdateInternal(request)
+        }
+    }
+
+    private suspend fun sendOrUpdateInternal(request: NotificationRequest) {
+        try {
+            if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
+                return
+            }
+
+            val existing =
+                notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                    userId = request.userId,
+                    type = request.type,
+                    targetId = request.targetId,
+                )
+
+            if (existing != null) {
+                val updated =
+                    existing.updateContent(
+                        newTitle = request.title,
+                        newBody = request.body,
+                        newMetadata = request.metadata,
+                    )
+                notificationSaveService.save(updated)
+                notificationPublisher.publishIfEligible(request.userId, updated)
+            } else {
+                sendInternal(request)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private suspend fun sendInternal(request: NotificationRequest) {
         try {
             if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
@@ -52,19 +90,20 @@ class NotificationService(
         }
     }
 
-    private fun createNotification(request: NotificationRequest): NotificationEntity {
-        return NotificationEntity(
+    private fun createNotification(request: NotificationRequest): NotificationEntity =
+        NotificationEntity(
             userId = request.userId,
             notificationType = request.type,
-            content = NotificationPayload(
-                title = request.title,
-                body = request.body,
-                targetId = request.targetId,
-                metadata = request.metadata
-            ),
-            isRead = false
+            content =
+                NotificationPayload(
+                    title = request.title,
+                    body = request.body,
+                    path = request.path,
+                    targetId = request.targetId,
+                    metadata = request.metadata,
+                ),
+            isRead = false,
         )
-    }
 
     @PreDestroy
     fun cleanup() {
