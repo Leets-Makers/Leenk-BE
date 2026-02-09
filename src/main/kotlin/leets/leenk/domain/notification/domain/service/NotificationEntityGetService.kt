@@ -54,23 +54,11 @@ class NotificationEntityGetService(
         val details = (notification.content.metadata["details"] as? List<*>)?.filterIsInstance<Map<String, Any>>()
             ?: return false
 
-        println("🔍 Checking milestone $milestone in details:")
-        details.forEach { detail ->
-            val body = detail["body"] as? String ?: ""
-            val numberRegex = """(\d+)개""".toRegex()
-            val match = numberRegex.find(body)
-            val extractedNumber = match?.groupValues?.get(1)?.toIntOrNull()
-            println("  - body: $body, extracted: $extractedNumber, matches: ${extractedNumber == milestone}")
-        }
-
-        val result = details.any { detail ->
+        return details.any { detail ->
             val body = detail["body"] as? String ?: ""
             val numberRegex = """(\d+)개""".toRegex()
             val match = numberRegex.find(body)
             match?.groupValues?.get(1)?.toIntOrNull() == milestone
         }
-
-        println("  → Result: $result")
-        return result
     }
 }

@@ -29,11 +29,12 @@ class NotificationService(
 
     override fun sendBatch(requests: List<NotificationRequest>) {
         scope.launch {
-            requests.map { request ->
-                async {
-                    sendInternal(request)
-                }
-            }.awaitAll()
+            requests
+                .map { request ->
+                    async {
+                        sendInternal(request)
+                    }
+                }.awaitAll()
         }
     }
 
