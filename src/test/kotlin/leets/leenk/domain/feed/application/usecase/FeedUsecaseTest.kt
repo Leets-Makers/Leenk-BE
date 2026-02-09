@@ -59,6 +59,7 @@ import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.blockuser.UserBlockService
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import java.util.Optional
@@ -91,6 +92,8 @@ class FeedUsecaseTest :
         val commentDeleteService = mockk<CommentDeleteService>(relaxed = true)
 
         val feedNotificationUsecase = mockk<FeedNotificationUsecase>(relaxed = true)
+
+        val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val feedMapper = mockk<FeedMapper>()
         val mediaMapper = mockk<MediaMapper>()
@@ -125,6 +128,7 @@ class FeedUsecaseTest :
                 feedUserMapper,
                 reactionMapper,
                 commentMapper,
+                eventPublisher,
             )
 
         Given("차단된 사용자 목록이 있을 때") {
