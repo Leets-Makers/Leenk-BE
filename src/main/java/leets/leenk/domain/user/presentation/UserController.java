@@ -104,6 +104,15 @@ public class UserController {
         return CommonResponse.success(UPDATE_MBTI);
     }
 
+    @PatchMapping("/me/cardinal")
+    @Operation(summary = "내 정보 수정 - 기수")
+    public CommonResponse<Void> updateCardinal(@Parameter(hidden = true) @CurrentUserId Long userId,
+                                               @Valid @RequestBody CardinalRequest request) {
+        userUsecase.updateCardinal(userId, request);
+
+        return CommonResponse.success(UPDATE_CARDINAL);
+    }
+
     @PatchMapping("/me/fcm-token")
     @Operation(summary = "내 정보 수정 - FCM 토큰")
     public CommonResponse<Void> updateFcmToken(@Parameter(hidden = true) @CurrentUserId Long userId,

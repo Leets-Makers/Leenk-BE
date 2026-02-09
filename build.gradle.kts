@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.3.0"
     id("org.jetbrains.kotlin.plugin.spring") version "2.3.0"
     id("org.jetbrains.kotlin.plugin.jpa") version "2.3.0"
+    id("org.jetbrains.kotlin.plugin.lombok") version "2.3.0"
     id("org.springframework.boot") version "3.5.9"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
@@ -78,6 +79,11 @@ dependencies {
     // AWS
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
     implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.3.0"))
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 }
 
 tasks.named<Test>("test") {

@@ -27,7 +27,10 @@ public enum UserErrorCode implements ErrorCodeInterface {
     USER_ALREADY_BLOCKED(2104, HttpStatus.BAD_REQUEST, "이미 차단한 사용자입니다."),
 
     @ExplainError("자기 자신을 차단하려고 시도할 때 발생합니다.")
-    SELF_BLOCK_NOT_ALLOWED(2105, HttpStatus.BAD_REQUEST, "자기 자신을 차단할 수 없습니다.");
+    SELF_BLOCK_NOT_ALLOWED(2105, HttpStatus.BAD_REQUEST, "자기 자신을 차단할 수 없습니다."),
+
+    @ExplainError("동일한 Apple ID로 이미 가입된 사용자가 존재할 때 발생합니다.")
+    USER_ALREADY_EXISTS(2106, HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
 
     private final int code;
     private final HttpStatus status;
