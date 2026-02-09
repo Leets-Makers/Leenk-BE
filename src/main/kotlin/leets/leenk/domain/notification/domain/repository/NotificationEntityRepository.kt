@@ -19,7 +19,9 @@ interface NotificationEntityRepository : MongoRepository<NotificationEntity, Str
      * FEED_FIRST_REACTION 알림에서 특정 사용자의 공감이 이미 포함되어 있는지 확인
      * feedAuthorId의 알림 중에서 feedId에 대한 FEED_FIRST_REACTION 알림의 details에 reactorId가 있는지 확인
      */
-    @Query("{ 'userId': ?0, 'notificationType': ?1, 'content.targetId': ?2, 'content.metadata.details': { '\$elemMatch': { 'userId': ?3 } } }")
+    @Query(
+        "{ 'userId': ?0, 'notificationType': ?1, 'content.targetId': ?2, 'content.metadata.details': { '\$elemMatch': { 'userId': ?3 } } }",
+    )
     fun findByFeedIdAndUserIdInFirstReactions(
         feedAuthorId: Long,
         notificationType: NotificationType,

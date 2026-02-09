@@ -45,14 +45,16 @@ class NotificationEntityGetService(
         feedId: Long,
         milestone: Int,
     ): Boolean {
-        val notification = notificationEntityRepository.findNotificationByUserAndTypeAndTarget(
-            userId = feedAuthorId,
-            notificationType = NotificationType.FEED_REACTION_COUNT,
-            targetId = feedId,
-        ) ?: return false
+        val notification =
+            notificationEntityRepository.findNotificationByUserAndTypeAndTarget(
+                userId = feedAuthorId,
+                notificationType = NotificationType.FEED_REACTION_COUNT,
+                targetId = feedId,
+            ) ?: return false
 
-        val details = (notification.content.metadata["details"] as? List<*>)?.filterIsInstance<Map<String, Any>>()
-            ?: return false
+        val details =
+            (notification.content.metadata["details"] as? List<*>)?.filterIsInstance<Map<String, Any>>()
+                ?: return false
 
         return details.any { detail ->
             val body = detail["body"] as? String ?: ""
