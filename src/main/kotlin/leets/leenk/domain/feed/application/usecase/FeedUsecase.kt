@@ -22,6 +22,7 @@ import leets.leenk.domain.feed.application.mapper.ReactionMapper
 import leets.leenk.domain.feed.domain.entity.Comment
 import leets.leenk.domain.feed.domain.entity.Feed
 import leets.leenk.domain.feed.domain.entity.LinkedUser
+import leets.leenk.domain.feed.domain.event.FeedDomainEvent
 import leets.leenk.domain.feed.domain.service.CommentDeleteService
 import leets.leenk.domain.feed.domain.service.CommentGetService
 import leets.leenk.domain.feed.domain.service.CommentSaveService
@@ -44,6 +45,7 @@ import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.blockuser.UserBlockService
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -75,6 +77,7 @@ class FeedUsecase(
     private val feedUserMapper: FeedUserMapper,
     private val reactionMapper: ReactionMapper,
     private val commentMapper: CommentMapper,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     @Transactional(readOnly = true)
     fun getFeeds(
@@ -211,8 +214,17 @@ class FeedUsecase(
         val linkedUsers = getLinkedUsers(author, request.userIds, feed)
         linkedUserSaveService.saveAll(linkedUsers)
 
-        feedNotificationUsecase.saveNewFeedNotification(feed)
-        feedNotificationUsecase.saveTagNotification(feed, linkedUsers, author)
+        // 태그된 사용자 ID 목록 (작성자 제외)
+        val taggedUserIds = request.userIds.filter { it != author.id }
+
+        eventPublisher.publishEvent(
+            FeedDomainEvent.created(
+                feedId = feed.id!!,
+                authorId = author.id!!,
+                authorName = author.name,
+                taggedUserIds = taggedUserIds,
+            ),
+        )
     }
 
     private fun getLinkedUsers(
@@ -258,7 +270,20 @@ class FeedUsecase(
 
         // Feed를 가져올 때 Fetch Join으로 작성자를 함께 가져와 락이 함께 걸리므로 별도의 락 필요 없음.
         feedUpdateService.updateTotalReaction(feed, reaction, feed.user, request.reactionCount)
-        feedNotificationUsecase.saveFirstReactionNotification(reaction)
+
+        // 업데이트된 총 공감 수 계산
+        val totalReactionCount = feed.totalReactionCount + request.reactionCount
+
+        eventPublisher.publishEvent(
+            FeedDomainEvent.reacted(
+                feedId = feed.id!!,
+                feedAuthorId = feed.user.id!!,
+                reactorId = user.id!!,
+                reactorName = user.name,
+                previousReactionCount = previousReactionCount,
+                totalReactionCount = totalReactionCount,
+            ),
+        )
 
         val updatedReactionCount = previousReactionCount + request.reactionCount
         notifyIfReachedReactionMilestone(previousReactionCount, updatedReactionCount, feed)
