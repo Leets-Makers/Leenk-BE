@@ -46,7 +46,7 @@ public class NotificationController {
     @PatchMapping("/{notificationId}")
     public CommonResponse<Void> markAsRead(@Parameter(hidden = true) @CurrentUserId Long userId,
                                            @PathVariable String notificationId) {
-        feedNotificationUsecase.markNotificationAsRead(userId, notificationId);
+        notificationUseCase.markNotificationAsRead(userId, notificationId);
         return CommonResponse.success(NotificationResponseCode.NOTIFICATION_MARK_AS_READ_SUCCESS);
     }
 }
