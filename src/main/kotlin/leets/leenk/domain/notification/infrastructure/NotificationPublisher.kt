@@ -12,9 +12,12 @@ import org.springframework.stereotype.Component
 class NotificationPublisher(
     private val eventPublisher: ApplicationEventPublisher,
     private val notificationPolicy: NotificationPolicy,
-    private val userGetService: UserGetService
+    private val userGetService: UserGetService,
 ) {
-    fun publishIfEligible(userId: Long, notification: NotificationEntity) {
+    fun publishIfEligible(
+        userId: Long,
+        notification: NotificationEntity,
+    ) {
         if (!notificationPolicy.canPublishPush(userId)) {
             return
         }
@@ -22,22 +25,22 @@ class NotificationPublisher(
         val user = userGetService.findById(userId)
         val fcmToken = user.getFcmTokenReflection() ?: return
 
-        val sqsEvent = SqsMessageEvent(
-            notification.content.title,
-            notification.content.body,
-            fcmToken,
-            notification.notificationType.path,
-            1L
-        )
+        val sqsEvent =
+            SqsMessageEvent(
+                notification.content.title,
+                notification.content.body,
+                fcmToken,
+                notification.notificationType.path,
+                user.id,
+            )
         eventPublisher.publishEvent(sqsEvent)
     }
 
-    private fun User.getFcmTokenReflection(): String? {
-        return try {
+    private fun User.getFcmTokenReflection(): String? =
+        try {
             val method = this.javaClass.getMethod("getFcmToken")
             method.invoke(this) as? String
         } catch (e: Exception) {
             null
         }
-    }
 }

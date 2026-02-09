@@ -175,4 +175,9 @@ public class User extends BaseEntity {
     public boolean isAgree() {
         return this.termsAgreement && this.privacyAgreement;
     }
+
+    // TODO: 코틀린 자바 롬복 문제. 추후 마이그레이션 후 삭제
+    public Long getId() {
+        return id;
+    }
 }

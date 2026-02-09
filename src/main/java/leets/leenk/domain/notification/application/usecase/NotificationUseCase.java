@@ -6,6 +6,7 @@ import leets.leenk.domain.notification.application.mapper.NotificationResponseMa
 import leets.leenk.domain.notification.domain.entity.Notification;
 import leets.leenk.domain.notification.domain.service.NotificationCountGetService;
 import leets.leenk.domain.notification.domain.service.NotificationGetService;
+import leets.leenk.domain.notification.domain.service.NotificationMarkReadService;
 import leets.leenk.domain.user.domain.entity.User;
 import leets.leenk.domain.user.domain.service.user.UserGetService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class NotificationUseCase {
 
     private final UserGetService userGetService;
     private final NotificationGetService notificationGetService;
+    private final NotificationMarkReadService notificationMarkReadService;
 
     private final NotificationCountGetService notificationCountGetService;
     private final NotificationResponseMapper notificationResponseMapper;
@@ -38,5 +40,11 @@ public class NotificationUseCase {
     public NotificationCountResponse getNotificationCount(long userId) {
         User user = userGetService.findById(userId);
         return notificationResponseMapper.toCountResponse(notificationCountGetService.getNotificationCount(user));
+    }
+
+    @Transactional
+    public void markNotificationAsRead(Long userId, String notificationId) {
+        User user = userGetService.findById(userId);
+        notificationMarkReadService.markReadNotification(user, notificationId);
     }
 }
