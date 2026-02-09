@@ -6,45 +6,51 @@ package leets.leenk.domain.feed.domain.event
  */
 data class FeedDomainEvent(
     val eventType: FeedEventType,
-    val data: Map<String, Any>
+    val data: Map<String, Any>,
 ) {
     companion object {
         /**
          * 피드 생성 이벤트
          */
+        @JvmStatic
         fun created(
             feedId: Long,
             authorId: Long,
             authorName: String,
-            taggedUserIds: List<Long> = emptyList()
+            taggedUserIds: List<Long> = emptyList(),
         ) = FeedDomainEvent(
             eventType = FeedEventType.CREATED,
-            data = mapOf(
-                "feedId" to feedId,
-                "authorId" to authorId,
-                "authorName" to authorName,
-                "taggedUserIds" to taggedUserIds
-            )
+            data =
+                mapOf(
+                    "feedId" to feedId,
+                    "authorId" to authorId,
+                    "authorName" to authorName,
+                    "taggedUserIds" to taggedUserIds,
+                ),
         )
 
         /**
          * 피드 공감 이벤트
          */
+        @JvmStatic
         fun reacted(
             feedId: Long,
             feedAuthorId: Long,
             reactorId: Long,
             reactorName: String,
-            totalReactionCount: Int
+            previousReactionCount: Long,
+            totalReactionCount: Long,
         ) = FeedDomainEvent(
             eventType = FeedEventType.REACTED,
-            data = mapOf(
-                "feedId" to feedId,
-                "feedAuthorId" to feedAuthorId,
-                "reactorId" to reactorId,
-                "reactorName" to reactorName,
-                "totalReactionCount" to totalReactionCount
-            )
+            data =
+                mapOf(
+                    "feedId" to feedId,
+                    "feedAuthorId" to feedAuthorId,
+                    "reactorId" to reactorId,
+                    "reactorName" to reactorName,
+                    "previousReactionCount" to previousReactionCount,
+                    "totalReactionCount" to totalReactionCount,
+                ),
         )
     }
 
@@ -57,5 +63,6 @@ data class FeedDomainEvent(
     val feedAuthorId: Long get() = data["feedAuthorId"] as Long
     val reactorId: Long get() = data["reactorId"] as Long
     val reactorName: String get() = data["reactorName"] as String
-    val totalReactionCount: Int get() = data["totalReactionCount"] as Int
+    val previousReactionCount: Long get() = data["previousReactionCount"] as Long
+    val totalReactionCount: Long get() = data["totalReactionCount"] as Long
 }

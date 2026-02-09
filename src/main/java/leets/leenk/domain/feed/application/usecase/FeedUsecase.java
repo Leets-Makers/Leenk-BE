@@ -200,8 +200,18 @@ public class FeedUsecase {
         List<LinkedUser> linkedUsers = getLinkedUsers(author, request.userIds(), feed);
         linkedUserSaveService.saveAll(linkedUsers);
 
-        feedNotificationUsecase.saveNewFeedNotification(feed);
-        feedNotificationUsecase.saveTagNotification(feed, linkedUsers, author);
+        // TODO: 코틀린 마이그레이션 후 코틀린화하기
+        eventPublisher.publishEvent(
+                FeedDomainEvent.created(
+                        feed.getId(),
+                        author.getId(),
+                        author.getName(),
+                        linkedUsers.stream()
+                                .map(LinkedUser::getUser)
+                                .map(User::getId)
+                                .toList()
+                )
+        );
     }
 
     private List<LinkedUser> getLinkedUsers(User author, List<Long> userIds, Feed feed) {
@@ -233,17 +243,18 @@ public class FeedUsecase {
                         )
                 );
 
-        long previousReactionCount = reaction.getReactionCount();
+        Long previousReactionCount = reaction.getReactionCount();
 
         feedUpdateService.updateTotalReaction(feed, reaction, feed.getUser(), request.reactionCount());
 
         eventPublisher.publishEvent(
-            FeedDomainEvent.Companion.reacted(
-                feed.getId(),
-                feed.getUser().getId(),
-                user.getId(),
-                user.getName(),
-                (int) (previousReactionCount + request.reactionCount())
+                FeedDomainEvent.Companion.reacted(
+                    feed.getId(),
+                    feed.getUser().getId(),
+                    user.getId(),
+                    user.getName(),
+                    previousReactionCount,
+                    feed.getTotalReactionCount()
             )
         );
     }
