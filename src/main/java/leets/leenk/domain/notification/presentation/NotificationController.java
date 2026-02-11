@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import leets.leenk.domain.notification.application.dto.response.NotificationCountResponse;
 import leets.leenk.domain.notification.application.dto.response.NotificationListResponse;
 import leets.leenk.domain.notification.application.exception.NotificationErrorCode;
-import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase;
 import leets.leenk.domain.notification.application.usecase.NotificationUseCase;
 import leets.leenk.global.auth.application.annotation.CurrentUserId;
 import leets.leenk.global.common.exception.ApiErrorCodeExample;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final FeedNotificationUsecase feedNotificationUsecase;
     private final NotificationUseCase notificationUseCase;
 
     @Operation(summary = "최근 알림 조회 API [무한스크롤] / 사용자의 최근 알림 목록을 페이지 단위로 조회합니다. pageNumber: 0부터 시작")
