@@ -2,7 +2,6 @@ package leets.leenk.domain.notification.infrastructure
 
 import leets.leenk.domain.notification.application.policy.NotificationPolicy
 import leets.leenk.domain.notification.domain.entity.NotificationEntity
-import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.global.sqs.application.dto.SqsMessageEvent
 import org.springframework.context.ApplicationEventPublisher
@@ -23,7 +22,7 @@ class NotificationPublisher(
         }
 
         val user = userGetService.findById(userId)
-        val fcmToken = user.getFcmTokenReflection() ?: return
+        val fcmToken = user.fcmToken ?: return
 
         val sqsEvent =
             SqsMessageEvent(
@@ -35,12 +34,4 @@ class NotificationPublisher(
             )
         eventPublisher.publishEvent(sqsEvent)
     }
-
-    private fun User.getFcmTokenReflection(): String? =
-        try {
-            val method = this.javaClass.getMethod("getFcmToken")
-            method.invoke(this) as? String
-        } catch (e: Exception) {
-            null
-        }
 }
