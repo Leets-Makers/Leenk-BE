@@ -36,28 +36,4 @@ class NotificationEntityGetService(
             feedId = feedId,
             reactorId = reactorId,
         ) != null
-
-    /**
-     * 특정 마일스톤이 details에 이미 존재하는지 확인
-     */
-    fun checkReactionCountDuplicated(
-        feedAuthorId: Long,
-        feedId: Long,
-        milestone: Int,
-    ): Boolean {
-        val notification =
-            notificationEntityRepository.findNotificationByUserAndTypeAndTarget(
-                userId = feedAuthorId,
-                notificationType = NotificationType.FEED_REACTION_COUNT,
-                targetId = feedId,
-            ) ?: return false
-
-        val details =
-            (notification.content.metadata["details"] as? List<*>)?.filterIsInstance<Map<String, Any>>()
-                ?: return false
-
-        return details.any { detail ->
-            (detail["milestone"] as? Int) == milestone
-        }
-    }
 }
