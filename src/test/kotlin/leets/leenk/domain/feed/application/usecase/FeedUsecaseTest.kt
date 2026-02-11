@@ -53,7 +53,6 @@ import leets.leenk.domain.media.domain.entity.enums.MediaType
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
-import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase
 import leets.leenk.domain.user.domain.entity.UserBlock
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
@@ -91,8 +90,6 @@ class FeedUsecaseTest :
         val commentGetService = mockk<CommentGetService>()
         val commentDeleteService = mockk<CommentDeleteService>(relaxed = true)
 
-        val feedNotificationUsecase = mockk<FeedNotificationUsecase>(relaxed = true)
-
         val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val feedMapper = mockk<FeedMapper>()
@@ -122,7 +119,6 @@ class FeedUsecaseTest :
                 commentSaveService,
                 commentGetService,
                 commentDeleteService,
-                feedNotificationUsecase,
                 feedMapper,
                 mediaMapper,
                 feedUserMapper,

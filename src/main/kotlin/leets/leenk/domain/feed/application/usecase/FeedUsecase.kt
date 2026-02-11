@@ -39,7 +39,6 @@ import leets.leenk.domain.media.application.mapper.MediaMapper
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
-import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase
 import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
@@ -71,7 +70,6 @@ class FeedUsecase(
     private val commentSaveService: CommentSaveService,
     private val commentGetService: CommentGetService,
     private val commentDeleteService: CommentDeleteService,
-    private val feedNotificationUsecase: FeedNotificationUsecase,
     private val feedMapper: FeedMapper,
     private val mediaMapper: MediaMapper,
     private val feedUserMapper: FeedUserMapper,
@@ -284,9 +282,6 @@ class FeedUsecase(
                 totalReactionCount = totalReactionCount,
             ),
         )
-
-        val updatedReactionCount = previousReactionCount + request.reactionCount
-        notifyIfReachedReactionMilestone(previousReactionCount, updatedReactionCount, feed)
     }
 
     @Transactional
@@ -456,20 +451,6 @@ class FeedUsecase(
 
         notionDatabaseService.sendFeedReport(request.report, user.id!!, feed.id!!)
         slackWebhookService.sendFeedReport(request.report)
-    }
-
-    private fun notifyIfReachedReactionMilestone(
-        previous: Long,
-        current: Long,
-        feed: Feed,
-    ) {
-        val milestones = longArrayOf(5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000)
-
-        for (milestone in milestones) {
-            if (previous < milestone && current >= milestone) {
-                feedNotificationUsecase.saveReactionCountNotification(feed, milestone)
-            }
-        }
     }
 
     private fun checkAuthor(
