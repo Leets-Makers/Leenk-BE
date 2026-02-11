@@ -45,7 +45,6 @@ class FeedNotificationAdapter(
                     userId = user.id,
                     type = NotificationType.NEW_FEED,
                     targetId = event.feedId,
-                    dynamicParams = listOf(event.authorName),
                 )
             }
 
@@ -61,7 +60,7 @@ class FeedNotificationAdapter(
                         userId = taggedUserId,
                         type = NotificationType.FEED_TAG,
                         targetId = event.feedId,
-                        dynamicParams = listOf(event.authorName),
+                        name = event.authorName,
                     )
                 }
 
@@ -93,7 +92,7 @@ class FeedNotificationAdapter(
                     "userId" to event.reactorId,
                     "name" to event.reactorName,
                     "title" to NotificationType.FEED_FIRST_REACTION.title,
-                    "body" to NotificationType.FEED_FIRST_REACTION.formatContent(event.reactorName),
+                    "body" to NotificationType.FEED_FIRST_REACTION.formatContent(name = event.reactorName),
                     "createDate" to now,
                 )
 
@@ -108,7 +107,7 @@ class FeedNotificationAdapter(
                         userId = event.feedAuthorId,
                         type = NotificationType.FEED_FIRST_REACTION,
                         targetId = event.feedId,
-                        dynamicParams = listOf(event.reactorName),
+                        name = event.reactorName,
                         metadata = mapOf("details" to updatedDetails),
                     ),
                 )
@@ -118,7 +117,7 @@ class FeedNotificationAdapter(
                         userId = event.feedAuthorId,
                         type = NotificationType.FEED_FIRST_REACTION,
                         targetId = event.feedId,
-                        dynamicParams = listOf(event.reactorName),
+                        name = event.reactorName,
                         metadata = mapOf("details" to listOf(newDetail)),
                     ),
                 )
@@ -157,7 +156,7 @@ class FeedNotificationAdapter(
                     allDetails.add(
                         mapOf(
                             "title" to NotificationType.FEED_REACTION_COUNT.title,
-                            "body" to NotificationType.FEED_REACTION_COUNT.formatContent(milestone),
+                            "body" to NotificationType.FEED_REACTION_COUNT.formatContent(count = milestone),
                             "createDate" to now,
                         ),
                     )
@@ -172,7 +171,7 @@ class FeedNotificationAdapter(
                         userId = event.feedAuthorId,
                         type = NotificationType.FEED_REACTION_COUNT,
                         targetId = event.feedId,
-                        dynamicParams = listOf(lastMilestone),
+                        count = lastMilestone,
                         metadata =
                             mapOf(
                                 "reactionCount" to lastMilestone,
@@ -186,7 +185,7 @@ class FeedNotificationAdapter(
                         userId = event.feedAuthorId,
                         type = NotificationType.FEED_REACTION_COUNT,
                         targetId = event.feedId,
-                        dynamicParams = listOf(lastMilestone),
+                        count = lastMilestone,
                         metadata =
                             mapOf(
                                 "reactionCount" to lastMilestone,

@@ -62,7 +62,7 @@ class NotificationService(
             if (existing != null) {
                 val updated =
                     existing.updateContent(
-                        newTitle = request.title,
+                        newTitle = request.notificationTitle,
                         newBody = request.body,
                         newMetadata = request.metadata,
                     )
@@ -96,7 +96,7 @@ class NotificationService(
             notificationType = request.type,
             content =
                 NotificationPayload(
-                    title = request.title,
+                    title = request.notificationTitle,
                     body = request.body,
                     path = request.path,
                     targetId = request.targetId,

@@ -14,7 +14,7 @@ public class FeedFirstReactionDetailMapper {
                 .userId(user.getId())
                 .name(user.getName())
                 .title(NotificationType.FEED_FIRST_REACTION.getTitle())
-                .body(NotificationType.FEED_FIRST_REACTION.formatContent(user.getName()))
+                .body(NotificationType.FEED_FIRST_REACTION.formatContent(user.getName(), null, null))
                 .build();
     }
 }

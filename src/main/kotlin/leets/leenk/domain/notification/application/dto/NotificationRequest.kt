@@ -6,14 +6,16 @@ data class NotificationRequest(
     val userId: Long,
     val type: NotificationType,
     val targetId: Long,
-    val dynamicParams: List<Any> = emptyList(), // {name}, {count} 등 body 치환용
+    val name: String? = null,
+    val title: String? = null,
+    val count: Any? = null,
     val metadata: Map<String, Any> = emptyMap(),
 ) {
-    val title: String
+    val notificationTitle: String
         get() = type.title
 
     val body: String
-        get() = type.formatContent(*dynamicParams.toTypedArray())
+        get() = type.formatContent(name = name, title = title, count = count)
 
     val path: String
         get() = "${type.path}/$targetId"

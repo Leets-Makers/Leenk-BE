@@ -92,24 +92,25 @@ enum class NotificationType(
     ),
     ;
 
-    fun formatContent(vararg params: Any): String {
-        var formatted = content
-
-        params.forEachIndexed { index, param ->
-            formatted =
-                formatted
-                    .replace("{name}", param.toString())
-                    .replace("{count}", param.toString())
-        }
+    fun formatContent(
+        name: String? = null,
+        title: String? = null,
+        count: Any? = null,
+    ): String {
+        var formatted =
+            content
+                .replace("{name}", name ?: "{name}")
+                .replace("{title}", title ?: "{title}")
+                .replace("{count}", count?.toString() ?: "{count}")
 
         return try {
-            if (formatted.contains("%")) {
-                String.format(formatted, *params)
+            if (formatted.contains("%d") && count != null) {
+                String.format(formatted, count)
             } else {
                 formatted
             }
         } catch (e: Exception) {
-            formatted
+            content
         }
     }
 }
