@@ -69,7 +69,7 @@ class NotificationService(
                         newMetadata = request.metadata,
                     )
                 notificationSaveService.save(updated)
-                notificationPublisher.publishIfEligible(request.userId, updated)
+                notificationPublisher.publish(request.userId, updated)
             } else {
                 sendInternal(request)
             }
@@ -86,7 +86,7 @@ class NotificationService(
 
             val notification = createNotification(request)
             notificationSaveService.save(notification)
-            notificationPublisher.publishIfEligible(request.userId, notification)
+            notificationPublisher.publish(request.userId, notification)
         } catch (e: Exception) {
             log.error("알림 발송에 실패하였습니다: userId={}, type={}", request.userId, request.type, e)
         }

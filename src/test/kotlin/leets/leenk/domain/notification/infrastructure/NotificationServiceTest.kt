@@ -29,7 +29,7 @@ class NotificationServiceTest :
         beforeEach {
             clearAllMocks()
             every { notificationPolicy.shouldNotify(any(), any()) } returns true
-            coEvery { notificationPublisher.publishIfEligible(any(), any()) } just Runs
+            coEvery { notificationPublisher.publish(any(), any()) } just Runs
         }
 
         describe("send()") {
@@ -45,7 +45,7 @@ class NotificationServiceTest :
                     notificationService.send(request)
                     Thread.sleep(100)
                     verify(exactly = 1) { notificationSaveService.save(any<NotificationEntity>()) }
-                    coVerify(exactly = 1) { notificationPublisher.publishIfEligible(1L, any()) }
+                    coVerify(exactly = 1) { notificationPublisher.publish(1L, any()) }
                 }
             }
             context("정책 조건을 만족하지 않는 경우") {
@@ -55,7 +55,7 @@ class NotificationServiceTest :
                     notificationService.send(request)
                     Thread.sleep(100)
                     verify(exactly = 0) { notificationSaveService.save(any<NotificationEntity>()) }
-                    coVerify(exactly = 0) { notificationPublisher.publishIfEligible(any(), any()) }
+                    coVerify(exactly = 0) { notificationPublisher.publish(any(), any()) }
                 }
             }
         }
@@ -73,7 +73,7 @@ class NotificationServiceTest :
                     notificationService.sendBatch(requests)
                     Thread.sleep(200)
                     verify(exactly = 3) { notificationSaveService.save(any<NotificationEntity>()) }
-                    coVerify(exactly = 3) { notificationPublisher.publishIfEligible(any(), any()) }
+                    coVerify(exactly = 3) { notificationPublisher.publish(any(), any()) }
                 }
             }
             context("빈 리스트가 주어진 경우") {
@@ -132,7 +132,7 @@ class NotificationServiceTest :
                             },
                         )
                     }
-                    coVerify(exactly = 1) { notificationPublisher.publishIfEligible(1L, any()) }
+                    coVerify(exactly = 1) { notificationPublisher.publish(1L, any()) }
                 }
             }
             context("기존 알림이 존재하지 않는 경우") {

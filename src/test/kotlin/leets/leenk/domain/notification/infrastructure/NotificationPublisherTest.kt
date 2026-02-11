@@ -2,7 +2,6 @@ package leets.leenk.domain.notification.infrastructure
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.*
-import leets.leenk.domain.notification.application.policy.NotificationPolicy
 import leets.leenk.domain.notification.domain.entity.NotificationEntity
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
@@ -15,13 +14,11 @@ class NotificationPublisherTest :
     DescribeSpec({
 
         val eventPublisher = mockk<ApplicationEventPublisher>()
-        val notificationPolicy = mockk<NotificationPolicy>()
         val userGetService = mockk<UserGetService>()
 
         val notificationPublisher =
             NotificationPublisher(
                 eventPublisher,
-                notificationPolicy,
                 userGetService,
             )
 
@@ -30,7 +27,7 @@ class NotificationPublisherTest :
         }
 
         describe("publishIfEligible()") {
-            context("푸시 알림 정책을 만족하고 FCM 토큰이 있는 경우") {
+            context("FCM 토큰이 있는 경우") {
                 it("SQS 이벤트를 발행해야 한다") {
                     // given
                     val userId = 1L
@@ -53,12 +50,11 @@ class NotificationPublisherTest :
                     every { user.id } returns userId
                     every { user.fcmToken } returns fcmToken
 
-                    every { notificationPolicy.canPublishPush(userId) } returns true
                     every { userGetService.findById(userId) } returns user
                     every { eventPublisher.publishEvent(any<SqsMessageEvent>()) } just Runs
 
                     // when
-                    notificationPublisher.publishIfEligible(userId, notification)
+                    notificationPublisher.publish(userId, notification)
 
                     // then
                     verify(exactly = 1) {
@@ -72,35 +68,6 @@ class NotificationPublisherTest :
                             },
                         )
                     }
-                }
-            }
-
-            context("푸시 알림 정책을 만족하지 않는 경우") {
-                it("이벤트를 발행하지 않아야 한다") {
-                    // given
-                    val userId = 1L
-                    val notification =
-                        NotificationEntity(
-                            id = "test-id",
-                            userId = userId,
-                            notificationType = NotificationType.NEW_FEED,
-                            content =
-                                NotificationPayload(
-                                    title = "Test",
-                                    body = "Test body",
-                                    path = "/feeds",
-                                    targetId = 100L,
-                                ),
-                        )
-
-                    every { notificationPolicy.canPublishPush(userId) } returns false
-
-                    // when
-                    notificationPublisher.publishIfEligible(userId, notification)
-
-                    // then
-                    verify(exactly = 0) { userGetService.findById(any()) }
-                    verify(exactly = 0) { eventPublisher.publishEvent(any<SqsMessageEvent>()) }
                 }
             }
 
@@ -126,11 +93,10 @@ class NotificationPublisherTest :
                     every { user.id } returns userId
                     every { user.fcmToken } returns null
 
-                    every { notificationPolicy.canPublishPush(userId) } returns true
                     every { userGetService.findById(userId) } returns user
 
                     // when
-                    notificationPublisher.publishIfEligible(userId, notification)
+                    notificationPublisher.publish(userId, notification)
 
                     // then
                     verify(exactly = 0) { eventPublisher.publishEvent(any<SqsMessageEvent>()) }

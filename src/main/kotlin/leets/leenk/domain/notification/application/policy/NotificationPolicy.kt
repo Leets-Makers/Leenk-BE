@@ -51,6 +51,4 @@ class NotificationPolicy(
             -> userSetting.isBirthdayNotify
         }
     }
-
-    fun canPublishPush(userId: Long): Boolean = true
 }
