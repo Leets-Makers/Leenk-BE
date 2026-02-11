@@ -15,6 +15,7 @@ class NotificationPublisher(
     companion object {
         private val log = LoggerFactory.getLogger(NotificationPublisher::class.java)
     }
+
     fun publish(
         userId: Long,
         notification: NotificationEntity,
