@@ -9,6 +9,7 @@ import leets.leenk.domain.notification.domain.entity.NotificationEntity
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
@@ -18,6 +19,7 @@ class NotificationService(
     private val notificationPublisher: NotificationPublisher,
     private val notificationPolicy: NotificationPolicy,
 ) : NotificationPort {
+    private val log = LoggerFactory.getLogger(javaClass)
     private val scope =
         CoroutineScope(
             SupervisorJob() + Dispatchers.IO + CoroutineName("notification"),
@@ -72,7 +74,7 @@ class NotificationService(
                 sendInternal(request)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            log.error("알림 수정 또는 발송에 실패하였습니다: userId={}, type={}", request.userId, request.type, e)
         }
     }
 
@@ -86,7 +88,7 @@ class NotificationService(
             notificationSaveService.save(notification)
             notificationPublisher.publishIfEligible(request.userId, notification)
         } catch (e: Exception) {
-            e.printStackTrace()
+            log.error("알림 발송에 실패하였습니다: userId={}, type={}", request.userId, request.type, e)
         }
     }
 
