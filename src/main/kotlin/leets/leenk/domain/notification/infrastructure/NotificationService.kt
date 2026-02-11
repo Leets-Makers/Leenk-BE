@@ -11,6 +11,8 @@ import leets.leenk.domain.notification.domain.service.NotificationEntityGetServi
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class NotificationService(
@@ -48,19 +50,20 @@ class NotificationService(
         }
     }
 
-    private suspend fun sendOrUpdateInternal(request: NotificationRequest) {
-        try {
-            if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
-                return
-            }
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected open suspend fun sendOrUpdateInternal(request: NotificationRequest) {
+        if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
+            return
+        }
 
-            val existing =
-                notificationEntityGetService.findByUserIdAndTypeAndTargetId(
-                    userId = request.userId,
-                    type = request.type,
-                    targetId = request.targetId,
-                )
+        val existing =
+            notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                userId = request.userId,
+                type = request.type,
+                targetId = request.targetId,
+            )
 
+        val notification =
             if (existing != null) {
                 val updated =
                     existing.updateContent(
@@ -69,26 +72,35 @@ class NotificationService(
                         newMetadata = request.metadata,
                     )
                 notificationSaveService.save(updated)
-                notificationPublisher.publish(request.userId, updated)
+                updated
             } else {
-                sendInternal(request)
+                val new = createNotification(request)
+                notificationSaveService.save(new)
+                new
             }
+
+        // 트랜잭션 밖에서 푸시 발행
+        try {
+            notificationPublisher.publish(request.userId, notification)
         } catch (e: Exception) {
-            log.error("알림 수정 또는 발송에 실패하였습니다: userId={}, type={}", request.userId, request.type, e)
+            log.warn("푸시 알림 발행 실패 (MongoDB 저장은 성공): userId={}, type={}", request.userId, request.type, e)
         }
     }
 
-    private suspend fun sendInternal(request: NotificationRequest) {
-        try {
-            if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
-                return
-            }
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected open suspend fun sendInternal(request: NotificationRequest) {
+        if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
+            return
+        }
 
-            val notification = createNotification(request)
-            notificationSaveService.save(notification)
+        val notification = createNotification(request)
+        notificationSaveService.save(notification)
+
+        // 트랜잭션 밖에서 푸시 발행
+        try {
             notificationPublisher.publish(request.userId, notification)
         } catch (e: Exception) {
-            log.error("알림 발송에 실패하였습니다: userId={}, type={}", request.userId, request.type, e)
+            log.warn("푸시 알림 발행 실패 (MongoDB 저장은 성공): userId={}, type={}", request.userId, request.type, e)
         }
     }
 
