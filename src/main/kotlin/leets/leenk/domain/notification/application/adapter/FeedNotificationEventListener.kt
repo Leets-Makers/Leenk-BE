@@ -146,15 +146,13 @@ class FeedNotificationEventListener(
             achievedMilestones.forEach { milestone ->
                 val alreadyExists =
                     allDetails.any { detail ->
-                        val body = detail["body"] as? String ?: ""
-                        val numberRegex = """(\d+)개""".toRegex()
-                        val match = numberRegex.find(body)
-                        match?.groupValues?.get(1)?.toIntOrNull() == milestone
+                        (detail["milestone"] as? Int) == milestone
                     }
 
                 if (!alreadyExists) {
                     allDetails.add(
                         mapOf(
+                            "milestone" to milestone,
                             "title" to NotificationType.FEED_REACTION_COUNT.title,
                             "body" to NotificationType.FEED_REACTION_COUNT.formatContent(count = milestone),
                             "createDate" to now,

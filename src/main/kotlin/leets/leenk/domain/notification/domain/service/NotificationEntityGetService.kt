@@ -57,10 +57,7 @@ class NotificationEntityGetService(
                 ?: return false
 
         return details.any { detail ->
-            val body = detail["body"] as? String ?: ""
-            val numberRegex = """(\d+)개""".toRegex()
-            val match = numberRegex.find(body)
-            match?.groupValues?.get(1)?.toIntOrNull() == milestone
+            (detail["milestone"] as? Int) == milestone
         }
     }
 }
