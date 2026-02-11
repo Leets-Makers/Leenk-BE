@@ -11,7 +11,7 @@ import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
 @Component
-class FeedNotificationAdapter(
+class FeedNotificationEventListener(
     private val notificationPort: NotificationPort,
     private val notificationEntityGetService: NotificationEntityGetService,
     private val userSettingGetService: leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService,
@@ -28,7 +28,7 @@ class FeedNotificationAdapter(
         sendNewFeedNotifications(event)
 
         if (event.taggedUserIds.isNotEmpty()) {
-            sendTagNotifications(event)
+            sendFeedTagNotifications(event)
         }
     }
 
@@ -51,7 +51,7 @@ class FeedNotificationAdapter(
         notificationPort.sendBatch(newFeedRequests)
     }
 
-    private fun sendTagNotifications(event: FeedDomainEvent) {
+    private fun sendFeedTagNotifications(event: FeedDomainEvent) {
         val tagRequests =
             event.taggedUserIds
                 .filter { it != event.authorId }
