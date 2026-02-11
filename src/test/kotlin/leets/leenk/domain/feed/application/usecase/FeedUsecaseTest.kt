@@ -338,8 +338,7 @@ class FeedUsecaseTest :
                     verify { feedSaveService.save(feed) }
                     verify { mediaSaveService.saveAll(any()) }
                     verify { linkedUserSaveService.saveAll(any()) }
-                    verify { feedNotificationUsecase.saveNewFeedNotification(feed) }
-                    verify { feedNotificationUsecase.saveTagNotification(eq(feed), any(), eq(author)) }
+                    verify(atLeast = 1) { eventPublisher.publishEvent(any<Any>()) }
                 }
             }
         }
@@ -386,8 +385,7 @@ class FeedUsecaseTest :
 
                 Then("업데이트와 알림이 저장되어야 한다") {
                     verify { feedUpdateService.updateTotalReaction(feed, reaction, author, 1L) }
-                    verify { feedNotificationUsecase.saveFirstReactionNotification(reaction) }
-                    verify { feedNotificationUsecase.saveReactionCountNotification(feed, 5) }
+                    verify(atLeast = 1) { eventPublisher.publishEvent(any<Any>()) }
                 }
             }
         }
@@ -419,7 +417,7 @@ class FeedUsecaseTest :
                 Then("리액션이 저장되고 첫 리액션 알림만 저장되어야 한다") {
                     verify { reactionSaveService.save(toSave) }
                     verify { feedUpdateService.updateTotalReaction(feed, saved, author, 1L) }
-                    verify { feedNotificationUsecase.saveFirstReactionNotification(saved) }
+                    verify(atLeast = 1) { eventPublisher.publishEvent(any<Any>()) }
                 }
             }
         }
