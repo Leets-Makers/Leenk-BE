@@ -105,6 +105,7 @@ class FeedNotificationEventListener(
         val achievedMilestones = findMilestonesBetween(event.previousReactionCount, event.totalReactionCount)
 
         if (achievedMilestones.isNotEmpty()) {
+            // 모든 마일스톤을 한 번에 DB에 저장
             val details =
                 achievedMilestones.map { milestone ->
                     mapOf(
@@ -117,7 +118,8 @@ class FeedNotificationEventListener(
 
             val highestMilestone = achievedMilestones.last()
 
-            notificationPort.sendOrUpdate(
+            // 푸시 알림은 각 마일스톤마다 발송
+            notificationPort.sendOrUpdateWithMultiplePush(
                 NotificationRequest(
                     userId = event.feedAuthorId,
                     type = NotificationType.FEED_REACTION_COUNT,

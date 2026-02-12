@@ -63,6 +63,33 @@ class NotificationService(
         }
     }
 
+    /**
+     * DB에는 한 번에 여러 details를 저장하고, 푸시는 각 detail마다 개별 발송
+     * Reaction Count 마일스톤처럼 여러 알림을 순차적으로 보내야 할 때 사용
+     */
+    override fun sendOrUpdateWithMultiplePush(request: NotificationRequest) {
+        scope.launch {
+            val notification = sendOrUpdateInternal(request)
+
+            // 트랜잭션 밖에서 각 detail마다 푸시 발행
+            notification?.let { saved ->
+                val details = request.metadata["details"] as? List<Map<String, Any>>
+                details?.forEach { detail ->
+                    // 각 detail의 내용으로 개별 푸시 생성
+                    val individualNotification =
+                        saved.copy(
+                            content =
+                                saved.content.copy(
+                                    title = detail["title"] as? String ?: saved.content.title,
+                                    body = detail["body"] as? String ?: saved.content.body,
+                                ),
+                        )
+                    publishNotification(request.userId, individualNotification)
+                }
+            }
+        }
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected open suspend fun sendOrUpdateInternal(request: NotificationRequest): NotificationEntity? {
         if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
