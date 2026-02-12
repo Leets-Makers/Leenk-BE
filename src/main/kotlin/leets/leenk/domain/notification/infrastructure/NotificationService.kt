@@ -106,8 +106,15 @@ class NotificationService(
         }
     }
 
+    // Suspend 래퍼 - 트랜잭션 밖에서 호출
+    protected open suspend fun sendOrUpdateInternal(request: NotificationRequest): NotificationEntity? =
+        withContext(Dispatchers.IO) {
+            saveOrUpdateNotificationBlocking(request)
+        }
+
+    // 트랜잭션 보장되는 블로킹 메서드
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected open suspend fun sendOrUpdateInternal(request: NotificationRequest): NotificationEntity? {
+    protected open fun saveOrUpdateNotificationBlocking(request: NotificationRequest): NotificationEntity? {
         if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
             return null
         }
@@ -158,8 +165,15 @@ class NotificationService(
         }
     }
 
+    // Suspend 래퍼 - 트랜잭션 밖에서 호출
+    protected open suspend fun sendInternal(request: NotificationRequest): NotificationEntity? =
+        withContext(Dispatchers.IO) {
+            saveNotificationBlocking(request)
+        }
+
+    // 트랜잭션 보장되는 블로킹 메서드
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected open suspend fun sendInternal(request: NotificationRequest): NotificationEntity? {
+    protected open fun saveNotificationBlocking(request: NotificationRequest): NotificationEntity? {
         if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
             return null
         }
