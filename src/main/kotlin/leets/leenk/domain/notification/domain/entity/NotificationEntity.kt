@@ -17,9 +17,10 @@ data class NotificationEntity(
     var isRead: Boolean = false,
     // TODO: 마이그레이션 이후 몽고 BaseEntity 상속하도록 수정
     @CreatedDate
-    var createDate: LocalDateTime = LocalDateTime.now(),
+    val createDate: LocalDateTime = LocalDateTime.now(),
     @LastModifiedDate
     var updateDate: LocalDateTime = LocalDateTime.now(),
+    var deleteDate: LocalDateTime? = null,
 ) {
     fun markRead() {
         this.isRead = true
