@@ -65,8 +65,9 @@ class BirthdayLetterUseCaseTest :
             every { birthdayNotificationUsecase.saveBirthdayLetterNotification(birthdayLetter) } returns Unit
 
             When("생일 편지를 작성하면") {
+                birthdayLetterUseCase.writeBirthdayLetter(senderId, receiverId, request)
+
                 Then("생일 체크가 수행되고 편지가 저장되며 알림이 전송되어야 한다") {
-                    birthdayLetterUseCase.writeBirthdayLetter(senderId, receiverId, request)
                     verify(exactly = 1) { birthdayChecker.validateIsBirthdayToday(receiver.birthday) }
                     verify(exactly = 1) { birthdayLetterSaveService.save(birthdayLetter) }
                     verify(exactly = 1) { birthdayNotificationUsecase.saveBirthdayLetterNotification(birthdayLetter) }
@@ -87,10 +88,13 @@ class BirthdayLetterUseCaseTest :
             every { birthdayChecker.validateIsBirthdayToday(receiver.birthday) } returns false
 
             When("생일 편지를 작성하면") {
-                Then("NotBirthdayTodayException이 발생하고 편지와 알림이 저장되지 않아야 한다") {
+                Then("NotBirthdayTodayException이 발생해야 한다") {
                     shouldThrow<NotBirthdayTodayException> {
                         birthdayLetterUseCase.writeBirthdayLetter(senderId, receiverId, request)
                     }
+                }
+
+                Then("편지와 알림이 저장되지 않아야 한다") {
                     verify(exactly = 0) { birthdayLetterSaveService.save(any()) }
                     verify(exactly = 0) { birthdayNotificationUsecase.saveBirthdayLetterNotification(any()) }
                 }
