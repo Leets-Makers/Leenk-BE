@@ -4,10 +4,16 @@ import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 @Document(collection = "notifications")
+@CompoundIndex(
+    name = "unique_notification",
+    def = "{'userId': 1, 'notificationType': 1, 'content.targetId': 1, 'deleteDate': 1}",
+    unique = true,
+)
 data class NotificationEntity(
     @Id
     val id: String? = null,

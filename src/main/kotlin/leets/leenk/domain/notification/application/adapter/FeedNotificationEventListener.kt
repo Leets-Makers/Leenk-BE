@@ -82,14 +82,7 @@ class FeedNotificationEventListener(
             )
 
         if (!isFirstReactionDuplicated) {
-            val existingNotification =
-                notificationEntityGetService.findByUserIdAndTypeAndTargetId(
-                    userId = event.feedAuthorId,
-                    type = NotificationType.FEED_FIRST_REACTION,
-                    targetId = event.feedId,
-                )
-
-            val newDetail =
+            val detail =
                 mapOf(
                     "userId" to event.reactorId,
                     "name" to event.reactorName,
@@ -98,102 +91,41 @@ class FeedNotificationEventListener(
                     "createDate" to now,
                 )
 
-            if (existingNotification != null) {
-                val currentDetails =
-                    (existingNotification.content.metadata["details"] as? List<*>)?.filterIsInstance<Map<String, Any>>()
-                        ?: emptyList()
-                val updatedDetails = currentDetails + newDetail
-                // TODO: 중첩 알림일 경우 1회만 체크하도록 수정
-                notificationPort.sendOrUpdate(
-                    NotificationRequest(
-                        userId = event.feedAuthorId,
-                        type = NotificationType.FEED_FIRST_REACTION,
-                        targetId = event.feedId,
-                        name = event.reactorName,
-                        metadata = mapOf("details" to updatedDetails),
-                    ),
-                )
-            } else {
-                notificationPort.send(
-                    NotificationRequest(
-                        userId = event.feedAuthorId,
-                        type = NotificationType.FEED_FIRST_REACTION,
-                        targetId = event.feedId,
-                        name = event.reactorName,
-                        metadata = mapOf("details" to listOf(newDetail)),
-                    ),
-                )
-            }
+            notificationPort.sendOrUpdate(
+                NotificationRequest(
+                    userId = event.feedAuthorId,
+                    type = NotificationType.FEED_FIRST_REACTION,
+                    targetId = event.feedId,
+                    name = event.reactorName,
+                    metadata = mapOf("details" to listOf(detail)),
+                ),
+            )
         }
 
         val achievedMilestones = findMilestonesBetween(event.previousReactionCount, event.totalReactionCount)
 
         if (achievedMilestones.isNotEmpty()) {
-            var currentNotification =
-                notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+            val details =
+                achievedMilestones.map { milestone ->
+                    mapOf(
+                        "milestone" to milestone,
+                        "title" to NotificationType.FEED_REACTION_COUNT.title,
+                        "body" to NotificationType.FEED_REACTION_COUNT.formatContent(count = milestone),
+                        "createDate" to now,
+                    )
+                }
+
+            val highestMilestone = achievedMilestones.last()
+
+            notificationPort.sendOrUpdate(
+                NotificationRequest(
                     userId = event.feedAuthorId,
                     type = NotificationType.FEED_REACTION_COUNT,
                     targetId = event.feedId,
-                )
-
-            val allDetails = mutableListOf<Map<String, Any>>()
-
-            if (currentNotification != null) {
-                val existingDetails =
-                    (currentNotification.content.metadata["details"] as? List<*>)?.filterIsInstance<Map<String, Any>>()
-                        ?: emptyList()
-                allDetails.addAll(existingDetails)
-            }
-
-            achievedMilestones.forEach { milestone ->
-                val alreadyExists =
-                    allDetails.any { detail ->
-                        (detail["milestone"] as? Int) == milestone
-                    }
-
-                if (!alreadyExists) {
-                    allDetails.add(
-                        mapOf(
-                            "milestone" to milestone,
-                            "title" to NotificationType.FEED_REACTION_COUNT.title,
-                            "body" to NotificationType.FEED_REACTION_COUNT.formatContent(count = milestone),
-                            "createDate" to now,
-                        ),
-                    )
-                }
-            }
-
-            val lastMilestone = achievedMilestones.last()
-
-            if (currentNotification != null) {
-                notificationPort.sendOrUpdate(
-                    NotificationRequest(
-                        userId = event.feedAuthorId,
-                        type = NotificationType.FEED_REACTION_COUNT,
-                        targetId = event.feedId,
-                        count = lastMilestone,
-                        metadata =
-                            mapOf(
-                                "reactionCount" to lastMilestone,
-                                "details" to allDetails,
-                            ),
-                    ),
-                )
-            } else {
-                notificationPort.send(
-                    NotificationRequest(
-                        userId = event.feedAuthorId,
-                        type = NotificationType.FEED_REACTION_COUNT,
-                        targetId = event.feedId,
-                        count = lastMilestone,
-                        metadata =
-                            mapOf(
-                                "reactionCount" to lastMilestone,
-                                "details" to allDetails,
-                            ),
-                    ),
-                )
-            }
+                    count = highestMilestone,
+                    metadata = mapOf("details" to details),
+                ),
+            )
         }
     }
 

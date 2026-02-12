@@ -10,6 +10,7 @@ import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
 import org.slf4j.LoggerFactory
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -22,14 +23,22 @@ class NotificationService(
     private val notificationPolicy: NotificationPolicy,
 ) : NotificationPort {
     private val log = LoggerFactory.getLogger(javaClass)
+
+    private val exceptionHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            log.error("알림 처리 중 예외 발생", throwable)
+        }
+
     private val scope =
         CoroutineScope(
-            SupervisorJob() + Dispatchers.IO + CoroutineName("notification"),
+            SupervisorJob() + Dispatchers.IO + CoroutineName("notification") + exceptionHandler,
         )
 
     override fun send(request: NotificationRequest) {
         scope.launch {
-            sendInternal(request)
+            val notification = sendInternal(request)
+            // 트랜잭션 밖에서 푸시 발행
+            notification?.let { publishNotification(request.userId, it) }
         }
     }
 
@@ -46,61 +55,88 @@ class NotificationService(
 
     override fun sendOrUpdate(request: NotificationRequest) {
         scope.launch {
-            sendOrUpdateInternal(request)
+            val notification = sendOrUpdateInternal(request)
+            // 트랜잭션 밖에서 푸시 발행
+            notification?.let { publishNotification(request.userId, it) }
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected open suspend fun sendOrUpdateInternal(request: NotificationRequest) {
+    protected open suspend fun sendOrUpdateInternal(request: NotificationRequest): NotificationEntity? {
         if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
-            return
+            return null
         }
 
-        val existing =
-            notificationEntityGetService.findByUserIdAndTypeAndTargetId(
-                userId = request.userId,
-                type = request.type,
-                targetId = request.targetId,
-            )
+        return try {
+            val existing =
+                notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                    userId = request.userId,
+                    type = request.type,
+                    targetId = request.targetId,
+                )
 
-        val notification =
             if (existing != null) {
-                val updated =
-                    existing.updateContent(
-                        newTitle = request.notificationTitle,
-                        newBody = request.body,
-                        newMetadata = request.metadata,
-                    )
-                notificationSaveService.save(updated)
-                updated
+                // 기존 알림 있음 -> details 배열에 추가
+                val details = request.metadata["details"] as? List<Map<String, Any>>
+                if (details != null) {
+                    notificationSaveService.pushDetails(
+                        userId = request.userId,
+                        type = request.type,
+                        targetId = request.targetId,
+                        details = details,
+                    ) ?: existing
+                } else {
+                    existing
+                }
             } else {
+                // 새 알림 생성
                 val new = createNotification(request)
                 notificationSaveService.save(new)
                 new
             }
+        } catch (e: DuplicateKeyException) {
+            // 경쟁 조건 발생: 다른 스레드가 먼저 생성함
+            log.debug("알림 중복 생성 감지, push로 detail 추가: userId={}, type={}", request.userId, request.type, e)
 
-        // 트랜잭션 밖에서 푸시 발행
-        try {
-            notificationPublisher.publish(request.userId, notification)
+            val details = request.metadata["details"] as? List<Map<String, Any>>
+            details?.let {
+                notificationSaveService.pushDetails(
+                    userId = request.userId,
+                    type = request.type,
+                    targetId = request.targetId,
+                    details = it,
+                )
+            }
         } catch (e: Exception) {
-            log.warn("푸시 알림 발행 실패 (MongoDB 저장은 성공): userId={}, type={}", request.userId, request.type, e)
+            log.error("알림 저장 중 예외 발생: userId={}, type={}", request.userId, request.type, e)
+            null
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected open suspend fun sendInternal(request: NotificationRequest) {
+    protected open suspend fun sendInternal(request: NotificationRequest): NotificationEntity? {
         if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
-            return
+            return null
         }
 
-        val notification = createNotification(request)
-        notificationSaveService.save(notification)
-
-        // 트랜잭션 밖에서 푸시 발행
-        try {
-            notificationPublisher.publish(request.userId, notification)
+        return try {
+            val notification = createNotification(request)
+            notificationSaveService.save(notification)
+            notification
         } catch (e: Exception) {
-            log.warn("푸시 알림 발행 실패 (MongoDB 저장은 성공): userId={}, type={}", request.userId, request.type, e)
+            log.error("알림 저장 중 예외 발생: userId={}, type={}", request.userId, request.type, e)
+            null
+        }
+    }
+
+    private suspend fun publishNotification(
+        userId: Long,
+        notification: NotificationEntity,
+    ) {
+        try {
+            notificationPublisher.publish(userId, notification)
+        } catch (e: Exception) {
+            log.warn("푸시 알림 발행 실패 (MongoDB 저장은 성공): userId={}", userId, e)
         }
     }
 
