@@ -33,7 +33,7 @@ class NotificationPublisher(
                     notification.content.title,
                     notification.content.body,
                     fcmToken,
-                    notification.notificationType.path,
+                    notification.content.path,
                     user.id,
                 )
             eventPublisher.publishEvent(sqsEvent)
