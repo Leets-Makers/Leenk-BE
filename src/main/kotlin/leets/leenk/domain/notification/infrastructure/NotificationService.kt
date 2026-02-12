@@ -36,9 +36,13 @@ class NotificationService(
 
     override fun send(request: NotificationRequest) {
         scope.launch {
-            val notification = sendInternal(request)
-            // 트랜잭션 밖에서 푸시 발행
-            notification?.let { publishNotification(request.userId, it) }
+            runCatching {
+                val notification = sendInternal(request)
+                // 트랜잭션 밖에서 푸시 발행
+                notification?.let { publishNotification(request.userId, it) }
+            }.onFailure { throwable ->
+                log.error("알림 전송 실패: messageId=${request.type}, userId=${request.userId}", throwable)
+            }
         }
     }
 
@@ -47,9 +51,13 @@ class NotificationService(
             requests
                 .map { request ->
                     async {
-                        val notification = sendInternal(request)
-                        // 트랜잭션 밖에서 푸시 발행
-                        notification?.let { publishNotification(request.userId, it) }
+                        runCatching {
+                            val notification = sendInternal(request)
+                            // 트랜잭션 밖에서 푸시 발행
+                            notification?.let { publishNotification(request.userId, it) }
+                        }.onFailure { throwable ->
+                            log.error("배치 알림 전송 실패: messageId=${request.type}, userId=${request.userId}", throwable)
+                        }
                     }
                 }.awaitAll()
         }
@@ -57,9 +65,13 @@ class NotificationService(
 
     override fun sendOrUpdate(request: NotificationRequest) {
         scope.launch {
-            val notification = sendOrUpdateInternal(request)
-            // 트랜잭션 밖에서 푸시 발행
-            notification?.let { publishNotification(request.userId, it) }
+            runCatching {
+                val notification = sendOrUpdateInternal(request)
+                // 트랜잭션 밖에서 푸시 발행
+                notification?.let { publishNotification(request.userId, it) }
+            }.onFailure { throwable ->
+                log.error("알림 전송/업데이트 실패: messageId=${request.type}, userId=${request.userId}", throwable)
+            }
         }
     }
 
@@ -69,23 +81,27 @@ class NotificationService(
      */
     override fun sendOrUpdateWithMultiplePush(request: NotificationRequest) {
         scope.launch {
-            val notification = sendOrUpdateInternal(request)
+            runCatching {
+                val notification = sendOrUpdateInternal(request)
 
-            // 트랜잭션 밖에서 각 detail마다 푸시 발행
-            notification?.let { saved ->
-                val details = request.metadata["details"] as? List<Map<String, Any>>
-                details?.forEach { detail ->
-                    // 각 detail의 내용으로 개별 푸시 생성
-                    val individualNotification =
-                        saved.copy(
-                            content =
-                                saved.content.copy(
-                                    title = detail["title"] as? String ?: saved.content.title,
-                                    body = detail["body"] as? String ?: saved.content.body,
-                                ),
-                        )
-                    publishNotification(request.userId, individualNotification)
+                // 트랜잭션 밖에서 각 detail마다 푸시 발행
+                notification?.let { saved ->
+                    val details = request.metadata["details"] as? List<Map<String, Any>>
+                    details?.forEach { detail ->
+                        // 각 detail의 내용으로 개별 푸시 생성
+                        val individualNotification =
+                            saved.copy(
+                                content =
+                                    saved.content.copy(
+                                        title = detail["title"] as? String ?: saved.content.title,
+                                        body = detail["body"] as? String ?: saved.content.body,
+                                    ),
+                            )
+                        publishNotification(request.userId, individualNotification)
+                    }
                 }
+            }.onFailure { throwable ->
+                log.error("다중 푸시 알림 전송/업데이트 실패: messageId=${request.type}, userId=${request.userId}", throwable)
             }
         }
     }
