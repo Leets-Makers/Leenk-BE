@@ -103,14 +103,9 @@ class BirthdayUsecaseTest :
                     result.hasNewLetters shouldBe hasNew
                 }
 
-                Then("로그인 사용자의 편지 개수가 조회되어야 한다") {
+                Then("로그인 사용자의 편지 정보가 조회되어야 한다") {
                     verify(exactly = 1) { birthdayLettersGetService.countMyReceivedLetters(loginUserId, any(), any()) }
-                }
-
-                Then("로그인 사용자의 새 편지 여부가 조회되어야 한다") {
-                    verify(
-                        exactly = 1,
-                    ) { birthdayLettersGetService.hasNewLetters(loginUserId, any(), any(), lastReadAt) }
+                    verify(exactly = 1) { birthdayLettersGetService.hasNewLetters(loginUserId, any(), any(), lastReadAt) }
                 }
             }
         }
