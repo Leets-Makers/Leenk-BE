@@ -47,7 +47,9 @@ class NotificationService(
             requests
                 .map { request ->
                     async {
-                        sendInternal(request)
+                        val notification = sendInternal(request)
+                        // 트랜잭션 밖에서 푸시 발행
+                        notification?.let { publishNotification(request.userId, it) }
                     }
                 }.awaitAll()
         }
