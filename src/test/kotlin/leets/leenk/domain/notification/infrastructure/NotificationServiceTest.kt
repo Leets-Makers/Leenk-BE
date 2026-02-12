@@ -181,6 +181,46 @@ class NotificationServiceTest :
                     }
                 }
             }
+            context("정책 조건을 만족하지 않는 경우") {
+                it("알림을 저장하거나 발행하지 않아야 한다") {
+                    val request =
+                        NotificationRequest(
+                            userId = 1L,
+                            type = NotificationType.FEED_FIRST_REACTION,
+                            targetId = 100L,
+                        )
+                    every { notificationPolicy.shouldNotify(1L, NotificationType.FEED_FIRST_REACTION) } returns false
+                    notificationService.sendOrUpdate(request)
+                    runBlocking { delay(200) }
+                    verify(exactly = 0) { notificationSaveService.save(any<NotificationEntity>()) }
+                    verify(exactly = 0) { notificationSaveService.pushDetails(any(), any(), any(), any()) }
+                    coVerify(exactly = 0) { notificationPublisher.publish(any(), any()) }
+                }
+            }
+            context("알림 발행 중 예외가 발생한 경우") {
+                it("알림은 저장되고 예외는 전파되지 않아야 한다") {
+                    val request =
+                        NotificationRequest(
+                            userId = 1L,
+                            type = NotificationType.FEED_FIRST_REACTION,
+                            targetId = 100L,
+                            name = "홍길동",
+                        )
+                    every {
+                        notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                            1L,
+                            NotificationType.FEED_FIRST_REACTION,
+                            100L,
+                        )
+                    } returns null
+                    every { notificationSaveService.save(any<NotificationEntity>()) } answers { firstArg() }
+                    coEvery { notificationPublisher.publish(any(), any()) } throws RuntimeException("발행 실패")
+                    notificationService.sendOrUpdate(request)
+                    runBlocking { delay(200) }
+                    verify(exactly = 1) { notificationSaveService.save(any<NotificationEntity>()) }
+                    coVerify(exactly = 1) { notificationPublisher.publish(1L, any()) }
+                }
+            }
         }
 
         afterSpec { notificationService.cleanup() }
