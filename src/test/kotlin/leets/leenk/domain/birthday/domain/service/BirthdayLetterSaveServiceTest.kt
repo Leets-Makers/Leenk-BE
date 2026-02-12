@@ -1,5 +1,6 @@
 package leets.leenk.domain.birthday.domain.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.every
 import io.mockk.mockk
@@ -9,6 +10,7 @@ import leets.leenk.domain.birthday.domain.entity.BirthdayLetterReadMark
 import leets.leenk.domain.birthday.domain.repository.BirthdayLetterReadMarkRepository
 import leets.leenk.domain.birthday.domain.repository.BirthdayLetterRepository
 import leets.leenk.domain.user.domain.entity.User
+import org.springframework.dao.DataAccessException
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -125,6 +127,49 @@ class BirthdayLetterSaveServiceTest :
 
                 Then("두 번째 저장이 호출되어야 한다") {
                     verify(exactly = 1) { birthdayLetterReadMarkRepository.save(secondMark) }
+                }
+            }
+        }
+
+        Given("생일 편지 저장 시 repository에서 예외가 발생할 때") {
+            val sender = createUser(1L, "sender")
+            val receiver = createUser(2L, "receiver")
+            val birthdayLetter =
+                BirthdayLetter(
+                    id = null,
+                    sender = sender,
+                    receiver = receiver,
+                    message = "생일 축하해요!",
+                )
+
+            every { birthdayLetterRepository.save(birthdayLetter) } throws
+                object : DataAccessException("DB 저장 실패") {}
+
+            When("생일 편지를 저장하면") {
+                Then("예외가 상위로 전파되어야 한다") {
+                    shouldThrow<DataAccessException> {
+                        birthdayLetterSaveService.save(birthdayLetter)
+                    }
+                }
+            }
+        }
+
+        Given("읽음 표시 저장 시 repository에서 예외가 발생할 때") {
+            val receiverId = 123L
+            val readMark =
+                BirthdayLetterReadMark(
+                    receiverId = receiverId,
+                    lastReadAt = LocalDateTime.now(),
+                )
+
+            every { birthdayLetterReadMarkRepository.save(readMark) } throws
+                object : DataAccessException("DB 저장 실패") {}
+
+            When("읽음 표시를 저장하면") {
+                Then("예외가 상위로 전파되어야 한다") {
+                    shouldThrow<DataAccessException> {
+                        birthdayLetterSaveService.saveBirthdayLetterReadMark(readMark)
+                    }
                 }
             }
         }
