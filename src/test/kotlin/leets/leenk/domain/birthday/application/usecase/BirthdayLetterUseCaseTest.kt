@@ -106,8 +106,8 @@ class BirthdayLetterUseCaseTest :
             val letter2 = createLetter(sender, receiver, "편지2")
             val letters = listOf(letter1, letter2)
 
-            val response1 = createLetterResponse(1L, "Sender", "편지1")
-            val response2 = createLetterResponse(2L, "Sender", "편지2")
+            val response1 = createLetterResponse(1L, 2L, "Sender", "편지1")
+            val response2 = createLetterResponse(2L, 2L, "Sender", "편지2")
 
             every { birthdayLettersGetService.getMyBirthdayLetters(receiverId) } returns letters
             every { birthdayLetterMapper.toMyBirthdayLettersResponse(letter1) } returns response1
@@ -241,6 +241,7 @@ private fun createLetter(
 
 private fun createLetterResponse(
     letterId: Long,
+    authorId: Long,
     authorName: String,
     message: String,
 ): MyBirthdayLettersResponse =
@@ -249,7 +250,7 @@ private fun createLetterResponse(
         author =
             UserProfileResponse
                 .builder()
-                .userId(letterId)
+                .userId(authorId)
                 .name(authorName)
                 .build(),
         message = message,
