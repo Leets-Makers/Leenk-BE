@@ -264,13 +264,10 @@ class FeedUsecase(
                     )
                 }
 
-        val previousReactionCount = reaction.reactionCount
+        val previousReactionCount = feed.totalReactionCount
 
         // Feed를 가져올 때 Fetch Join으로 작성자를 함께 가져와 락이 함께 걸리므로 별도의 락 필요 없음.
         feedUpdateService.updateTotalReaction(feed, reaction, feed.user, request.reactionCount)
-
-        // 업데이트된 총 공감 수 계산
-        val totalReactionCount = feed.totalReactionCount + request.reactionCount
 
         eventPublisher.publishEvent(
             FeedDomainEvent.Reacted(
@@ -279,7 +276,7 @@ class FeedUsecase(
                 reactorId = user.id!!,
                 reactorName = user.name,
                 previousReactionCount = previousReactionCount,
-                totalReactionCount = totalReactionCount,
+                totalReactionCount = previousReactionCount + request.reactionCount,
             ),
         )
     }
