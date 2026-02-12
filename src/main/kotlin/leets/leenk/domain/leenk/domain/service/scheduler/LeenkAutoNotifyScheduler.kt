@@ -3,7 +3,6 @@ package leets.leenk.domain.leenk.domain.service.scheduler
 import leets.leenk.domain.leenk.application.usecase.LeenkSchedulerUsecase
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -11,7 +10,6 @@ import java.time.ZoneId
 class LeenkAutoNotifyScheduler(
     private val leenkSchedulerUsecase: LeenkSchedulerUsecase,
 ) {
-    @Transactional
     @Scheduled(cron = "0 0/30 * * * *", zone = "Asia/Seoul")
     fun scheduleLeenkNotifications() {
         val now = LocalDateTime.now(KST)
