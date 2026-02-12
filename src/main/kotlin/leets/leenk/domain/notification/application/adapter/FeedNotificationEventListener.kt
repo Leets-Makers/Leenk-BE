@@ -1,7 +1,6 @@
 package leets.leenk.domain.notification.application.adapter
 
 import leets.leenk.domain.feed.domain.event.FeedDomainEvent
-import leets.leenk.domain.feed.domain.event.FeedEventType
 import leets.leenk.domain.notification.application.dto.NotificationRequest
 import leets.leenk.domain.notification.application.port.NotificationPort
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
@@ -17,14 +16,16 @@ class FeedNotificationEventListener(
     private val userSettingGetService: leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService,
 ) {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    fun on(event: FeedDomainEvent) {
-        when (event.eventType) {
-            FeedEventType.CREATED -> handleFeedCreated(event)
-            FeedEventType.REACTED -> handleFeedReacted(event)
-        }
+    fun onFeedCreated(event: FeedDomainEvent.Created) {
+        handleFeedCreated(event)
     }
 
-    private fun handleFeedCreated(event: FeedDomainEvent) {
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    fun onFeedReacted(event: FeedDomainEvent.Reacted) {
+        handleFeedReacted(event)
+    }
+
+    private fun handleFeedCreated(event: FeedDomainEvent.Created) {
         sendNewFeedNotifications(event)
 
         if (event.taggedUserIds.isNotEmpty()) {
@@ -32,7 +33,7 @@ class FeedNotificationEventListener(
         }
     }
 
-    private fun sendNewFeedNotifications(event: FeedDomainEvent) {
+    private fun sendNewFeedNotifications(event: FeedDomainEvent.Created) {
         val usersToNotify = userSettingGetService.getUsersToNotifyNewFeed(event.authorId)
 
         if (usersToNotify.isEmpty()) {
@@ -51,7 +52,7 @@ class FeedNotificationEventListener(
         notificationPort.sendBatch(newFeedRequests)
     }
 
-    private fun sendFeedTagNotifications(event: FeedDomainEvent) {
+    private fun sendFeedTagNotifications(event: FeedDomainEvent.Created) {
         val tagRequests =
             event.taggedUserIds
                 .filter { it != event.authorId }
@@ -69,7 +70,7 @@ class FeedNotificationEventListener(
         }
     }
 
-    private fun handleFeedReacted(event: FeedDomainEvent) {
+    private fun handleFeedReacted(event: FeedDomainEvent.Reacted) {
         val now = java.time.LocalDateTime.now()
 
         val isFirstReactionDuplicated =

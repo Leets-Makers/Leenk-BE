@@ -216,7 +216,7 @@ class FeedUsecase(
         val taggedUserIds = request.userIds.filter { it != author.id }
 
         eventPublisher.publishEvent(
-            FeedDomainEvent.created(
+            FeedDomainEvent.Created(
                 feedId = feed.id!!,
                 authorId = author.id!!,
                 authorName = author.name,
@@ -273,7 +273,7 @@ class FeedUsecase(
         val totalReactionCount = feed.totalReactionCount + request.reactionCount
 
         eventPublisher.publishEvent(
-            FeedDomainEvent.reacted(
+            FeedDomainEvent.Reacted(
                 feedId = feed.id!!,
                 feedAuthorId = feed.user.id!!,
                 reactorId = user.id!!,
