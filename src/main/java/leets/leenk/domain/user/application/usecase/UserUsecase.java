@@ -101,6 +101,13 @@ public class UserUsecase {
     }
 
     @Transactional
+    public void updateCardinal(long userId, CardinalRequest request) {
+        User user = userGetService.findById(userId);
+
+        userUpdateService.updateCardinal(user, request.cardinal());
+    }
+
+    @Transactional
     public void updateFcmToken(long userId, FcmTokenRequest request) {
         User user = userGetService.findById(userId);
 

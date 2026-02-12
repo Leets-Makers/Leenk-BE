@@ -25,4 +25,19 @@ public class LoginMapper {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+    /**
+     * Apple 로그인 응답 (온보딩 필요 시)
+     * Position은 사용하지 않으므로 null 반환
+     */
+    public LoginResponse toLoginResponseForApple(User user, String accessToken, String refreshToken) {
+        return LoginResponse.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .cardinal(user.getCardinal())
+                .position(null)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
 }

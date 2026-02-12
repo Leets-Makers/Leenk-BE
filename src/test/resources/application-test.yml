@@ -42,6 +42,10 @@ token:
   password: test-password
 
 auth:
+  jwt:
+    secret: test-jwt-secret-key-for-testing-minimum-256-bits
+    access-token-expiration: 3600000
+    refresh-token-expiration: 604800000
   oauth2:
     client-id: test-client-id
     client-secret: test-client-secret
@@ -53,6 +57,14 @@ auth:
       kakao_grant_type: test
       kakao_grant_type_name: test
     apple:
+      client-id: test-apple-client-id
+      team_id: test-team-id
+      key_id: test-key-id
+      redirect_uri: https://test.redirect.com
+      token_uri: https://appleid.apple.com/auth/token
+      keys_uri: https://appleid.apple.com/auth/keys
+      private_key_path: test-key.p8
+      allowed_audiences: test-audience
       apple_grant_type: test
       apple_grant_type_name: test
 
