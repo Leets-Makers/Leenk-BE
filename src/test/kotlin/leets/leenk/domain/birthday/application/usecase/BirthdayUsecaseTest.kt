@@ -104,8 +104,12 @@ class BirthdayUsecaseTest :
                 }
 
                 Then("로그인 사용자의 편지 정보가 조회되어야 한다") {
-                    verify(exactly = 1) { birthdayLettersGetService.countMyReceivedLetters(loginUserId, any(), any()) }
-                    verify(exactly = 1) { birthdayLettersGetService.hasNewLetters(loginUserId, any(), any(), lastReadAt) }
+                    verify(exactly = 1) {
+                        birthdayLettersGetService.countMyReceivedLetters(loginUserId, any(), any())
+                    }
+                    verify(exactly = 1) {
+                        birthdayLettersGetService.hasNewLetters(loginUserId, any(), any(), lastReadAt)
+                    }
                 }
             }
         }
