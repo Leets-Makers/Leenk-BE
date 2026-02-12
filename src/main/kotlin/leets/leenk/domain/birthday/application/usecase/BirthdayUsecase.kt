@@ -50,11 +50,6 @@ class BirthdayUsecase(
             birthdayGetService
                 .findUpcomingBirthdayUsers(today, 30)
                 .map { user ->
-                    var next = user.birthday.withYear(today.year)
-                    if (!next.isAfter(today)) {
-                        next = next.plusDays(1)
-                    }
-
                     birthdayMapper.toUpcomingBirthdayUserResponse(user)
                 }
 
