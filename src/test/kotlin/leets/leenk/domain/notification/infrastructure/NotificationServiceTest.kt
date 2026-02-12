@@ -2,6 +2,8 @@ package leets.leenk.domain.notification.infrastructure
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import leets.leenk.domain.notification.application.dto.NotificationRequest
 import leets.leenk.domain.notification.application.policy.NotificationPolicy
 import leets.leenk.domain.notification.domain.entity.NotificationEntity
@@ -18,18 +20,22 @@ class NotificationServiceTest :
         val notificationPublisher = mockk<NotificationPublisher>()
         val notificationPolicy = mockk<NotificationPolicy>()
 
-        val notificationService =
-            NotificationService(
-                notificationSaveService,
-                notificationEntityGetService,
-                notificationPublisher,
-                notificationPolicy,
-            )
+        lateinit var notificationService: NotificationService
 
         beforeEach {
             clearAllMocks()
             every { notificationPolicy.shouldNotify(any(), any()) } returns true
             coEvery { notificationPublisher.publish(any(), any()) } just Runs
+
+            notificationService =
+                spyk(
+                    NotificationService(
+                        notificationSaveService,
+                        notificationEntityGetService,
+                        notificationPublisher,
+                        notificationPolicy,
+                    ),
+                )
         }
 
         describe("send()") {
@@ -43,7 +49,7 @@ class NotificationServiceTest :
                         )
                     every { notificationSaveService.save(any<NotificationEntity>()) } answers { firstArg() }
                     notificationService.send(request)
-                    Thread.sleep(100)
+                    runBlocking { delay(200) }
                     verify(exactly = 1) { notificationSaveService.save(any<NotificationEntity>()) }
                     coVerify(exactly = 1) { notificationPublisher.publish(1L, any()) }
                 }
@@ -53,7 +59,7 @@ class NotificationServiceTest :
                     val request = NotificationRequest(userId = 1L, type = NotificationType.NEW_FEED, targetId = 100L)
                     every { notificationPolicy.shouldNotify(1L, NotificationType.NEW_FEED) } returns false
                     notificationService.send(request)
-                    Thread.sleep(100)
+                    runBlocking { delay(200) }
                     verify(exactly = 0) { notificationSaveService.save(any<NotificationEntity>()) }
                     coVerify(exactly = 0) { notificationPublisher.publish(any(), any()) }
                 }
@@ -71,7 +77,7 @@ class NotificationServiceTest :
                         )
                     every { notificationSaveService.save(any<NotificationEntity>()) } answers { firstArg() }
                     notificationService.sendBatch(requests)
-                    Thread.sleep(200)
+                    runBlocking { delay(300) }
                     verify(exactly = 3) { notificationSaveService.save(any<NotificationEntity>()) }
                     coVerify(exactly = 3) { notificationPublisher.publish(any(), any()) }
                 }
@@ -79,15 +85,15 @@ class NotificationServiceTest :
             context("빈 리스트가 주어진 경우") {
                 it("아무것도 처리하지 않아야 한다") {
                     notificationService.sendBatch(emptyList())
-                    Thread.sleep(100)
+                    runBlocking { delay(200) }
                     verify(exactly = 0) { notificationSaveService.save(any<NotificationEntity>()) }
                 }
             }
         }
 
         describe("sendOrUpdate()") {
-            context("기존 알림이 존재하는 경우") {
-                it("알림 내용을 업데이트하고 발행해야 한다") {
+            context("기존 알림이 존재하고 details가 있는 경우") {
+                it("details를 업데이트하고 발행해야 한다") {
                     val existingNotification =
                         NotificationEntity(
                             id = "existing-id",
@@ -104,6 +110,10 @@ class NotificationServiceTest :
                                 ),
                             isRead = false,
                         )
+                    val details =
+                        listOf(
+                            mapOf("title" to "New Title", "body" to "New Body"),
+                        )
                     val request =
                         NotificationRequest(
                             userId = 1L,
@@ -111,7 +121,7 @@ class NotificationServiceTest :
                             targetId = 100L,
                             name = "새로운 사용자",
                             metadata =
-                                mapOf("count" to 2),
+                                mapOf("details" to details),
                         )
                     every {
                         notificationEntityGetService.findByUserIdAndTypeAndTargetId(
@@ -120,16 +130,22 @@ class NotificationServiceTest :
                             100L,
                         )
                     } returns existingNotification
-                    every { notificationSaveService.save(any<NotificationEntity>()) } answers { firstArg() }
+                    every {
+                        notificationSaveService.pushDetails(
+                            userId = 1L,
+                            type = NotificationType.FEED_FIRST_REACTION,
+                            targetId = 100L,
+                            details = details,
+                        )
+                    } returns existingNotification
                     notificationService.sendOrUpdate(request)
-                    Thread.sleep(100)
+                    runBlocking { delay(200) }
                     verify(exactly = 1) {
-                        notificationSaveService.save(
-                            match<NotificationEntity> {
-                                it.id == "existing-id" &&
-                                    it.content.title == "Leenk" &&
-                                    it.isRead == false
-                            },
+                        notificationSaveService.pushDetails(
+                            userId = 1L,
+                            type = NotificationType.FEED_FIRST_REACTION,
+                            targetId = 100L,
+                            details = details,
                         )
                     }
                     coVerify(exactly = 1) { notificationPublisher.publish(1L, any()) }
@@ -153,7 +169,7 @@ class NotificationServiceTest :
                     } returns null
                     every { notificationSaveService.save(any<NotificationEntity>()) } answers { firstArg() }
                     notificationService.sendOrUpdate(request)
-                    Thread.sleep(100)
+                    runBlocking { delay(200) }
                     verify(exactly = 1) {
                         notificationSaveService.save(
                             match<NotificationEntity> {
