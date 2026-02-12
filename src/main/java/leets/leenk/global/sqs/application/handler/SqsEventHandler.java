@@ -1,8 +1,7 @@
 package leets.leenk.global.sqs.application.handler;
 
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import leets.leenk.global.sqs.application.mapper.AwsSqsManager;
 import leets.leenk.global.sqs.application.dto.SqsMessageEvent;
@@ -17,7 +16,7 @@ public class SqsEventHandler {
 
 	private final AwsSqsManager awsSqsManager;
 
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	@EventListener
 	public void handleEvent(SqsMessageEvent event) {
 		try {
 			SendMessageRequest request = awsSqsManager.createPushAlarmMessageRequest(event);
