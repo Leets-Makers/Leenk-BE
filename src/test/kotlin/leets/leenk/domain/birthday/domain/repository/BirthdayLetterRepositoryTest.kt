@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringTestExtension
 import io.kotest.extensions.spring.SpringTestLifecycleMode
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import jakarta.persistence.EntityManager
 import leets.leenk.config.MysqlTestConfig
@@ -54,7 +54,7 @@ class BirthdayLetterRepositoryTest(
                 val result = birthdayLetterRepository.findAllByReceiverIdOrderByCreateDateDesc(receiver.id!!)
 
                 Then("빈 리스트를 반환해야 한다") {
-                    result shouldHaveSize 0
+                    result.shouldBeEmpty()
                 }
             }
         }
