@@ -184,7 +184,7 @@ class BirthdayUsecaseTest :
                 val result = birthdayUsecase.getUpcomingBirthdayUsers()
 
                 Then("생일 예정인 사용자 목록이 반환되어야 한다") {
-                    result.users shouldHaveSize 2
+                    result shouldBe expectedResponse
                 }
 
                 Then("birthdayGetService가 30일로 호출되어야 한다") {
