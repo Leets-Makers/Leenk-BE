@@ -30,21 +30,10 @@ class BirthdayLetterRepositoryTest(
         Given("특정 수신자에게 여러 편지가 있을 때") {
             val sender = persistUser("sender")
             val receiver1 = persistUser("receiver1")
-            val receiver2 = persistUser("receiver2")
 
-            val letter1 = birthdayLetterRepository.save(createLetter(sender, receiver1, "첫 번째 편지"))
-            val letter2 = birthdayLetterRepository.save(createLetter(sender, receiver1, "두 번째 편지"))
-            val letter3 = birthdayLetterRepository.save(createLetter(sender, receiver1, "세 번째 편지"))
-            val otherLetter = birthdayLetterRepository.save(createLetter(sender, receiver2, "다른 수신자"))
-
-            flushAndClear()
-
-            updateLetterCreateDate(letter1.id!!, BASE_TIME.plusMinutes(1))
-            updateLetterCreateDate(letter2.id!!, BASE_TIME.plusMinutes(2))
-            updateLetterCreateDate(letter3.id!!, BASE_TIME.plusMinutes(3))
-            updateLetterCreateDate(otherLetter.id!!, BASE_TIME.plusMinutes(4))
-
-            flushAndClear()
+            val letter1 = saveLetterWithTime(sender, receiver1, "첫 번째 편지", BASE_TIME.plusMinutes(1))
+            val letter2 = saveLetterWithTime(sender, receiver1, "두 번째 편지", BASE_TIME.plusMinutes(2))
+            val letter3 = saveLetterWithTime(sender, receiver1, "세 번째 편지", BASE_TIME.plusMinutes(3))
 
             When("수신자 ID로 편지를 조회하면") {
                 val result = birthdayLetterRepository.findAllByReceiverIdOrderByCreateDateDesc(receiver1.id!!)
@@ -75,20 +64,12 @@ class BirthdayLetterRepositoryTest(
             val sender = persistUser("sender")
             val receiver = persistUser("receiver")
 
-            val letter1 = birthdayLetterRepository.save(createLetter(sender, receiver, "기간 내 1"))
-            val letter2 = birthdayLetterRepository.save(createLetter(sender, receiver, "기간 내 2"))
-            val letter3 = birthdayLetterRepository.save(createLetter(sender, receiver, "기간 밖"))
-
-            flushAndClear()
-
             val start = BASE_TIME
             val end = BASE_TIME.plusHours(2)
 
-            updateLetterCreateDate(letter1.id!!, start.plusMinutes(10))
-            updateLetterCreateDate(letter2.id!!, start.plusMinutes(20))
-            updateLetterCreateDate(letter3.id!!, end.plusMinutes(10)) // 기간 밖
-
-            flushAndClear()
+            saveLetterWithTime(sender, receiver, "기간 내 1", start.plusMinutes(10))
+            saveLetterWithTime(sender, receiver, "기간 내 2", start.plusMinutes(20))
+            saveLetterWithTime(sender, receiver, "기간 밖", end.plusMinutes(10))
 
             When("기간 내 편지 개수를 세면") {
                 val count =
@@ -125,16 +106,10 @@ class BirthdayLetterRepositoryTest(
             val sender = persistUser("sender")
             val receiver = persistUser("receiver")
 
-            val letter = birthdayLetterRepository.save(createLetter(sender, receiver, "새 편지"))
-
-            flushAndClear()
-
             val start = BASE_TIME
             val end = BASE_TIME.plusDays(1)
 
-            updateLetterCreateDate(letter.id!!, start.plusMinutes(10))
-
-            flushAndClear()
+            saveLetterWithTime(sender, receiver, "새 편지", start.plusMinutes(10))
 
             When("새로운 편지가 있는지 확인하면") {
                 val hasNew =
@@ -155,19 +130,12 @@ class BirthdayLetterRepositoryTest(
             val sender = persistUser("sender")
             val receiver = persistUser("receiver")
 
-            val oldLetter = birthdayLetterRepository.save(createLetter(sender, receiver, "읽은 편지"))
-            val newLetter = birthdayLetterRepository.save(createLetter(sender, receiver, "새 편지"))
-
-            flushAndClear()
-
             val start = BASE_TIME
             val end = BASE_TIME.plusDays(1)
             val lastReadAt = BASE_TIME.plusMinutes(15)
 
-            updateLetterCreateDate(oldLetter.id!!, start.plusMinutes(10))
-            updateLetterCreateDate(newLetter.id!!, start.plusMinutes(20))
-
-            flushAndClear()
+            saveLetterWithTime(sender, receiver, "읽은 편지", start.plusMinutes(10))
+            saveLetterWithTime(sender, receiver, "새 편지", start.plusMinutes(20))
 
             When("새로운 편지가 있는지 확인하면") {
                 val hasNew =
@@ -188,17 +156,11 @@ class BirthdayLetterRepositoryTest(
             val sender = persistUser("sender")
             val receiver = persistUser("receiver")
 
-            val letter = birthdayLetterRepository.save(createLetter(sender, receiver, "읽은 편지"))
-
-            flushAndClear()
-
             val start = BASE_TIME
             val end = BASE_TIME.plusDays(1)
             val lastReadAt = BASE_TIME.plusMinutes(20)
 
-            updateLetterCreateDate(letter.id!!, start.plusMinutes(10))
-
-            flushAndClear()
+            saveLetterWithTime(sender, receiver, "읽은 편지", start.plusMinutes(10))
 
             When("새로운 편지가 있는지 확인하면") {
                 val hasNew =
@@ -219,16 +181,10 @@ class BirthdayLetterRepositoryTest(
             val sender = persistUser("sender")
             val receiver = persistUser("receiver")
 
-            val letter = birthdayLetterRepository.save(createLetter(sender, receiver, "기간 밖 편지"))
-
-            flushAndClear()
-
             val start = BASE_TIME
             val end = BASE_TIME.plusDays(1)
 
-            updateLetterCreateDate(letter.id!!, end.plusMinutes(10))
-
-            flushAndClear()
+            saveLetterWithTime(sender, receiver, "기간 밖 편지", end.plusMinutes(10))
 
             When("새로운 편지가 있는지 확인하면") {
                 val hasNew =
@@ -244,6 +200,19 @@ class BirthdayLetterRepositoryTest(
                 }
             }
         }
+    }
+
+    private fun saveLetterWithTime(
+        sender: User,
+        receiver: User,
+        message: String,
+        time: LocalDateTime,
+    ): BirthdayLetter {
+        val letter = birthdayLetterRepository.save(createLetter(sender, receiver, message))
+        flushAndClear()
+        updateLetterCreateDate(letter.id!!, time)
+        flushAndClear()
+        return letter
     }
 
     private fun createLetter(
