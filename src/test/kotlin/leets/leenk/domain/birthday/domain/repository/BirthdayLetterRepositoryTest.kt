@@ -39,7 +39,6 @@ class BirthdayLetterRepositoryTest(
                 val result = birthdayLetterRepository.findAllByReceiverIdOrderByCreateDateDesc(receiver1.id!!)
 
                 Then("해당 수신자의 편지만 생성일 역순으로 조회되어야 한다") {
-                    result shouldHaveSize 3
                     result.map { it.id } shouldContainExactly listOf(letter3.id, letter2.id, letter1.id)
                     result.forEach { letter ->
                         letter.receiver.id shouldBe receiver1.id
