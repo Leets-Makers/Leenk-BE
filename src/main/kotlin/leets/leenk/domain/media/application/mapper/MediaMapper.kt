@@ -19,10 +19,10 @@ class MediaMapper {
     ): Media =
         Media(
             feed = feed,
-            position = request.position(),
-            mediaUrl = request.mediaUrl(),
-            thumbnailUrl = request.mediaUrl(),
-            mediaType = request.mediaType(),
+            position = request.position,
+            mediaUrl = request.mediaUrl,
+            thumbnailUrl = request.mediaUrl,
+            mediaType = request.mediaType,
         )
 
     fun toMedia(
