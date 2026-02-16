@@ -91,7 +91,7 @@ class FeedUsecase(
         val feeds = slice.content
         val medias = mediaGetService.findAllByFeeds(feeds)
 
-        val mediaMap = medias.groupBy { it.feed.id!! }
+        val mediaMap = medias.groupBy { it.feed?.id!! }
 
         return feedMapper.toFeedListResponse(slice, mediaMap)
     }
@@ -150,7 +150,7 @@ class FeedUsecase(
         allFeeds.addAll(nextFeeds)
 
         val allMedias = mediaGetService.findAllByFeeds(allFeeds)
-        val mediaMap = allMedias.groupBy { it.feed.id!! }
+        val mediaMap = allMedias.groupBy { it.feed?.id!! }
 
         val linkedUserMap = mutableMapOf<Long, List<LinkedUser>>()
         for (feed in allFeeds) {
@@ -350,7 +350,7 @@ class FeedUsecase(
         val slice = feedGetService.findAllByUser(user, pageable)
         val medias = mediaGetService.findAllByFeeds(slice.content)
 
-        val mediaMap = medias.groupBy { it.feed.id!! }
+        val mediaMap = medias.groupBy { it.feed?.id!! }
 
         return feedMapper.toFeedListResponse(user, slice, mediaMap, includeTotalReaction)
     }
@@ -367,7 +367,7 @@ class FeedUsecase(
         val slice = linkedUserGetService.findAllByUser(user, pageable)
         val medias = mediaGetService.findAllByFeeds(slice.content)
 
-        val mediaMap = medias.groupBy { it.feed.id!! }
+        val mediaMap = medias.groupBy { it.feed?.id!! }
 
         return feedMapper.toFeedListResponse(slice, mediaMap)
     }
