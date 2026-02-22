@@ -158,7 +158,7 @@ class LeenkUsecase(
 
         val leenks = slice.content
         val medias = mediaGetService.findByLeenks(leenks)
-        val mediaMap = medias.groupBy { it.leenk?.id!! }
+        val mediaMap = medias.groupBy { it.leenk!!.id!! }
 
         return leenkMapper.toLeenkListResponse(slice, mediaMap)
     }
@@ -197,7 +197,7 @@ class LeenkUsecase(
 
         val leenks = participantsSlice.content.map { it.leenk }
         val medias = mediaGetService.findByLeenks(leenks)
-        val mediaMap = medias.groupBy { it.leenk?.id!! }
+        val mediaMap = medias.groupBy { it.leenk!!.id!! }
 
         val leenkSlice = SliceImpl(leenks, pageable, participantsSlice.hasNext())
 
@@ -216,7 +216,7 @@ class LeenkUsecase(
 
         val leenks = participantsSlice.content.map { it.leenk }
         val medias = mediaGetService.findByLeenks(leenks)
-        val mediaMap = medias.groupBy { it.leenk?.id!! }
+        val mediaMap = medias.groupBy { it.leenk!!.id!! }
 
         val leenkSlice = SliceImpl(leenks, pageable, participantsSlice.hasNext())
 
