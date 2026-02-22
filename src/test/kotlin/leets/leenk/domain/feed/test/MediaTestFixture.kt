@@ -9,13 +9,12 @@ object MediaTestFixture {
         id: Long,
         feed: Feed,
     ): Media =
-        Media
-            .builder()
-            .id(id)
-            .feed(feed)
-            .mediaUrl("https://example.com/media.jpg")
-            .thumbnailUrl("https://example.com/media.jpg")
-            .mediaType(MediaType.IMAGE)
-            .position(1)
-            .build()
+        Media(
+            id = id,
+            feed = feed,
+            mediaUrl = "https://example.com/media.jpg",
+            thumbnailUrl = "https://example.com/media.jpg",
+            mediaType = MediaType.IMAGE,
+            position = 1,
+        )
 }
