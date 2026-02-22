@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifySequence
 import leets.leenk.domain.feed.test.FeedTestFixture
 import leets.leenk.domain.feed.test.UserTestFixture
 import leets.leenk.domain.media.domain.repository.MediaRepository
@@ -25,8 +26,10 @@ class MediaDeleteServiceTest :
                 it("deleteAllByFeed와 flush가 순서대로 호출되어야 한다") {
                     mediaDeleteService.deleteAllByFeed(feed)
 
-                    verify(exactly = 1) { mediaRepository.deleteAllByFeed(feed) }
-                    verify(exactly = 1) { mediaRepository.flush() }
+                    verifySequence {
+                        mediaRepository.deleteAllByFeed(feed)
+                        mediaRepository.flush()
+                    }
                 }
             }
         }
