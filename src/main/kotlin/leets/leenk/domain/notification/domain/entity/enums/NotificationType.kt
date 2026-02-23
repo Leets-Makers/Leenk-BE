@@ -95,7 +95,7 @@ enum class NotificationType(
     fun formatContent(
         name: String? = null,
         title: String? = null,
-        count: Any? = null,
+        count: Long? = null,
     ): String {
         var formatted =
             content

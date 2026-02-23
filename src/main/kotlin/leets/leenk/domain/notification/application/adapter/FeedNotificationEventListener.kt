@@ -138,8 +138,8 @@ class FeedNotificationEventListener(
     private fun findMilestonesBetween(
         previousCount: Long,
         currentCount: Long,
-    ): List<Int> {
-        val milestones = listOf(5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000)
+    ): List<Long> {
+        val milestones = listOf(5L, 10L, 25L, 50L, 100L, 250L, 500L, 1000L, 2000L, 5000L, 10000L, 20000L, 50000L, 100000L)
         return milestones.filter { it in (previousCount + 1)..currentCount }
     }
 }

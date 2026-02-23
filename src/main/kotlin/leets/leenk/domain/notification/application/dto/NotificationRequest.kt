@@ -8,7 +8,7 @@ data class NotificationRequest(
     val targetId: Long,
     val name: String? = null,
     val title: String? = null,
-    val count: Any? = null,
+    val count: Long? = null,
     val metadata: Map<String, Any> = emptyMap(),
 ) {
     val notificationTitle: String
