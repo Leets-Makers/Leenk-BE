@@ -139,7 +139,23 @@ class FeedNotificationEventListener(
         previousCount: Long,
         currentCount: Long,
     ): List<Long> {
-        val milestones = listOf(5L, 10L, 25L, 50L, 100L, 250L, 500L, 1000L, 2000L, 5000L, 10000L, 20000L, 50000L, 100000L)
+        val milestones =
+            listOf(
+                5L,
+                10L,
+                25L,
+                50L,
+                100L,
+                250L,
+                500L,
+                1000L,
+                2000L,
+                5000L,
+                10000L,
+                20000L,
+                50000L,
+                100000L,
+            )
         return milestones.filter { it in (previousCount + 1)..currentCount }
     }
 }

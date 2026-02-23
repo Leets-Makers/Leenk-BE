@@ -14,7 +14,7 @@ class SqsNotificationPublisher(
     private val userGetService: UserGetService,
 ) : NotificationPublishPort {
     private val log = LoggerFactory.getLogger(SqsNotificationPublisher::class.java)
-    //TODO: 코틀린 의존성 추가 후 코틀린 형식으로 변경
+    // TODO: 코틀린 의존성 추가 후 코틀린 형식으로 변경
 
     override suspend fun publish(
         userId: Long,
