@@ -48,4 +48,7 @@ class Feed(
     fun updateDescription(description: String) {
         this.description = description
     }
+
+    val requireId: Long
+        get() = checkNotNull(id) { "영속화되지 않은 Feed 엔티티입니다" }
 }

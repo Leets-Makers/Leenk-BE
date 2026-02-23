@@ -207,4 +207,11 @@ public class User extends BaseEntity {
     public Long getId() {
         return id;
     }
+
+    public Long requireId() {
+        if (id == null) {
+            throw new IllegalStateException("영속화되지 않은 User 엔티티입니다");
+        }
+        return id;
+    }
 }

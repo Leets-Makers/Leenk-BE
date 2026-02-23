@@ -217,8 +217,8 @@ class FeedUsecase(
 
         eventPublisher.publishEvent(
             FeedDomainEvent.Created(
-                feedId = feed.id!!,
-                authorId = author.id!!,
+                feedId = feed.requireId,
+                authorId = author.requireId(),
                 authorName = author.name,
                 taggedUserIds = taggedUserIds,
             ),
@@ -271,9 +271,9 @@ class FeedUsecase(
 
         eventPublisher.publishEvent(
             FeedDomainEvent.Reacted(
-                feedId = feed.id!!,
-                feedAuthorId = feed.user.id!!,
-                reactorId = user.id!!,
+                feedId = feed.requireId,
+                feedAuthorId = feed.user.requireId(),
+                reactorId = user.requireId(),
                 reactorName = user.name,
                 previousReactionCount = previousReactionCount,
                 totalReactionCount = previousReactionCount + request.reactionCount,
