@@ -147,18 +147,19 @@ class NotificationService(
                 new
             }
         } catch (e: DuplicateKeyException) {
-            // 경쟁 조건 발생: 다른 스레드가 먼저 생성함
+            // 경쟁 조건 발생: 다른 스레드가 먼저 생성함 -> details 추가 후 푸시 발송
             log.debug("알림 중복 생성 감지, push로 detail 추가: userId={}, type={}", request.userId, request.type, e)
 
             val details = request.metadata["details"] as? List<Map<String, Any>>
-            details?.let {
-                notificationSaveService.pushDetails(
+            if (details != null) {
+                return notificationSaveService.pushDetails(
                     userId = request.userId,
                     type = request.type,
                     targetId = request.targetId,
-                    details = it,
+                    details = details,
                 )
             }
+            return null
         } catch (e: Exception) {
             log.error("알림 저장 중 예외 발생: userId={}, type={}", request.userId, request.type, e)
             null
