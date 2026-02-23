@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import leets.leenk.domain.notification.application.dto.NotificationRequest
 import leets.leenk.domain.notification.application.policy.NotificationPolicy
 import leets.leenk.domain.notification.application.port.NotificationPort
+import leets.leenk.domain.notification.application.port.NotificationPublishPort
 import leets.leenk.domain.notification.domain.entity.NotificationEntity
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class NotificationService(
     private val notificationSaveService: NotificationSaveService,
     private val notificationEntityGetService: NotificationEntityGetService,
-    private val notificationPublisher: NotificationPublisher,
+    private val notificationPublisher: NotificationPublishPort,
     private val notificationPolicy: NotificationPolicy,
 ) : NotificationPort {
     private val log = LoggerFactory.getLogger(javaClass)

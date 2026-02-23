@@ -16,7 +16,7 @@ class NotificationServiceTest :
 
         val notificationSaveService = mockk<NotificationSaveService>()
         val notificationEntityGetService = mockk<NotificationEntityGetService>()
-        val notificationPublisher = mockk<NotificationPublisher>()
+        val notificationPublisher = mockk<SqsNotificationPublisher>()
         val notificationPolicy = mockk<NotificationPolicy>()
 
         lateinit var notificationService: NotificationService

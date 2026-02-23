@@ -17,7 +17,7 @@ class NotificationPublisherTest :
         val userGetService = mockk<UserGetService>()
 
         val notificationPublisher =
-            NotificationPublisher(
+            SqsNotificationPublisher(
                 eventPublisher,
                 userGetService,
             )
