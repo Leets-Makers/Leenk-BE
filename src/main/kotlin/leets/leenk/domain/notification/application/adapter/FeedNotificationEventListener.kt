@@ -140,6 +140,6 @@ class FeedNotificationEventListener(
         currentCount: Long,
     ): List<Int> {
         val milestones = listOf(5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000)
-        return milestones.filter { it > previousCount && it <= currentCount }
+        return milestones.filter { it in (previousCount + 1)..currentCount }
     }
 }
