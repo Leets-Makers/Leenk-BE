@@ -26,7 +26,7 @@ class NotificationTypeTest :
 
         "정수형 포맷 문자열(%d)을 올바르게 치환해야 한다" {
             val type = NotificationType.FEED_REACTION_COUNT
-            val reactionCount = 25
+            val reactionCount = 25L
 
             val result = type.formatContent(count = reactionCount)
 
