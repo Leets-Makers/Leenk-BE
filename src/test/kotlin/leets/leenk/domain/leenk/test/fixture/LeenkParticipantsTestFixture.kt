@@ -12,19 +12,12 @@ class LeenkParticipantsTestFixture {
             leenk: Leenk,
             participant: User,
             joinedAt: LocalDateTime = LocalDateTime.now(),
-        ): LeenkParticipants {
-            val builder =
-                LeenkParticipants
-                    .builder()
-                    .leenk(leenk)
-                    .participant(participant)
-                    .joinedAt(joinedAt)
-
-            if (id != null) {
-                builder.id(id)
-            }
-
-            return builder.build()
-        }
+        ): LeenkParticipants =
+            LeenkParticipants(
+                id = id,
+                leenk = leenk,
+                participant = participant,
+                joinedAt = joinedAt,
+            )
     }
 }
