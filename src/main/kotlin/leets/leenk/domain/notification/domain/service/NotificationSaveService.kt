@@ -6,6 +6,8 @@ import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import leets.leenk.domain.notification.domain.repository.NotificationEntityRepository
 import leets.leenk.domain.notification.domain.repository.NotificationRepository
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.findOne
+import org.springframework.data.mongodb.core.updateFirst
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
@@ -55,8 +57,8 @@ class NotificationSaveService(
                 }
             }
 
-        mongoTemplate.updateFirst(query, update, NotificationEntity::class.java)
-        return mongoTemplate.findOne(query, NotificationEntity::class.java)
+        mongoTemplate.updateFirst<NotificationEntity>(query, update)
+        return mongoTemplate.findOne<NotificationEntity>(query)
     }
 
     private fun getUpdatedTitleAndBody(
