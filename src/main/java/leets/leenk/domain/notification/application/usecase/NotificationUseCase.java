@@ -43,7 +43,7 @@ public class NotificationUseCase {
     }
 
     @Transactional
-    public void markNotificationAsRead(Long userId, String notificationId) {
+    public void markAsRead(Long userId, String notificationId) {
         User user = userGetService.findById(userId);
         notificationMarkReadService.markReadNotification(user, notificationId);
     }
