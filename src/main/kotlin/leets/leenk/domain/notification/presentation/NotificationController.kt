@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/notifications")
 class NotificationController(
-    // TODO: 코틀린 UseCase 마이그레이션 이후 교체
     private val notificationUseCase: NotificationUseCase,
 ) {
     @GetMapping
@@ -34,7 +33,7 @@ class NotificationController(
     ): CommonResponse<NotificationListResponse> {
         val response = notificationUseCase.getNotifications(userId, pageNumber, pageSize)
 
-        return CommonResponse.success(NotificationResponseCode.NOTIFICATION_READ_SUCCESS, response)
+        return CommonResponse.success(ResponseCode.NOTIFICATION_READ_SUCCESS, response)
     }
 
     @GetMapping("/count")
@@ -44,7 +43,7 @@ class NotificationController(
     ): CommonResponse<NotificationCountResponse> {
         val response = notificationUseCase.getNotificationCount(userId)
 
-        return CommonResponse.success(NotificationResponseCode.NOTIFICATION_COUNT_READ_SUCCESS, response)
+        return CommonResponse.success(ResponseCode.NOTIFICATION_COUNT_READ_SUCCESS, response)
     }
 
     @PatchMapping("/{notificationId}")
@@ -55,6 +54,6 @@ class NotificationController(
     ): CommonResponse<Void?> {
         notificationUseCase.markAsRead(userId, notificationId)
 
-        return CommonResponse.success(NotificationResponseCode.NOTIFICATION_MARK_AS_READ_SUCCESS)
+        return CommonResponse.success(ResponseCode.NOTIFICATION_MARK_AS_READ_SUCCESS)
     }
 }
