@@ -28,8 +28,8 @@ class NotificationController(
     @Operation(summary = "최근 알림 조회 API [무한스크롤] / 사용자의 최근 알림 목록을 페이지 단위로 조회합니다. pageNumber: 0부터 시작")
     fun getNotifications(
         @Parameter(hidden = true) @CurrentUserId userId: Long,
-        @RequestParam pageNumber: Int,
-        @RequestParam pageSize: Int,
+        @RequestParam("page") pageNumber: Int,
+        @RequestParam("size") pageSize: Int,
     ): CommonResponse<NotificationListResponse> {
         val response = notificationUseCase.getNotifications(userId, pageNumber, pageSize)
 
