@@ -1,10 +1,8 @@
 package leets.leenk.domain.notification.domain.service
 
-import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.NotificationEntity
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import leets.leenk.domain.notification.domain.repository.NotificationEntityRepository
-import leets.leenk.domain.notification.domain.repository.NotificationRepository
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
@@ -15,12 +13,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class NotificationSaveService(
-    private val notificationRepository: NotificationRepository,
     private val notificationEntityRepository: NotificationEntityRepository,
     private val mongoTemplate: MongoTemplate,
 ) {
-    fun save(notification: Notification): Notification = notificationRepository.save(notification)
-
     fun save(notification: NotificationEntity): NotificationEntity = notificationEntityRepository.save(notification)
 
     /**
