@@ -9,8 +9,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import leets.leenk.domain.notification.application.exception.InvalidNotificationAccessException
 import leets.leenk.domain.notification.application.exception.NotificationNotFoundException
-import leets.leenk.domain.notification.domain.repository.NotificationRepository
-import leets.leenk.domain.notification.test.fixture.NotificationFixture
 import leets.leenk.domain.user.test.fixture.UserFixture
 import java.util.Optional
 
