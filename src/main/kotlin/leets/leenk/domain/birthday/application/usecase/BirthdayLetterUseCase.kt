@@ -45,9 +45,9 @@ class BirthdayLetterUseCase(
 
         eventPublisher.publishEvent(
             BirthdayDomainEvent.LetterSent(
-                letterId = birthdayLetter.id!!,
+                letterId = birthdayLetter.requireId,
                 senderName = sender.name,
-                receiverId = receiver.id!!,
+                receiverId = receiver.requireId(),
             ),
         )
     }
