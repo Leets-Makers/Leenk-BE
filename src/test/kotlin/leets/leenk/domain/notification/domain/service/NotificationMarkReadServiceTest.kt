@@ -9,55 +9,62 @@ import io.mockk.mockk
 import io.mockk.verify
 import leets.leenk.domain.notification.application.exception.InvalidNotificationAccessException
 import leets.leenk.domain.notification.application.exception.NotificationNotFoundException
-import leets.leenk.domain.user.test.fixture.UserFixture
-import java.util.Optional
+import leets.leenk.domain.notification.application.mapper.NotificationResponseMapper
+import leets.leenk.domain.notification.application.usecase.NotificationUseCase
+import leets.leenk.domain.notification.domain.repository.NotificationEntityRepository
+import leets.leenk.domain.notification.test.fixture.NotificationFixture
+import leets.leenk.domain.user.test.fixture.UserTestFixture
 
 class NotificationMarkReadServiceTest :
     StringSpec({
-        val notificationRepository = mockk<NotificationRepository>()
-        val notificationMarkReadService = NotificationMarkReadService(notificationRepository)
+        val notificationEntityRepository = mockk<NotificationEntityRepository>()
+        val notificationEntityGetService = NotificationEntityGetService(notificationEntityRepository)
+        val notificationSaveService = mockk<NotificationSaveService>()
+        val notificationResponseMapper = mockk<NotificationResponseMapper>()
+        val notificationUseCase =
+            NotificationUseCase(notificationEntityGetService, notificationSaveService, notificationResponseMapper)
 
         beforeEach {
-            clearMocks(notificationRepository)
+            clearMocks(notificationEntityRepository, notificationSaveService)
         }
 
         "유효한 알림 ID로 읽음 처리 요청 시 알림의 읽음 상태가 true로 변경되어야 한다" {
-            val user = UserFixture.basicUser()
-            val notification = NotificationFixture.basicNotification()
+            val user = UserTestFixture.createUser(id = 1L)
+            val notification = NotificationFixture.basicNotification(userId = 1L)
 
-            every { notificationRepository.findById(notification.id) } returns Optional.of(notification)
-            every { notificationRepository.save(notification) } returns notification
+            every { notificationEntityRepository.findActiveById(notification.id!!) } returns notification
+            every { notificationSaveService.save(notification) } returns notification
 
-            notificationMarkReadService.markReadNotification(user, notification.id)
+            notificationUseCase.markAsRead(user.id, notification.id!!)
 
             notification.isRead shouldBe true
         }
 
         "존재하지 않는 알림 ID로 읽음 처리 요청 시 NotificationNotFoundException이 발생해야 한다" {
-            val user = UserFixture.basicUser()
+            val user = UserTestFixture.createUser(id = 1L)
             val invalidNotificationId = "999"
 
-            every { notificationRepository.findById(invalidNotificationId) } returns Optional.empty()
+            every { notificationEntityRepository.findActiveById(invalidNotificationId) } returns null
 
             shouldThrow<NotificationNotFoundException> {
-                notificationMarkReadService.markReadNotification(user, invalidNotificationId)
+                notificationUseCase.markAsRead(user.id, invalidNotificationId)
             }
 
-            verify(exactly = 0) { notificationRepository.save(any()) }
+            verify(exactly = 0) { notificationSaveService.save(any()) }
         }
 
         "다른 사용자의 알림에 대한 읽음 처리 요청 시 InvalidNotificationAccessException이 발생해야 한다" {
-            val user = UserFixture.basicUser() // userId = 1L
+            val user = UserTestFixture.createUser(id = 1L)
             val otherUsersNotification = NotificationFixture.notificationForUser(userId = 2L)
 
-            every { notificationRepository.findById(otherUsersNotification.id) } returns
-                Optional.of(otherUsersNotification)
+            every { notificationEntityRepository.findActiveById(otherUsersNotification.id!!) } returns
+                otherUsersNotification
 
             shouldThrow<InvalidNotificationAccessException> {
-                notificationMarkReadService.markReadNotification(user, otherUsersNotification.id)
+                notificationUseCase.markAsRead(user.id, otherUsersNotification.id!!)
             }
 
             otherUsersNotification.isRead shouldBe false
-            verify(exactly = 0) { notificationRepository.save(any()) }
+            verify(exactly = 0) { notificationSaveService.save(any()) }
         }
     })
