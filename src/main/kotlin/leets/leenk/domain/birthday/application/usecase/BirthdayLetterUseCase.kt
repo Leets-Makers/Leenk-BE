@@ -7,8 +7,9 @@ import leets.leenk.domain.birthday.application.mapper.BirthdayLetterMapper
 import leets.leenk.domain.birthday.application.util.BirthdayChecker
 import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService
-import leets.leenk.domain.notification.application.usecase.BirthdayNotificationUsecase
+import leets.leenk.domain.birthday.domain.event.BirthdayDomainEvent
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -20,7 +21,7 @@ class BirthdayLetterUseCase(
     private val birthdayLettersGetService: BirthdayLettersGetService,
     private val birthdayLetterMapper: BirthdayLetterMapper,
     private val birthdayChecker: BirthdayChecker,
-    private val birthdayNotificationUsecase: BirthdayNotificationUsecase,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     @Transactional
     fun writeBirthdayLetter(
@@ -42,7 +43,13 @@ class BirthdayLetterUseCase(
 
         birthdayLetterSaveService.save(birthdayLetter)
 
-        birthdayNotificationUsecase.saveBirthdayLetterNotification(birthdayLetter)
+        eventPublisher.publishEvent(
+            BirthdayDomainEvent.LetterSent(
+                letterId = birthdayLetter.id!!,
+                senderName = sender.name,
+                receiverId = receiver.id!!,
+            ),
+        )
     }
 
     @Transactional(readOnly = true)
