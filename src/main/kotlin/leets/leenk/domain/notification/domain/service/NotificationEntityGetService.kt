@@ -24,17 +24,14 @@ class NotificationEntityGetService(
             targetId = targetId,
         )
 
-    fun findAllByUserId(userId: Long): List<NotificationEntity> =
-        notificationEntityRepository.findAllByUserId(userId)
+    fun findAllByUserId(userId: Long): List<NotificationEntity> = notificationEntityRepository.findAllByUserId(userId)
 
     fun findPageByUserId(
         userId: Long,
         pageable: Pageable,
-    ): Slice<NotificationEntity> =
-        notificationEntityRepository.findPageByUserIdAndDeleteDateIsNull(userId, pageable)
+    ): Slice<NotificationEntity> = notificationEntityRepository.findPageByUserIdAndDeleteDateIsNull(userId, pageable)
 
-    fun countUnreadByUserId(userId: Long): Long =
-        notificationEntityRepository.countUnreadByUserId(userId)
+    fun countUnreadByUserId(userId: Long): Long = notificationEntityRepository.countUnreadByUserId(userId)
 
     fun findByIdForUser(
         notificationId: String,

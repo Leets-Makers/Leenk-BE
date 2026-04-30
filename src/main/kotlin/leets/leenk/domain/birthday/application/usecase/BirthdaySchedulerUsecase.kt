@@ -24,9 +24,10 @@ class BirthdaySchedulerUsecase(
 
         eventPublisher.publishEvent(
             BirthdayDomainEvent.TodayBirthday(
-                birthdayUsers = birthdayUsers.map {
-                    BirthdayDomainEvent.BirthdayUserInfo(it.requireId(), it.name)
-                },
+                birthdayUsers =
+                    birthdayUsers.map {
+                        BirthdayDomainEvent.BirthdayUserInfo(it.requireId(), it.name)
+                    },
                 receiverIds = receiverIds,
             ),
         )

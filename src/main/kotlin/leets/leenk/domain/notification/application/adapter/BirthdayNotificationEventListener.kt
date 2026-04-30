@@ -15,28 +15,30 @@ class BirthdayNotificationEventListener(
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun onTodayBirthday(event: BirthdayDomainEvent.TodayBirthday) {
         // 생일자에게 축하 알림
-        val celebrateRequests = event.birthdayUsers.map { birthdayUser ->
-            NotificationRequest(
-                userId = birthdayUser.id,
-                type = NotificationType.BIRTHDAY_CELEBRATE,
-                targetId = birthdayUser.id,
-                name = birthdayUser.name,
-            )
-        }
+        val celebrateRequests =
+            event.birthdayUsers.map { birthdayUser ->
+                NotificationRequest(
+                    userId = birthdayUser.id,
+                    type = NotificationType.BIRTHDAY_CELEBRATE,
+                    targetId = birthdayUser.id,
+                    name = birthdayUser.name,
+                )
+            }
         notificationPort.sendBatch(celebrateRequests)
 
         // 다른 사용자들에게 생일자별 공지
         event.birthdayUsers.forEach { birthdayUser ->
-            val announceRequests = event.receiverIds
-                .filter { it != birthdayUser.id }
-                .map { receiverId ->
-                    NotificationRequest(
-                        userId = receiverId,
-                        type = NotificationType.BIRTHDAY_ANNOUNCEMENT,
-                        targetId = birthdayUser.id,
-                        name = birthdayUser.name,
-                    )
-                }
+            val announceRequests =
+                event.receiverIds
+                    .filter { it != birthdayUser.id }
+                    .map { receiverId ->
+                        NotificationRequest(
+                            userId = receiverId,
+                            type = NotificationType.BIRTHDAY_ANNOUNCEMENT,
+                            targetId = birthdayUser.id,
+                            name = birthdayUser.name,
+                        )
+                    }
             if (announceRequests.isNotEmpty()) {
                 notificationPort.sendBatch(announceRequests)
             }

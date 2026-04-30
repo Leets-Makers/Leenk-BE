@@ -1,7 +1,6 @@
 package leets.leenk.domain.birthday.domain.event
 
 sealed class BirthdayDomainEvent {
-
     data class TodayBirthday(
         val birthdayUsers: List<BirthdayUserInfo>,
         val receiverIds: List<Long>,

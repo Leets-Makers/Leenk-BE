@@ -15,7 +15,6 @@ import java.util.Date
 
 @Component
 class NotificationResponseMapper {
-
     fun toNotificationListResponse(notifications: Slice<NotificationEntity>): NotificationListResponse =
         NotificationListResponse(
             notificationResponses = notifications.map { toResponse(it) }.toList(),
@@ -33,8 +32,7 @@ class NotificationResponseMapper {
             leenkStartingSoonInfo = extractLeenkStartingSoonInfo(notification),
         )
 
-    fun toCountResponse(count: Long): NotificationCountResponse =
-        NotificationCountResponse(notificationCount = count)
+    fun toCountResponse(count: Long): NotificationCountResponse = NotificationCountResponse(notificationCount = count)
 
     @Suppress("UNCHECKED_CAST")
     private fun extractDetails(notification: NotificationEntity): List<NotificationDetailResponse>? =
@@ -47,8 +45,7 @@ class NotificationResponseMapper {
                     body = detail["body"] as? String ?: "",
                     createDate = detail["createDate"].toDateString(),
                 )
-            }
-            ?.takeIf { it.isNotEmpty() }
+            }?.takeIf { it.isNotEmpty() }
 
     private fun extractLeenkStartingSoonInfo(notification: NotificationEntity): LeenkStartingSoonInfo? {
         if (notification.notificationType != NotificationType.LEENK_STARTING_SOON) return null
@@ -63,8 +60,20 @@ class NotificationResponseMapper {
 
     private fun Any?.toDateString(): String =
         when (this) {
-            is LocalDateTime -> this.toString()
-            is Date -> this.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime().toString()
-            else -> this?.toString() ?: ""
+            is LocalDateTime -> {
+                this.toString()
+            }
+
+            is Date -> {
+                this
+                    .toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDateTime()
+                    .toString()
+            }
+
+            else -> {
+                this?.toString() ?: ""
+            }
         }
 }

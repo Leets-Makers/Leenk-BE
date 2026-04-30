@@ -14,17 +14,17 @@ import io.mockk.verify
 import leets.leenk.domain.birthday.application.dto.request.BirthdayLetterRequest
 import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersResponse
 import leets.leenk.domain.birthday.application.exception.NotBirthdayTodayException
-import leets.leenk.domain.birthday.domain.event.BirthdayDomainEvent
 import leets.leenk.domain.birthday.application.mapper.BirthdayLetterMapper
 import leets.leenk.domain.birthday.application.util.BirthdayChecker
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetterReadMark
+import leets.leenk.domain.birthday.domain.event.BirthdayDomainEvent
 import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService
-import org.springframework.context.ApplicationEventPublisher
 import leets.leenk.domain.user.application.dto.response.UserProfileResponse
 import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 import java.time.LocalDateTime
 

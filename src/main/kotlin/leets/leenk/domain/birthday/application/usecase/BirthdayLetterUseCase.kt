@@ -5,9 +5,9 @@ import leets.leenk.domain.birthday.application.dto.response.MyBirthdayLettersRes
 import leets.leenk.domain.birthday.application.exception.NotBirthdayTodayException
 import leets.leenk.domain.birthday.application.mapper.BirthdayLetterMapper
 import leets.leenk.domain.birthday.application.util.BirthdayChecker
+import leets.leenk.domain.birthday.domain.event.BirthdayDomainEvent
 import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService
-import leets.leenk.domain.birthday.domain.event.BirthdayDomainEvent
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service

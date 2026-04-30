@@ -1,4 +1,4 @@
-package leets.leenk.domain.notification.presentation;
+package leets.leenk.domain.notification.presentation
 
 import leets.leenk.global.common.response.ResponseCodeInterface
 import org.springframework.http.HttpStatus

@@ -21,18 +21,20 @@ class LeenkNotificationEventListener(
 
         if (usersToNotify.isEmpty()) return
 
-        val requests = usersToNotify.map { user ->
-            NotificationRequest(
-                userId = user.id,
-                type = NotificationType.NEW_LEENK,
-                targetId = event.leenkId,
-                name = event.hostName,
-                title = event.leenkTitle,
-                metadata = mapOf(
-                    "authorUserId" to event.hostId,
-                ),
-            )
-        }
+        val requests =
+            usersToNotify.map { user ->
+                NotificationRequest(
+                    userId = user.id,
+                    type = NotificationType.NEW_LEENK,
+                    targetId = event.leenkId,
+                    name = event.hostName,
+                    title = event.leenkTitle,
+                    metadata =
+                        mapOf(
+                            "authorUserId" to event.hostId,
+                        ),
+                )
+            }
         notificationPort.sendBatch(requests)
     }
 
@@ -45,17 +47,18 @@ class LeenkNotificationEventListener(
                 type = NotificationType.LEENK_JOIN_COMPLETED,
                 targetId = event.leenkId,
                 title = event.leenkTitle,
-            )
+            ),
         )
 
         if (event.existingParticipantIds.isEmpty()) return
 
         val now = LocalDateTime.now()
-        val participantDetail = mapOf(
-            "participantId" to event.newParticipantId,
-            "participantName" to event.newParticipantName,
-            "createDate" to now,
-        )
+        val participantDetail =
+            mapOf(
+                "participantId" to event.newParticipantId,
+                "participantName" to event.newParticipantName,
+                "createDate" to now,
+            )
 
         // 기존 참여자들에게 새 참여자 알림 (집계: sendOrUpdate가 기존 알림 있으면 details에 추가, 없으면 새로 생성)
         event.existingParticipantIds.forEach { participantId ->
@@ -67,7 +70,7 @@ class LeenkNotificationEventListener(
                     name = event.newParticipantName,
                     title = event.leenkTitle,
                     metadata = mapOf("details" to listOf(participantDetail)),
-                )
+                ),
             )
         }
     }
@@ -80,7 +83,7 @@ class LeenkNotificationEventListener(
                 type = NotificationType.KICKED_FROM_LEENK,
                 targetId = event.leenkId,
                 title = event.leenkTitle,
-            )
+            ),
         )
     }
 
@@ -93,10 +96,11 @@ class LeenkNotificationEventListener(
                 targetId = event.leenkId,
                 name = event.leftUserName,
                 title = event.leenkTitle,
-                metadata = mapOf(
-                    "leftUserId" to event.leftUserId,
-                ),
-            )
+                metadata =
+                    mapOf(
+                        "leftUserId" to event.leftUserId,
+                    ),
+            ),
         )
     }
 
@@ -114,21 +118,23 @@ class LeenkNotificationEventListener(
     fun onStartingSoon(event: LeenkDomainEvent.StartingSoon) {
         if (event.participantIds.isEmpty()) return
 
-        val metadata = buildMap<String, Any> {
-            event.placeId?.let { put("placeId", it) }
-            event.placeName?.let { put("placeName", it) }
-            event.startTime?.let { put("startTime", it.toString()) }
-        }
+        val metadata =
+            buildMap<String, Any> {
+                event.placeId?.let { put("placeId", it) }
+                event.placeName?.let { put("placeName", it) }
+                event.startTime?.let { put("startTime", it.toString()) }
+            }
 
-        val requests = event.participantIds.map { userId ->
-            NotificationRequest(
-                userId = userId,
-                type = NotificationType.LEENK_STARTING_SOON,
-                targetId = event.leenkId,
-                title = event.leenkTitle,
-                metadata = metadata,
-            )
-        }
+        val requests =
+            event.participantIds.map { userId ->
+                NotificationRequest(
+                    userId = userId,
+                    type = NotificationType.LEENK_STARTING_SOON,
+                    targetId = event.leenkId,
+                    title = event.leenkTitle,
+                    metadata = metadata,
+                )
+            }
         notificationPort.sendBatch(requests)
     }
 
@@ -150,7 +156,7 @@ class LeenkNotificationEventListener(
                 type = NotificationType.LEENK_STARTED_HOST_REMINDER,
                 targetId = event.leenkId,
                 title = event.leenkTitle,
-            )
+            ),
         )
     }
 
@@ -162,14 +168,15 @@ class LeenkNotificationEventListener(
     ) {
         if (participantIds.isEmpty()) return
 
-        val requests = participantIds.map { userId ->
-            NotificationRequest(
-                userId = userId,
-                type = type,
-                targetId = leenkId,
-                title = leenkTitle,
-            )
-        }
+        val requests =
+            participantIds.map { userId ->
+                NotificationRequest(
+                    userId = userId,
+                    type = type,
+                    targetId = leenkId,
+                    title = leenkTitle,
+                )
+            }
         notificationPort.sendBatch(requests)
     }
 }

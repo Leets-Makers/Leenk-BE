@@ -21,6 +21,7 @@ import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
 import leets.leenk.domain.leenk.application.mapper.LocationMapper
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
+import leets.leenk.domain.leenk.domain.event.LeenkDomainEvent
 import leets.leenk.domain.leenk.domain.service.LeenkDeleteService
 import leets.leenk.domain.leenk.domain.service.LeenkGetService
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsDeleteService
@@ -33,11 +34,10 @@ import leets.leenk.domain.media.application.mapper.MediaMapper
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
-import leets.leenk.domain.leenk.domain.event.LeenkDomainEvent
-import org.springframework.context.ApplicationEventPublisher
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import org.springframework.data.domain.Sort
@@ -94,7 +94,7 @@ class LeenkUsecase(
                 leenkTitle = leenk.title,
                 hostId = author.id,
                 hostName = author.name,
-            )
+            ),
         )
 
         return LeenkCreateResponse(leenk.id!!)
@@ -258,9 +258,11 @@ class LeenkUsecase(
         leenkParticipantsSaveService.save(participant)
         leenk.increaseCurrentParticipants()
 
-        val existingParticipantIds = leenkParticipantsGetService.findAllByLeenk(leenk)
-            .map { it.participant.id }
-            .filter { it != user.id }
+        val existingParticipantIds =
+            leenkParticipantsGetService
+                .findAllByLeenk(leenk)
+                .map { it.participant.id }
+                .filter { it != user.id }
 
         eventPublisher.publishEvent(
             LeenkDomainEvent.ParticipantJoined(
@@ -269,7 +271,7 @@ class LeenkUsecase(
                 newParticipantId = user.id,
                 newParticipantName = user.name,
                 existingParticipantIds = existingParticipantIds,
-            )
+            ),
         )
     }
 
@@ -297,7 +299,7 @@ class LeenkUsecase(
                 leenkId = leenk.id!!,
                 leenkTitle = leenk.title,
                 participantIds = participantIds,
-            )
+            ),
         )
     }
 
@@ -349,7 +351,7 @@ class LeenkUsecase(
                 leenkId = leenk.id!!,
                 leenkTitle = leenk.title,
                 kickedUserId = participant.participant.id,
-            )
+            ),
         )
     }
 
@@ -404,7 +406,7 @@ class LeenkUsecase(
                 leftUserId = user.id,
                 leftUserName = user.name,
                 hostId = leenk.author.id,
-            )
+            ),
         )
     }
 }

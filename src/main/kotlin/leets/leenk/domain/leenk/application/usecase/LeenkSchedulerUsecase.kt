@@ -27,7 +27,7 @@ class LeenkSchedulerUsecase(
                     leenkId = leenk.id!!,
                     leenkTitle = leenk.title,
                     participantIds = participantIds,
-                )
+                ),
             )
         }
         return leenksToFinish.size
@@ -47,7 +47,7 @@ class LeenkSchedulerUsecase(
                     placeId = leenk.location.id,
                     placeName = leenk.location.placeName,
                     startTime = leenk.startTime,
-                )
+                ),
             )
         }
     }
@@ -63,7 +63,7 @@ class LeenkSchedulerUsecase(
                     leenkId = leenk.id!!,
                     leenkTitle = leenk.title,
                     participantIds = participantIds,
-                )
+                ),
             )
         }
         return leenksToNotify.size
@@ -79,7 +79,7 @@ class LeenkSchedulerUsecase(
                     leenkId = leenk.id!!,
                     leenkTitle = leenk.title,
                     hostId = leenk.author.id,
-                )
+                ),
             )
         }
     }

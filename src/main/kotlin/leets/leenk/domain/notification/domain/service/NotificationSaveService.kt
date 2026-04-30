@@ -83,6 +83,8 @@ class NotificationSaveService(
                 }
             }
 
-            else -> null
+            else -> {
+                null
+            }
         }
 }
