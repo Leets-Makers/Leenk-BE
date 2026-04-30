@@ -69,29 +69,25 @@ class NotificationSaveService(
         when (type) {
             NotificationType.FEED_REACTION_COUNT -> {
                 details.lastOrNull()?.let { lastDetail ->
-                    val milestone = lastDetail["milestone"] as? Int
-                    (lastDetail["title"] as? String ?: "Leenk") to
-                        (lastDetail["body"] as? String ?: "내가 쓴 피드에 좋아요를 ${milestone}개 받았어")
+                    val milestone = (lastDetail["milestone"] as? Long)
+                    type.title to (lastDetail["body"] as? String ?: type.formatContent(count = milestone))
                 }
             }
 
             NotificationType.FEED_FIRST_REACTION -> {
                 details.lastOrNull()?.let { lastDetail ->
-                    (lastDetail["title"] as? String ?: "Leenk") to
-                        (lastDetail["body"] as? String ?: "내가 쓴 피드에 좋아요를 받았어")
+                    val name = lastDetail["name"] as? String ?: ""
+                    type.title to (lastDetail["body"] as? String ?: type.formatContent(name = name))
                 }
             }
 
             NotificationType.NEW_LEENK_PARTICIPANT -> {
                 details.lastOrNull()?.let { lastDetail ->
                     val participantName = lastDetail["participantName"] as? String ?: ""
-                    (lastDetail["title"] as? String ?: "Leenk") to
-                        NotificationType.NEW_LEENK_PARTICIPANT.formatContent(name = participantName)
+                    type.title to type.formatContent(name = participantName)
                 }
             }
 
-            else -> {
-                null
-            }
+            else -> null
         }
 }
