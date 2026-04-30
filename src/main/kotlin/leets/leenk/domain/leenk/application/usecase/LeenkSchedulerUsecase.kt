@@ -33,6 +33,7 @@ class LeenkSchedulerUsecase(
         return leenksToFinish.size
     }
 
+    @Transactional
     fun notifyLeenksStartingWithin30Minutes(now: LocalDateTime) {
         val leenksToNotify = leenkGetService.findLeenksStartingWithin30Minutes(now)
 
