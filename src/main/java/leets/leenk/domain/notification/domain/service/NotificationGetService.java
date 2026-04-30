@@ -1,36 +1,21 @@
 package leets.leenk.domain.notification.domain.service;
 
-import leets.leenk.domain.leenk.domain.entity.Leenk;
-import leets.leenk.domain.notification.application.mapper.LeenkNotificationMapper;
-import leets.leenk.domain.user.domain.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import leets.leenk.domain.notification.domain.entity.Notification;
-import leets.leenk.domain.notification.domain.entity.enums.NotificationType;
 import leets.leenk.domain.notification.domain.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class NotificationGetService {
 
     private final NotificationRepository notificationRepository;
-    private final LeenkNotificationMapper leenkNotificationMapper;
 
     public Slice<Notification> findRecentNotifications(Long userId, Pageable pageable) {
         return notificationRepository.findPageByUserId(pageable, userId);
     }
 
-    public Notification findOrCreateNewLeenkParticipantNotification(Leenk leenk, User existingUser) {
-        Optional<Notification> existingNotification = notificationRepository
-                .findByUserIdAndNotificationTypeAndContentLeenkId(
-                        existingUser.getId(), NotificationType.NEW_LEENK_PARTICIPANT, leenk.getId());
-
-        return existingNotification.orElseGet(() -> leenkNotificationMapper.toNewLeenkParticipantNotification(leenk,
-                existingUser));
-    }
 }
