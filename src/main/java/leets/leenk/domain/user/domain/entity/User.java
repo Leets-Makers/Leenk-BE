@@ -202,4 +202,16 @@ public class User extends BaseEntity {
     public boolean isAgree() {
         return this.termsAgreement && this.privacyAgreement;
     }
+
+    // TODO: 코틀린 자바 롬복 문제. 추후 마이그레이션 후 삭제
+    public Long getId() {
+        return id;
+    }
+
+    public Long requireId() {
+        if (id == null) {
+            throw new IllegalStateException("영속화되지 않은 User 엔티티입니다");
+        }
+        return id;
+    }
 }

@@ -12,7 +12,7 @@ public class FeedReactionCountDetailMapper {
         return FeedReactionCountDetail.builder()
                 .reactionCount(reactionCount)
                 .title(NotificationType.FEED_REACTION_COUNT.getTitle())
-                .body(NotificationType.FEED_REACTION_COUNT.getFormattedContent(reactionCount))
+                .body(NotificationType.FEED_REACTION_COUNT.formatContent(null, null, reactionCount))
                 .build();
     }
 }

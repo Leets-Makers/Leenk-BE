@@ -29,6 +29,7 @@ import leets.leenk.domain.feed.application.mapper.ReactionMapper
 import leets.leenk.domain.feed.domain.entity.Comment
 import leets.leenk.domain.feed.domain.entity.Feed
 import leets.leenk.domain.feed.domain.entity.LinkedUser
+import leets.leenk.domain.feed.domain.event.FeedDomainEvent
 import leets.leenk.domain.feed.domain.service.CommentDeleteService
 import leets.leenk.domain.feed.domain.service.CommentGetService
 import leets.leenk.domain.feed.domain.service.CommentSaveService
@@ -53,12 +54,12 @@ import leets.leenk.domain.media.domain.entity.enums.MediaType
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
-import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase
 import leets.leenk.domain.user.domain.entity.UserBlock
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.blockuser.UserBlockService
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import java.util.Optional
@@ -90,7 +91,7 @@ class FeedUsecaseTest :
         val commentGetService = mockk<CommentGetService>()
         val commentDeleteService = mockk<CommentDeleteService>(relaxed = true)
 
-        val feedNotificationUsecase = mockk<FeedNotificationUsecase>(relaxed = true)
+        val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val feedMapper = mockk<FeedMapper>()
         val mediaMapper = mockk<MediaMapper>()
@@ -119,12 +120,12 @@ class FeedUsecaseTest :
                 commentSaveService,
                 commentGetService,
                 commentDeleteService,
-                feedNotificationUsecase,
                 feedMapper,
                 mediaMapper,
                 feedUserMapper,
                 reactionMapper,
                 commentMapper,
+                eventPublisher,
             )
 
         Given("차단된 사용자 목록이 있을 때") {
@@ -334,8 +335,7 @@ class FeedUsecaseTest :
                     verify { feedSaveService.save(feed) }
                     verify { mediaSaveService.saveAll(any()) }
                     verify { linkedUserSaveService.saveAll(any()) }
-                    verify { feedNotificationUsecase.saveNewFeedNotification(feed) }
-                    verify { feedNotificationUsecase.saveTagNotification(eq(feed), any(), eq(author)) }
+                    verify(atLeast = 1) { eventPublisher.publishEvent(any<FeedDomainEvent.Created>()) }
                 }
             }
         }
@@ -382,8 +382,7 @@ class FeedUsecaseTest :
 
                 Then("업데이트와 알림이 저장되어야 한다") {
                     verify { feedUpdateService.updateTotalReaction(feed, reaction, author, 1L) }
-                    verify { feedNotificationUsecase.saveFirstReactionNotification(reaction) }
-                    verify { feedNotificationUsecase.saveReactionCountNotification(feed, 5) }
+                    verify(atLeast = 1) { eventPublisher.publishEvent(any<FeedDomainEvent.Reacted>()) }
                 }
             }
         }
@@ -415,7 +414,7 @@ class FeedUsecaseTest :
                 Then("리액션이 저장되고 첫 리액션 알림만 저장되어야 한다") {
                     verify { reactionSaveService.save(toSave) }
                     verify { feedUpdateService.updateTotalReaction(feed, saved, author, 1L) }
-                    verify { feedNotificationUsecase.saveFirstReactionNotification(saved) }
+                    verify(atLeast = 1) { eventPublisher.publishEvent(any<FeedDomainEvent.Reacted>()) }
                 }
             }
         }

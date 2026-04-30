@@ -22,6 +22,7 @@ import leets.leenk.domain.feed.application.mapper.ReactionMapper
 import leets.leenk.domain.feed.domain.entity.Comment
 import leets.leenk.domain.feed.domain.entity.Feed
 import leets.leenk.domain.feed.domain.entity.LinkedUser
+import leets.leenk.domain.feed.domain.event.FeedDomainEvent
 import leets.leenk.domain.feed.domain.service.CommentDeleteService
 import leets.leenk.domain.feed.domain.service.CommentGetService
 import leets.leenk.domain.feed.domain.service.CommentSaveService
@@ -38,12 +39,12 @@ import leets.leenk.domain.media.application.mapper.MediaMapper
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
-import leets.leenk.domain.notification.application.usecase.FeedNotificationUsecase
 import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.blockuser.UserBlockService
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -69,12 +70,12 @@ class FeedUsecase(
     private val commentSaveService: CommentSaveService,
     private val commentGetService: CommentGetService,
     private val commentDeleteService: CommentDeleteService,
-    private val feedNotificationUsecase: FeedNotificationUsecase,
     private val feedMapper: FeedMapper,
     private val mediaMapper: MediaMapper,
     private val feedUserMapper: FeedUserMapper,
     private val reactionMapper: ReactionMapper,
     private val commentMapper: CommentMapper,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     @Transactional(readOnly = true)
     fun getFeeds(
@@ -211,8 +212,17 @@ class FeedUsecase(
         val linkedUsers = getLinkedUsers(author, request.userIds, feed)
         linkedUserSaveService.saveAll(linkedUsers)
 
-        feedNotificationUsecase.saveNewFeedNotification(feed)
-        feedNotificationUsecase.saveTagNotification(feed, linkedUsers, author)
+        // 태그된 사용자 ID 목록 (작성자 제외)
+        val taggedUserIds = request.userIds.filter { it != author.id }
+
+        eventPublisher.publishEvent(
+            FeedDomainEvent.Created(
+                feedId = feed.requireId,
+                authorId = author.requireId(),
+                authorName = author.name,
+                taggedUserIds = taggedUserIds,
+            ),
+        )
     }
 
     private fun getLinkedUsers(
@@ -254,14 +264,21 @@ class FeedUsecase(
                     )
                 }
 
-        val previousReactionCount = reaction.reactionCount
+        val previousReactionCount = feed.totalReactionCount
 
         // Feed를 가져올 때 Fetch Join으로 작성자를 함께 가져와 락이 함께 걸리므로 별도의 락 필요 없음.
         feedUpdateService.updateTotalReaction(feed, reaction, feed.user, request.reactionCount)
-        feedNotificationUsecase.saveFirstReactionNotification(reaction)
 
-        val updatedReactionCount = previousReactionCount + request.reactionCount
-        notifyIfReachedReactionMilestone(previousReactionCount, updatedReactionCount, feed)
+        eventPublisher.publishEvent(
+            FeedDomainEvent.Reacted(
+                feedId = feed.requireId,
+                feedAuthorId = feed.user.requireId(),
+                reactorId = user.requireId(),
+                reactorName = user.name,
+                previousReactionCount = previousReactionCount,
+                totalReactionCount = previousReactionCount + request.reactionCount,
+            ),
+        )
     }
 
     @Transactional
@@ -431,20 +448,6 @@ class FeedUsecase(
 
         notionDatabaseService.sendFeedReport(request.report, user.id!!, feed.id!!)
         slackWebhookService.sendFeedReport(request.report)
-    }
-
-    private fun notifyIfReachedReactionMilestone(
-        previous: Long,
-        current: Long,
-        feed: Feed,
-    ) {
-        val milestones = longArrayOf(5, 10, 25, 50, 100, 250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000)
-
-        for (milestone in milestones) {
-            if (previous < milestone && current >= milestone) {
-                feedNotificationUsecase.saveReactionCountNotification(feed, milestone)
-            }
-        }
     }
 
     private fun checkAuthor(

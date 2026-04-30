@@ -34,4 +34,8 @@ public class Notification extends MongoBaseEntity {
         this.isRead = true;
     }
 
+    public NotificationContent getContent() {
+        return this.content;
+    }
+
 }
