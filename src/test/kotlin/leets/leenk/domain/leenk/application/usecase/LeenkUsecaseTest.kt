@@ -19,7 +19,6 @@ import leets.leenk.domain.media.application.mapper.MediaMapper
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
-import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase
 import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
@@ -27,6 +26,7 @@ import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.domain.user.test.fixture.UserTestFixture
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
+import org.springframework.context.ApplicationEventPublisher
 
 class LeenkUsecaseTest {
     private val locationSaveService: LocationSaveService = mockk()
@@ -52,8 +52,7 @@ class LeenkUsecaseTest {
     private val locationMapper: LocationMapper = mockk()
     private val mediaMapper: MediaMapper = mockk()
 
-    private val leenkNotificationUsecase: LeenkNotificationUsecase = mockk(relaxed = true)
-
+    private val eventPublisher: ApplicationEventPublisher = mockk(relaxed = true)
     private lateinit var leenkUsecase: LeenkUsecase
     private lateinit var user: User
     private lateinit var recruitingLeenk: Leenk
@@ -79,7 +78,7 @@ class LeenkUsecaseTest {
         participantsMapper: LeenkParticipantsMapper,
         locationMapper: LocationMapper,
         mediaMapper: MediaMapper,
-        leenkNotificationUsecase: LeenkNotificationUsecase,
+        eventPublisher: ApplicationEventPublisher,
     ): LeenkUsecase =
         LeenkUsecase(
             locationSaveService,
@@ -100,7 +99,7 @@ class LeenkUsecaseTest {
             participantsMapper,
             locationMapper,
             mediaMapper,
-            leenkNotificationUsecase,
+            eventPublisher,
         )
 
     @BeforeEach
@@ -125,7 +124,7 @@ class LeenkUsecaseTest {
                 participantsMapper = participantsMapper,
                 locationMapper = locationMapper,
                 mediaMapper = mediaMapper,
-                leenkNotificationUsecase = leenkNotificationUsecase,
+                eventPublisher = eventPublisher,
             )
 
         user = UserTestFixture.createUser(id = 1L)
@@ -166,7 +165,7 @@ class LeenkUsecaseTest {
 
             // then
             verify(exactly = 1) { leenkParticipantsSaveService.save(participant) }
-            verify(exactly = 1) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(recruitingLeenk, user) }
+            verify(exactly = 1) { eventPublisher.publishEvent(any()) }
             assertThat(recruitingLeenk.currentParticipants).isEqualTo(initialParticipants + 1)
         }
 
@@ -189,7 +188,7 @@ class LeenkUsecaseTest {
             }
 
             verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
-            verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
+            verify(exactly = 0) { eventPublisher.publishEvent(any()) }
         }
 
         @Test
@@ -206,7 +205,7 @@ class LeenkUsecaseTest {
             }
 
             verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
-            verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
+            verify(exactly = 0) { eventPublisher.publishEvent(any()) }
         }
 
         @Test
@@ -229,7 +228,7 @@ class LeenkUsecaseTest {
             }
 
             verify(exactly = 0) { leenkParticipantsSaveService.save(any()) }
-            verify(exactly = 0) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(any(), any()) }
+            verify(exactly = 0) { eventPublisher.publishEvent(any()) }
         }
 
         @Test
@@ -260,7 +259,7 @@ class LeenkUsecaseTest {
 
             // then
             verify(exactly = 1) { leenkParticipantsSaveService.save(lastParticipant) }
-            verify(exactly = 1) { leenkNotificationUsecase.saveNewLeenkParticipantNotification(almostFullLeenk, user) }
+            verify(exactly = 1) { eventPublisher.publishEvent(any()) }
             assertThat(almostFullLeenk.currentParticipants).isEqualTo(almostFullLeenk.maxParticipants)
         }
     }
@@ -280,7 +279,7 @@ class LeenkUsecaseTest {
 
             // then
             assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.CLOSED)
-            verify(exactly = 1) { leenkNotificationUsecase.saveLeenkClosedNotification(recruitingLeenk) }
+            verify(exactly = 1) { eventPublisher.publishEvent(any()) }
         }
 
         @Test
@@ -297,7 +296,7 @@ class LeenkUsecaseTest {
             }
 
             assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.RECRUITING)
-            verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
+            verify(exactly = 0) { eventPublisher.publishEvent(any()) }
         }
 
         @Test
@@ -318,7 +317,7 @@ class LeenkUsecaseTest {
                 leenkUsecase.closeLeenk(1L, 1L)
             }
 
-            verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
+            verify(exactly = 0) { eventPublisher.publishEvent(any()) }
         }
 
         @Test
@@ -339,7 +338,7 @@ class LeenkUsecaseTest {
                 leenkUsecase.closeLeenk(1L, 1L)
             }
 
-            verify(exactly = 0) { leenkNotificationUsecase.saveLeenkClosedNotification(any()) }
+            verify(exactly = 0) { eventPublisher.publishEvent(any()) }
         }
     }
 }

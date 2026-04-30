@@ -49,6 +49,7 @@ class NotificationSaveService(
         val update =
             Update().apply {
                 push("content.metadata.details").each(*details.toTypedArray())
+                set("isRead", false)
 
                 // 최상단 title, body 업데이트
                 getUpdatedTitleAndBody(type, details)?.let { (title, body) ->
@@ -78,6 +79,14 @@ class NotificationSaveService(
                 details.lastOrNull()?.let { lastDetail ->
                     (lastDetail["title"] as? String ?: "Leenk") to
                         (lastDetail["body"] as? String ?: "내가 쓴 피드에 좋아요를 받았어")
+                }
+            }
+
+            NotificationType.NEW_LEENK_PARTICIPANT -> {
+                details.lastOrNull()?.let { lastDetail ->
+                    val participantName = lastDetail["participantName"] as? String ?: ""
+                    (lastDetail["title"] as? String ?: "Leenk") to
+                        NotificationType.NEW_LEENK_PARTICIPANT.formatContent(name = participantName)
                 }
             }
 
