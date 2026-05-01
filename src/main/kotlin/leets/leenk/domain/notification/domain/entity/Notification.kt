@@ -37,5 +37,4 @@ data class Notification(
         this.isRead = false
         this.updateDate = LocalDateTime.now()
     }
-
 }
