@@ -56,7 +56,7 @@ class BirthdayLetterUseCaseTest :
 
             val sender = createUser(senderId, "Sender")
             val receiver = createUser(receiverId, "Receiver", LocalDate.of(2000, 12, 25))
-            val birthdayLetter = createLetter(sender, receiver, request.message)
+            val birthdayLetter = createLetter(1L, sender, receiver, request.message)
 
             every { userGetService.findById(senderId) } returns sender
             every { userGetService.findById(receiverId) } returns receiver
@@ -106,8 +106,8 @@ class BirthdayLetterUseCaseTest :
             val sender = createUser(2L, "Sender")
             val receiver = createUser(receiverId, "Receiver")
 
-            val letter1 = createLetter(sender, receiver, "편지1")
-            val letter2 = createLetter(sender, receiver, "편지2")
+            val letter1 = createLetter(1L, sender, receiver, "편지1")
+            val letter2 = createLetter(1L, sender, receiver, "편지2")
             val letters = listOf(letter1, letter2)
 
             val response1 = createLetterResponse(1L, 2L, "Sender", "편지1")
@@ -233,11 +233,13 @@ private fun createUser(
         .build()
 
 private fun createLetter(
+    id: Long,
     sender: User,
     receiver: User,
     message: String,
 ): BirthdayLetter =
     BirthdayLetter(
+        id = id,
         sender = sender,
         receiver = receiver,
         message = message,

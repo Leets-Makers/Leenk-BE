@@ -11,6 +11,7 @@ import leets.leenk.domain.leenk.domain.entity.Leenk
 import leets.leenk.domain.leenk.domain.entity.LeenkParticipants
 import leets.leenk.domain.leenk.domain.entity.Location
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
+import leets.leenk.domain.leenk.domain.event.LeenkDomainEvent
 import leets.leenk.domain.leenk.domain.service.*
 import leets.leenk.domain.leenk.test.fixture.LeenkParticipantsTestFixture
 import leets.leenk.domain.leenk.test.fixture.LeenkTestFixture
@@ -157,6 +158,7 @@ class LeenkUsecaseTest {
             every { leenkParticipantsGetService.existsByLeenkAndParticipant(recruitingLeenk, user) } returns false
             every { participantsMapper.toParticipants(recruitingLeenk, user, any()) } returns participant
             every { leenkParticipantsSaveService.save(any()) } returns participant
+            every { leenkParticipantsGetService.findAllByLeenk(recruitingLeenk) } returns listOf(participant)
 
             val initialParticipants = recruitingLeenk.currentParticipants
 
@@ -165,7 +167,9 @@ class LeenkUsecaseTest {
 
             // then
             verify(exactly = 1) { leenkParticipantsSaveService.save(participant) }
-            verify(exactly = 1) { eventPublisher.publishEvent(any()) }
+            verify(exactly = 1) {
+                eventPublisher.publishEvent(any<LeenkDomainEvent.ParticipantJoined>())
+            }
             assertThat(recruitingLeenk.currentParticipants).isEqualTo(initialParticipants + 1)
         }
 
@@ -253,13 +257,16 @@ class LeenkUsecaseTest {
             every { leenkParticipantsGetService.existsByLeenkAndParticipant(almostFullLeenk, user) } returns false
             every { participantsMapper.toParticipants(almostFullLeenk, user, any()) } returns lastParticipant
             every { leenkParticipantsSaveService.save(any()) } returns lastParticipant
+            every { leenkParticipantsGetService.findAllByLeenk(any()) } returns emptyList()
 
             // when
             leenkUsecase.participateLeenk(1L, 1L)
 
             // then
             verify(exactly = 1) { leenkParticipantsSaveService.save(lastParticipant) }
-            verify(exactly = 1) { eventPublisher.publishEvent(any()) }
+            verify(exactly = 1) {
+                eventPublisher.publishEvent(any<LeenkDomainEvent.ParticipantJoined>())
+            }
             assertThat(almostFullLeenk.currentParticipants).isEqualTo(almostFullLeenk.maxParticipants)
         }
     }
@@ -273,13 +280,16 @@ class LeenkUsecaseTest {
             // given
             every { userGetService.findById(1L) } returns user
             every { leenkGetService.findById(1L) } returns recruitingLeenk
+            every { leenkParticipantsGetService.findAllByLeenk(any()) } returns emptyList()
 
             // when
             leenkUsecase.closeLeenk(1L, 1L)
 
             // then
             assertThat(recruitingLeenk.status).isEqualTo(LeenkStatus.CLOSED)
-            verify(exactly = 1) { eventPublisher.publishEvent(any()) }
+            verify(exactly = 1) {
+                eventPublisher.publishEvent(any<LeenkDomainEvent.Closed>())
+            }
         }
 
         @Test
