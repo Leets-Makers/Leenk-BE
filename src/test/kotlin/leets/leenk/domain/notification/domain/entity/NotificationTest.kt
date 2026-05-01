@@ -4,12 +4,11 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
-import leets.leenk.domain.notification.test.fixture.NotificationFixture
 
-class NotificationEntityTest :
+class NotificationTest :
     DescribeSpec({
 
-        describe("NotificationEntity") {
+        describe("Notification") {
             context("markRead()") {
                 it("알림을 읽음 상태로 변경하고 updateDate를 갱신해야 한다") {
                     val notification =

@@ -8,14 +8,14 @@ import leets.leenk.domain.notification.application.policy.NotificationPolicy
 import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
-import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
+import leets.leenk.domain.notification.domain.service.NotificationGetService
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
 
 class NotificationServiceTest :
     DescribeSpec({
 
         val notificationSaveService = mockk<NotificationSaveService>()
-        val notificationEntityGetService = mockk<NotificationEntityGetService>()
+        val notificationGetService = mockk<NotificationGetService>()
         val notificationPublisher = mockk<SqsNotificationPublisher>()
         val notificationPolicy = mockk<NotificationPolicy>()
 
@@ -30,7 +30,7 @@ class NotificationServiceTest :
                 spyk(
                     NotificationService(
                         notificationSaveService,
-                        notificationEntityGetService,
+                        notificationGetService,
                         notificationPublisher,
                         notificationPolicy,
                     ),
@@ -123,7 +123,7 @@ class NotificationServiceTest :
                                 mapOf("details" to details),
                         )
                     every {
-                        notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                        notificationGetService.findByUserIdAndTypeAndTargetId(
                             1L,
                             NotificationType.FEED_FIRST_REACTION,
                             100L,
@@ -160,7 +160,7 @@ class NotificationServiceTest :
                             name = "홍길동",
                         )
                     every {
-                        notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                        notificationGetService.findByUserIdAndTypeAndTargetId(
                             1L,
                             NotificationType.FEED_FIRST_REACTION,
                             100L,
@@ -206,7 +206,7 @@ class NotificationServiceTest :
                             name = "홍길동",
                         )
                     every {
-                        notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                        notificationGetService.findByUserIdAndTypeAndTargetId(
                             1L,
                             NotificationType.FEED_FIRST_REACTION,
                             100L,

@@ -4,7 +4,7 @@ import leets.leenk.domain.feed.domain.event.FeedDomainEvent
 import leets.leenk.domain.notification.application.dto.NotificationRequest
 import leets.leenk.domain.notification.application.port.NotificationPort
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
-import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
+import leets.leenk.domain.notification.domain.service.NotificationGetService
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
@@ -13,7 +13,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 @Component
 class FeedNotificationEventListener(
     private val notificationPort: NotificationPort,
-    private val notificationEntityGetService: NotificationEntityGetService,
+    private val notificationGetService: NotificationGetService,
     private val userSettingGetService: UserSettingGetService,
 ) {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -75,7 +75,7 @@ class FeedNotificationEventListener(
         val now = java.time.LocalDateTime.now()
 
         val isFirstReactionDuplicated =
-            notificationEntityGetService.checkFirstReactionDuplicated(
+            notificationGetService.checkFirstReactionDuplicated(
                 feedAuthorId = event.feedAuthorId,
                 feedId = event.feedId,
                 reactorId = event.reactorId,

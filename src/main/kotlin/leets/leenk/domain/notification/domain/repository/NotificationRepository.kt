@@ -7,7 +7,7 @@ import org.springframework.data.domain.Slice
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
 
-interface NotificationEntityRepository : MongoRepository<Notification, String> {
+interface NotificationRepository : MongoRepository<Notification, String> {
     @Query("{ 'userId': ?0, 'notificationType': ?1, 'content.targetId': ?2, 'deleteDate': null }")
     fun findNotificationByUserAndTypeAndTarget(
         userId: Long,

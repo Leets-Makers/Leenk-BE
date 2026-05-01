@@ -8,7 +8,7 @@ import leets.leenk.domain.notification.application.port.NotificationPort
 import leets.leenk.domain.notification.application.port.NotificationPublishPort
 import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
-import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
+import leets.leenk.domain.notification.domain.service.NotificationGetService
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DuplicateKeyException
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class NotificationService(
     private val notificationSaveService: NotificationSaveService,
-    private val notificationEntityGetService: NotificationEntityGetService,
+    private val notificationGetService: NotificationGetService,
     private val notificationPublisher: NotificationPublishPort,
     private val notificationPolicy: NotificationPolicy,
 ) : NotificationPort {
@@ -122,7 +122,7 @@ class NotificationService(
 
         return try {
             val existing =
-                notificationEntityGetService.findByUserIdAndTypeAndTargetId(
+                notificationGetService.findByUserIdAndTypeAndTargetId(
                     userId = request.userId,
                     type = request.type,
                     targetId = request.targetId,

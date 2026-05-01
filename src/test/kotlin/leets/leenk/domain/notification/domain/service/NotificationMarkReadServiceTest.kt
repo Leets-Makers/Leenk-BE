@@ -11,28 +11,28 @@ import leets.leenk.domain.notification.application.exception.InvalidNotification
 import leets.leenk.domain.notification.application.exception.NotificationNotFoundException
 import leets.leenk.domain.notification.application.mapper.NotificationResponseMapper
 import leets.leenk.domain.notification.application.usecase.NotificationUseCase
-import leets.leenk.domain.notification.domain.repository.NotificationEntityRepository
+import leets.leenk.domain.notification.domain.repository.NotificationRepository
 import leets.leenk.domain.notification.test.fixture.NotificationFixture
 import leets.leenk.domain.user.test.fixture.UserTestFixture
 
 class NotificationMarkReadServiceTest :
     StringSpec({
-        val notificationEntityRepository = mockk<NotificationEntityRepository>()
-        val notificationEntityGetService = NotificationEntityGetService(notificationEntityRepository)
+        val notificationRepository = mockk<NotificationRepository>()
+        val notificationGetService = NotificationGetService(notificationRepository)
         val notificationSaveService = mockk<NotificationSaveService>()
         val notificationResponseMapper = mockk<NotificationResponseMapper>()
         val notificationUseCase =
-            NotificationUseCase(notificationEntityGetService, notificationSaveService, notificationResponseMapper)
+            NotificationUseCase(notificationGetService, notificationSaveService, notificationResponseMapper)
 
         beforeEach {
-            clearMocks(notificationEntityRepository, notificationSaveService)
+            clearMocks(notificationRepository, notificationSaveService)
         }
 
         "유효한 알림 ID로 읽음 처리 요청 시 알림의 읽음 상태가 true로 변경되어야 한다" {
             val user = UserTestFixture.createUser(id = 1L)
             val notification = NotificationFixture.basicNotification(userId = 1L)
 
-            every { notificationEntityRepository.findActiveById(notification.id!!) } returns notification
+            every { notificationRepository.findActiveById(notification.id!!) } returns notification
             every { notificationSaveService.save(notification) } returns notification
 
             notificationUseCase.markAsRead(user.id, notification.id!!)
@@ -44,7 +44,7 @@ class NotificationMarkReadServiceTest :
             val user = UserTestFixture.createUser(id = 1L)
             val invalidNotificationId = "999"
 
-            every { notificationEntityRepository.findActiveById(invalidNotificationId) } returns null
+            every { notificationRepository.findActiveById(invalidNotificationId) } returns null
 
             shouldThrow<NotificationNotFoundException> {
                 notificationUseCase.markAsRead(user.id, invalidNotificationId)
@@ -57,7 +57,7 @@ class NotificationMarkReadServiceTest :
             val user = UserTestFixture.createUser(id = 1L)
             val otherUsersNotification = NotificationFixture.notificationForUser(userId = 2L)
 
-            every { notificationEntityRepository.findActiveById(otherUsersNotification.id!!) } returns
+            every { notificationRepository.findActiveById(otherUsersNotification.id!!) } returns
                 otherUsersNotification
 
             shouldThrow<InvalidNotificationAccessException> {

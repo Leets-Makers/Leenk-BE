@@ -3,7 +3,7 @@ package leets.leenk.domain.notification.application.usecase
 import leets.leenk.domain.notification.application.dto.response.NotificationCountResponse
 import leets.leenk.domain.notification.application.dto.response.NotificationListResponse
 import leets.leenk.domain.notification.application.mapper.NotificationResponseMapper
-import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
+import leets.leenk.domain.notification.domain.service.NotificationGetService
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class NotificationUseCase(
-    private val notificationEntityGetService: NotificationEntityGetService,
+    private val notificationGetService: NotificationGetService,
     private val notificationSaveService: NotificationSaveService,
     private val notificationResponseMapper: NotificationResponseMapper,
 ) {
@@ -24,14 +24,14 @@ class NotificationUseCase(
         pageSize: Int,
     ): NotificationListResponse {
         val pageable: Pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "updateDate"))
-        val notifications = notificationEntityGetService.findPageByUserId(userId, pageable)
+        val notifications = notificationGetService.findPageByUserId(userId, pageable)
 
         return notificationResponseMapper.toNotificationListResponse(notifications)
     }
 
     @Transactional(readOnly = true)
     fun getNotificationCount(userId: Long): NotificationCountResponse {
-        val count = notificationEntityGetService.countUnreadByUserId(userId)
+        val count = notificationGetService.countUnreadByUserId(userId)
 
         return notificationResponseMapper.toCountResponse(count)
     }
@@ -41,7 +41,7 @@ class NotificationUseCase(
         userId: Long,
         notificationId: String,
     ) {
-        val notification = notificationEntityGetService.findByIdForUser(notificationId, userId)
+        val notification = notificationGetService.findByIdForUser(notificationId, userId)
         notification.markRead()
         notificationSaveService.save(notification)
     }
