@@ -13,7 +13,7 @@ class NotificationEntityTest :
             context("markRead()") {
                 it("알림을 읽음 상태로 변경하고 updateDate를 갱신해야 한다") {
                     val notification =
-                        NotificationEntity(
+                        Notification(
                             id = "test-id",
                             userId = 1L,
                             notificationType = NotificationType.NEW_FEED,
@@ -39,7 +39,7 @@ class NotificationEntityTest :
             context("markUnread()") {
                 it("알림을 읽지 않음 상태로 변경하고 updateDate를 갱신해야 한다") {
                     val notification =
-                        NotificationEntity(
+                        Notification(
                             id = "test-id",
                             userId = 1L,
                             notificationType = NotificationType.NEW_FEED,
@@ -66,7 +66,7 @@ class NotificationEntityTest :
                 it("새로운 내용으로 알림을 업데이트하고 읽지 않음 상태로 설정해야 한다") {
                     val originalCreateDate = LocalDateTime.now().minusDays(1)
                     val notification =
-                        NotificationEntity(
+                        Notification(
                             id = "test-id",
                             userId = 1L,
                             notificationType = NotificationType.FEED_FIRST_REACTION,
@@ -103,7 +103,7 @@ class NotificationEntityTest :
 
                 it("path와 targetId는 원본과 동일하게 유지되어야 한다") {
                     val notification =
-                        NotificationEntity(
+                        Notification(
                             id = "test-id",
                             userId = 1L,
                             notificationType = NotificationType.FEED_FIRST_REACTION,

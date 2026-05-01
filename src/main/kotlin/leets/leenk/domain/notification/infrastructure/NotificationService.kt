@@ -6,7 +6,7 @@ import leets.leenk.domain.notification.application.dto.NotificationRequest
 import leets.leenk.domain.notification.application.policy.NotificationPolicy
 import leets.leenk.domain.notification.application.port.NotificationPort
 import leets.leenk.domain.notification.application.port.NotificationPublishPort
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
+import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
 import leets.leenk.domain.notification.domain.service.NotificationSaveService
@@ -108,14 +108,14 @@ class NotificationService(
     }
 
     // Suspend 래퍼 - 트랜잭션 밖에서 호출
-    protected open suspend fun sendOrUpdateInternal(request: NotificationRequest): NotificationEntity? =
+    protected open suspend fun sendOrUpdateInternal(request: NotificationRequest): Notification? =
         withContext(Dispatchers.IO) {
             saveOrUpdateNotificationBlocking(request)
         }
 
     // 트랜잭션 보장되는 블로킹 메서드
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected open fun saveOrUpdateNotificationBlocking(request: NotificationRequest): NotificationEntity? {
+    protected open fun saveOrUpdateNotificationBlocking(request: NotificationRequest): Notification? {
         if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
             return null
         }
@@ -168,14 +168,14 @@ class NotificationService(
     }
 
     // Suspend 래퍼 - 트랜잭션 밖에서 호출
-    protected open suspend fun sendInternal(request: NotificationRequest): NotificationEntity? =
+    protected open suspend fun sendInternal(request: NotificationRequest): Notification? =
         withContext(Dispatchers.IO) {
             saveNotificationBlocking(request)
         }
 
     // 트랜잭션 보장되는 블로킹 메서드
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected open fun saveNotificationBlocking(request: NotificationRequest): NotificationEntity? {
+    protected open fun saveNotificationBlocking(request: NotificationRequest): Notification? {
         if (!notificationPolicy.shouldNotify(request.userId, request.type)) {
             return null
         }
@@ -192,7 +192,7 @@ class NotificationService(
 
     private suspend fun publishNotification(
         userId: Long,
-        notification: NotificationEntity,
+        notification: Notification,
     ) {
         try {
             notificationPublisher.publish(userId, notification)
@@ -201,8 +201,8 @@ class NotificationService(
         }
     }
 
-    private fun createNotification(request: NotificationRequest): NotificationEntity =
-        NotificationEntity(
+    private fun createNotification(request: NotificationRequest): Notification =
+        Notification(
             userId = request.userId,
             notificationType = request.type,
             content =

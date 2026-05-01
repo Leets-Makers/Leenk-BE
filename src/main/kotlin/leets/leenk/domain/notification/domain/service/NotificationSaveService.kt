@@ -1,6 +1,6 @@
 package leets.leenk.domain.notification.domain.service
 
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
+import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import leets.leenk.domain.notification.domain.repository.NotificationEntityRepository
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class NotificationSaveService(
-    private val notificationEntityRepository: NotificationEntityRepository,
+    private val notificationRepository: NotificationEntityRepository,
     private val mongoTemplate: MongoTemplate,
 ) {
-    fun save(notification: NotificationEntity): NotificationEntity = notificationEntityRepository.save(notification)
+    fun save(notification: Notification): Notification = notificationRepository.save(notification)
 
     /**
      * details 배열에 여러 항목을 한 번에 추가 (원자적 연산)
@@ -27,7 +27,7 @@ class NotificationSaveService(
         type: NotificationType,
         targetId: Long,
         details: List<Map<String, Any>>,
-    ): NotificationEntity? {
+    ): Notification? {
         val query =
             Query.query(
                 Criteria
@@ -53,8 +53,8 @@ class NotificationSaveService(
                 }
             }
 
-        mongoTemplate.updateFirst<NotificationEntity>(query, update)
-        return mongoTemplate.findOne<NotificationEntity>(query)
+        mongoTemplate.updateFirst<Notification>(query, update)
+        return mongoTemplate.findOne<Notification>(query)
     }
 
     private fun getUpdatedTitleAndBody(

@@ -1,6 +1,6 @@
 package leets.leenk.domain.notification.test.fixture
 
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
+import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 
@@ -9,8 +9,8 @@ object NotificationFixture {
         id: String = "notification-1",
         userId: Long = 1L,
         notificationType: NotificationType = NotificationType.NEW_FEED,
-    ): NotificationEntity =
-        NotificationEntity(
+    ): Notification =
+        Notification(
             id = id,
             userId = userId,
             notificationType = notificationType,
@@ -27,8 +27,8 @@ object NotificationFixture {
         id: String = "notification-2",
         userId: Long,
         notificationType: NotificationType = NotificationType.NEW_FEED,
-    ): NotificationEntity =
-        NotificationEntity(
+    ): Notification =
+        Notification(
             id = id,
             userId = userId,
             notificationType = notificationType,

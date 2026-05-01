@@ -14,7 +14,7 @@ import java.time.LocalDateTime
     def = "{'userId': 1, 'notificationType': 1, 'content.targetId': 1, 'deleteDate': 1}",
     unique = true,
 )
-data class NotificationEntity(
+data class Notification(
     @Id
     val id: String? = null,
     var userId: Long,
@@ -42,8 +42,8 @@ data class NotificationEntity(
         newTitle: String,
         newBody: String,
         newMetadata: Map<String, Any>,
-    ): NotificationEntity =
-        NotificationEntity(
+    ): Notification =
+        Notification(
             id = this.id,
             userId = this.userId,
             notificationType = this.notificationType,

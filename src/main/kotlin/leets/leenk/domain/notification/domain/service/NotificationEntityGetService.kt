@@ -2,7 +2,7 @@ package leets.leenk.domain.notification.domain.service
 
 import leets.leenk.domain.notification.application.exception.InvalidNotificationAccessException
 import leets.leenk.domain.notification.application.exception.NotificationNotFoundException
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
+import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import leets.leenk.domain.notification.domain.repository.NotificationEntityRepository
 import org.springframework.data.domain.Pageable
@@ -17,26 +17,26 @@ class NotificationEntityGetService(
         userId: Long,
         type: NotificationType,
         targetId: Long,
-    ): NotificationEntity? =
+    ): Notification? =
         notificationEntityRepository.findNotificationByUserAndTypeAndTarget(
             userId = userId,
             notificationType = type,
             targetId = targetId,
         )
 
-    fun findAllByUserId(userId: Long): List<NotificationEntity> = notificationEntityRepository.findAllByUserId(userId)
+    fun findAllByUserId(userId: Long): List<Notification> = notificationEntityRepository.findAllByUserId(userId)
 
     fun findPageByUserId(
         userId: Long,
         pageable: Pageable,
-    ): Slice<NotificationEntity> = notificationEntityRepository.findPageByUserIdAndDeleteDateIsNull(userId, pageable)
+    ): Slice<Notification> = notificationEntityRepository.findPageByUserIdAndDeleteDateIsNull(userId, pageable)
 
     fun countUnreadByUserId(userId: Long): Long = notificationEntityRepository.countUnreadByUserId(userId)
 
     fun findByIdForUser(
         notificationId: String,
         userId: Long,
-    ): NotificationEntity {
+    ): Notification {
         val notification =
             notificationEntityRepository.findActiveById(notificationId)
                 ?: throw NotificationNotFoundException()

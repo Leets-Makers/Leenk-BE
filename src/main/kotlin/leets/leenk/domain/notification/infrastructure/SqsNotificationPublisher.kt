@@ -1,7 +1,7 @@
 package leets.leenk.domain.notification.infrastructure
 
 import leets.leenk.domain.notification.application.port.NotificationPublishPort
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
+import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.global.sqs.application.dto.SqsMessageEvent
 import org.slf4j.LoggerFactory
@@ -18,7 +18,7 @@ class SqsNotificationPublisher(
 
     override suspend fun publish(
         userId: Long,
-        notification: NotificationEntity,
+        notification: Notification,
     ) {
         try {
             val user = userGetService.findById(userId)
