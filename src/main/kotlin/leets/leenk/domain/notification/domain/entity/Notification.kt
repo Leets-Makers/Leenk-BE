@@ -38,25 +38,4 @@ data class Notification(
         this.updateDate = LocalDateTime.now()
     }
 
-    fun updateContent(
-        newTitle: String,
-        newBody: String,
-        newMetadata: Map<String, Any>,
-    ): Notification =
-        Notification(
-            id = this.id,
-            userId = this.userId,
-            notificationType = this.notificationType,
-            content =
-                NotificationPayload(
-                    title = newTitle,
-                    body = newBody,
-                    path = this.content.path,
-                    targetId = this.content.targetId,
-                    metadata = newMetadata,
-                ),
-            isRead = false,
-            createDate = this.createDate, // 기존 생성일 유지
-            updateDate = LocalDateTime.now(), // 수정일 갱신
-        )
 }

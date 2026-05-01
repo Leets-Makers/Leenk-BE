@@ -18,7 +18,7 @@ object NotificationFixture {
                 NotificationPayload(
                     title = "테스트 알림",
                     body = "테스트 알림 내용",
-                    path = "feeds",
+                    path = "/feeds/1",
                     targetId = 1L,
                 ),
         )
@@ -36,7 +36,7 @@ object NotificationFixture {
                 NotificationPayload(
                     title = "테스트 알림",
                     body = "테스트 알림 내용",
-                    path = "feeds",
+                    path = "/feeds/1",
                     targetId = 1L,
                 ),
         )
