@@ -55,8 +55,8 @@ class LeenkNotificationEventListener(
         val now = LocalDateTime.now()
         val participantDetail =
             mapOf(
-                "participantId" to event.newParticipantId,
-                "participantName" to event.newParticipantName,
+                "userId" to event.newParticipantId,
+                "name" to event.newParticipantName,
                 "createDate" to now,
             )
 
