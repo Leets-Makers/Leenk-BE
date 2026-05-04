@@ -39,9 +39,9 @@ class NotificationResponseMapper {
         (notification.content.metadata["details"] as? List<Map<String, Any>>)
             ?.map { detail ->
                 NotificationDetailResponse(
-                    userId = detail["userId"] as? Long,
+                    userId = (detail["userId"] as? Number)?.toLong(),
                     name = detail["name"] as? String,
-                    milestone = detail["milestone"] as? Long,
+                    milestone = (detail["milestone"] as? Number)?.toLong(),
                     body = detail["body"] as? String ?: "",
                     createDate = detail["createDate"].toDateString(),
                 )
