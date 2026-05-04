@@ -64,7 +64,7 @@ class NotificationSaveService(
         when (type) {
             NotificationType.FEED_REACTION_COUNT -> {
                 details.lastOrNull()?.let { lastDetail ->
-                    val milestone = (lastDetail["milestone"] as? Long)
+                    val milestone = (lastDetail["milestone"] as? Number)?.toLong()
                     type.title to (lastDetail["body"] as? String ?: type.formatContent(count = milestone))
                 }
             }
