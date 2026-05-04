@@ -28,12 +28,17 @@ class SqsNotificationPublisher(
                     return
                 }
 
+            val path = notification.content.path ?: run {
+                log.debug("딥링크 path 없음, 알림 발행 skip: notificationId={}", notification.id)
+                return
+            }
+
             val sqsEvent =
                 SqsMessageEvent(
                     notification.content.title,
                     notification.content.body,
                     fcmToken,
-                    notification.content.path,
+                    path,
                     user.id,
                 )
             eventPublisher.publishEvent(sqsEvent)
