@@ -78,7 +78,7 @@ class NotificationSaveService(
 
             NotificationType.NEW_LEENK_PARTICIPANT -> {
                 details.lastOrNull()?.let { lastDetail ->
-                    val participantName = lastDetail["participantName"] as? String ?: ""
+                    val participantName = lastDetail["name"] as? String ?: ""
                     type.title to type.formatContent(name = participantName)
                 }
             }
