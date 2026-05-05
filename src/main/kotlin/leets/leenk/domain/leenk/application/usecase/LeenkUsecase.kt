@@ -21,6 +21,7 @@ import leets.leenk.domain.leenk.application.mapper.LeenkParticipantsMapper
 import leets.leenk.domain.leenk.application.mapper.LocationMapper
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkFilter
 import leets.leenk.domain.leenk.domain.entity.enums.LeenkStatus
+import leets.leenk.domain.leenk.domain.event.LeenkDomainEvent
 import leets.leenk.domain.leenk.domain.service.LeenkDeleteService
 import leets.leenk.domain.leenk.domain.service.LeenkGetService
 import leets.leenk.domain.leenk.domain.service.LeenkParticipantsDeleteService
@@ -33,10 +34,10 @@ import leets.leenk.domain.media.application.mapper.MediaMapper
 import leets.leenk.domain.media.domain.service.MediaDeleteService
 import leets.leenk.domain.media.domain.service.MediaGetService
 import leets.leenk.domain.media.domain.service.MediaSaveService
-import leets.leenk.domain.notification.application.usecase.LeenkNotificationUsecase
 import leets.leenk.domain.user.domain.service.NotionDatabaseService
 import leets.leenk.domain.user.domain.service.SlackWebhookService
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import org.springframework.data.domain.Sort
@@ -64,7 +65,7 @@ class LeenkUsecase(
     private val participantsMapper: LeenkParticipantsMapper,
     private val locationMapper: LocationMapper,
     private val mediaMapper: MediaMapper,
-    private val leenkNotificationUsecase: LeenkNotificationUsecase,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     @Transactional
     fun uploadLeenk(
@@ -87,7 +88,14 @@ class LeenkUsecase(
             mediaSaveService.save(media)
         }
 
-        leenkNotificationUsecase.saveNewLeenkNotification(leenk)
+        eventPublisher.publishEvent(
+            LeenkDomainEvent.NewLeenk(
+                leenkId = leenk.id!!,
+                leenkTitle = leenk.title,
+                hostId = author.id,
+                hostName = author.name,
+            ),
+        )
 
         return LeenkCreateResponse(leenk.id!!)
     }
@@ -250,7 +258,21 @@ class LeenkUsecase(
         leenkParticipantsSaveService.save(participant)
         leenk.increaseCurrentParticipants()
 
-        leenkNotificationUsecase.saveNewLeenkParticipantNotification(leenk, user)
+        val existingParticipantIds =
+            leenkParticipantsGetService
+                .findAllByLeenk(leenk)
+                .map { it.participant.id }
+                .filter { it != user.id }
+
+        eventPublisher.publishEvent(
+            LeenkDomainEvent.ParticipantJoined(
+                leenkId = leenk.id!!,
+                leenkTitle = leenk.title,
+                newParticipantId = user.id,
+                newParticipantName = user.name,
+                existingParticipantIds = existingParticipantIds,
+            ),
+        )
     }
 
     @Transactional
@@ -271,7 +293,14 @@ class LeenkUsecase(
 
         leenk.changeStatusToClosed()
 
-        leenkNotificationUsecase.saveLeenkClosedNotification(leenk)
+        val participantIds = leenkParticipantsGetService.findAllByLeenk(leenk).map { it.participant.id }
+        eventPublisher.publishEvent(
+            LeenkDomainEvent.Closed(
+                leenkId = leenk.id!!,
+                leenkTitle = leenk.title,
+                participantIds = participantIds,
+            ),
+        )
     }
 
     @Transactional
@@ -317,7 +346,13 @@ class LeenkUsecase(
         leenkParticipantsDeleteService.delete(participant)
         leenk.decreaseCurrentParticipants()
 
-        leenkNotificationUsecase.saveKickedFromLeenkNotification(leenk, participant.participant)
+        eventPublisher.publishEvent(
+            LeenkDomainEvent.ParticipantKicked(
+                leenkId = leenk.id!!,
+                leenkTitle = leenk.title,
+                kickedUserId = participant.participant.id,
+            ),
+        )
     }
 
     @Transactional
@@ -364,6 +399,14 @@ class LeenkUsecase(
 
         leenk.decreaseCurrentParticipants()
 
-        leenkNotificationUsecase.saveLeenkLeftNotification(leenk, user)
+        eventPublisher.publishEvent(
+            LeenkDomainEvent.ParticipantLeft(
+                leenkId = leenk.id!!,
+                leenkTitle = leenk.title,
+                leftUserId = user.id,
+                leftUserName = user.name,
+                hostId = leenk.author.id,
+            ),
+        )
     }
 }

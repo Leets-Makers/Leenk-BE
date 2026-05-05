@@ -1,22 +1,43 @@
 package leets.leenk.domain.notification.test.fixture
 
 import leets.leenk.domain.notification.domain.entity.Notification
+import leets.leenk.domain.notification.domain.entity.NotificationPayload
+import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 
 object NotificationFixture {
-    // TODO: Notification을 Kotlin으로 마이그레이션한 후 Named Arguments로 변경
-    fun basicNotification(): Notification =
-        Notification
-            .builder()
-            .id("100")
-            .isRead(false)
-            .userId(1L)
-            .build()
+    fun basicNotification(
+        id: String = "notification-1",
+        userId: Long = 1L,
+        notificationType: NotificationType = NotificationType.NEW_FEED,
+    ): Notification =
+        Notification(
+            id = id,
+            userId = userId,
+            notificationType = notificationType,
+            content =
+                NotificationPayload(
+                    title = "테스트 알림",
+                    body = "테스트 알림 내용",
+                    path = "/feeds/1",
+                    targetId = 1L,
+                ),
+        )
 
-    fun notificationForUser(userId: Long): Notification =
-        Notification
-            .builder()
-            .id("101")
-            .isRead(false)
-            .userId(userId)
-            .build()
+    fun notificationForUser(
+        id: String = "notification-2",
+        userId: Long,
+        notificationType: NotificationType = NotificationType.NEW_FEED,
+    ): Notification =
+        Notification(
+            id = id,
+            userId = userId,
+            notificationType = notificationType,
+            content =
+                NotificationPayload(
+                    title = "테스트 알림",
+                    body = "테스트 알림 내용",
+                    path = "/feeds/1",
+                    targetId = 1L,
+                ),
+        )
 }

@@ -1,9 +1,7 @@
 package leets.leenk.domain.notification.domain.service
 
 import leets.leenk.domain.notification.domain.entity.Notification
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
-import leets.leenk.domain.notification.domain.repository.NotificationEntityRepository
 import leets.leenk.domain.notification.domain.repository.NotificationRepository
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.findOne
@@ -16,12 +14,9 @@ import org.springframework.stereotype.Service
 @Service
 class NotificationSaveService(
     private val notificationRepository: NotificationRepository,
-    private val notificationEntityRepository: NotificationEntityRepository,
     private val mongoTemplate: MongoTemplate,
 ) {
     fun save(notification: Notification): Notification = notificationRepository.save(notification)
-
-    fun save(notification: NotificationEntity): NotificationEntity = notificationEntityRepository.save(notification)
 
     /**
      * details 배열에 여러 항목을 한 번에 추가 (원자적 연산)
@@ -32,7 +27,7 @@ class NotificationSaveService(
         type: NotificationType,
         targetId: Long,
         details: List<Map<String, Any>>,
-    ): NotificationEntity? {
+    ): Notification? {
         val query =
             Query.query(
                 Criteria
@@ -49,6 +44,7 @@ class NotificationSaveService(
         val update =
             Update().apply {
                 push("content.metadata.details").each(*details.toTypedArray())
+                set("isRead", false)
 
                 // 최상단 title, body 업데이트
                 getUpdatedTitleAndBody(type, details)?.let { (title, body) ->
@@ -57,8 +53,8 @@ class NotificationSaveService(
                 }
             }
 
-        mongoTemplate.updateFirst<NotificationEntity>(query, update)
-        return mongoTemplate.findOne<NotificationEntity>(query)
+        mongoTemplate.updateFirst<Notification>(query, update)
+        return mongoTemplate.findOne<Notification>(query)
     }
 
     private fun getUpdatedTitleAndBody(
@@ -68,16 +64,22 @@ class NotificationSaveService(
         when (type) {
             NotificationType.FEED_REACTION_COUNT -> {
                 details.lastOrNull()?.let { lastDetail ->
-                    val milestone = lastDetail["milestone"] as? Int
-                    (lastDetail["title"] as? String ?: "Leenk") to
-                        (lastDetail["body"] as? String ?: "내가 쓴 피드에 좋아요를 ${milestone}개 받았어")
+                    val milestone = (lastDetail["milestone"] as? Number)?.toLong()
+                    type.title to (lastDetail["body"] as? String ?: type.formatContent(count = milestone))
                 }
             }
 
             NotificationType.FEED_FIRST_REACTION -> {
                 details.lastOrNull()?.let { lastDetail ->
-                    (lastDetail["title"] as? String ?: "Leenk") to
-                        (lastDetail["body"] as? String ?: "내가 쓴 피드에 좋아요를 받았어")
+                    val name = lastDetail["name"] as? String ?: ""
+                    type.title to (lastDetail["body"] as? String ?: type.formatContent(name = name))
+                }
+            }
+
+            NotificationType.NEW_LEENK_PARTICIPANT -> {
+                details.lastOrNull()?.let { lastDetail ->
+                    val participantName = lastDetail["name"] as? String ?: ""
+                    type.title to type.formatContent(name = participantName)
                 }
             }
 

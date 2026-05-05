@@ -1,7 +1,8 @@
 package leets.leenk.domain.notification.infrastructure
 
+import kotlinx.coroutines.CancellationException
 import leets.leenk.domain.notification.application.port.NotificationPublishPort
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
+import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.global.sqs.application.dto.SqsMessageEvent
 import org.slf4j.LoggerFactory
@@ -18,7 +19,7 @@ class SqsNotificationPublisher(
 
     override suspend fun publish(
         userId: Long,
-        notification: NotificationEntity,
+        notification: Notification,
     ) {
         try {
             val user = userGetService.findById(userId)
@@ -28,16 +29,24 @@ class SqsNotificationPublisher(
                     return
                 }
 
+            val path =
+                notification.content.path ?: run {
+                    log.debug("딥링크 path 없음, 알림 발행 skip: notificationId={}", notification.id)
+                    return
+                }
+
             val sqsEvent =
                 SqsMessageEvent(
                     notification.content.title,
                     notification.content.body,
                     fcmToken,
-                    notification.content.path,
+                    path,
                     user.id,
                 )
             eventPublisher.publishEvent(sqsEvent)
             log.info("알림 발행 성공: userId={}, type={}", userId, notification.notificationType)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             log.error("알림 발행 실패: userId={}, notificationId={}", userId, notification.id, e)
         }

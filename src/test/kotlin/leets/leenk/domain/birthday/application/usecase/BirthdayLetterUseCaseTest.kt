@@ -18,12 +18,13 @@ import leets.leenk.domain.birthday.application.mapper.BirthdayLetterMapper
 import leets.leenk.domain.birthday.application.util.BirthdayChecker
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetter
 import leets.leenk.domain.birthday.domain.entity.BirthdayLetterReadMark
+import leets.leenk.domain.birthday.domain.event.BirthdayDomainEvent
 import leets.leenk.domain.birthday.domain.service.BirthdayLetterSaveService
 import leets.leenk.domain.birthday.domain.service.BirthdayLettersGetService
-import leets.leenk.domain.notification.application.usecase.BirthdayNotificationUsecase
 import leets.leenk.domain.user.application.dto.response.UserProfileResponse
 import leets.leenk.domain.user.domain.entity.User
 import leets.leenk.domain.user.domain.service.user.UserGetService
+import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -36,7 +37,7 @@ class BirthdayLetterUseCaseTest :
         val birthdayLettersGetService = mockk<BirthdayLettersGetService>()
         val birthdayLetterMapper = mockk<BirthdayLetterMapper>()
         val birthdayChecker = mockk<BirthdayChecker>()
-        val birthdayNotificationUsecase = mockk<BirthdayNotificationUsecase>()
+        val eventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
 
         val birthdayLetterUseCase =
             BirthdayLetterUseCase(
@@ -45,7 +46,7 @@ class BirthdayLetterUseCaseTest :
                 birthdayLettersGetService,
                 birthdayLetterMapper,
                 birthdayChecker,
-                birthdayNotificationUsecase,
+                eventPublisher,
             )
 
         Given("수신자가 오늘 생일일 때") {
@@ -55,14 +56,13 @@ class BirthdayLetterUseCaseTest :
 
             val sender = createUser(senderId, "Sender")
             val receiver = createUser(receiverId, "Receiver", LocalDate.of(2000, 12, 25))
-            val birthdayLetter = createLetter(sender, receiver, request.message)
+            val birthdayLetter = createLetter(1L, sender, receiver, request.message)
 
             every { userGetService.findById(senderId) } returns sender
             every { userGetService.findById(receiverId) } returns receiver
             every { birthdayChecker.validateIsBirthdayToday(receiver.birthday) } returns true
             every { birthdayLetterMapper.toBirthdayLetter(sender, receiver, request) } returns birthdayLetter
             every { birthdayLetterSaveService.save(birthdayLetter) } returns Unit
-            every { birthdayNotificationUsecase.saveBirthdayLetterNotification(birthdayLetter) } returns Unit
 
             When("생일 편지를 작성하면") {
                 birthdayLetterUseCase.writeBirthdayLetter(senderId, receiverId, request)
@@ -70,7 +70,7 @@ class BirthdayLetterUseCaseTest :
                 Then("생일 체크가 수행되고 편지가 저장되며 알림이 전송되어야 한다") {
                     verify(exactly = 1) { birthdayChecker.validateIsBirthdayToday(receiver.birthday) }
                     verify(exactly = 1) { birthdayLetterSaveService.save(birthdayLetter) }
-                    verify(exactly = 1) { birthdayNotificationUsecase.saveBirthdayLetterNotification(birthdayLetter) }
+                    verify(exactly = 1) { eventPublisher.publishEvent(any<BirthdayDomainEvent.LetterSent>()) }
                 }
             }
         }
@@ -95,8 +95,11 @@ class BirthdayLetterUseCaseTest :
                 }
 
                 Then("편지와 알림이 저장되지 않아야 한다") {
+                    shouldThrow<NotBirthdayTodayException> {
+                        birthdayLetterUseCase.writeBirthdayLetter(senderId, receiverId, request)
+                    }
                     verify(exactly = 0) { birthdayLetterSaveService.save(any()) }
-                    verify(exactly = 0) { birthdayNotificationUsecase.saveBirthdayLetterNotification(any()) }
+                    verify(exactly = 0) { eventPublisher.publishEvent(any()) }
                 }
             }
         }
@@ -106,8 +109,8 @@ class BirthdayLetterUseCaseTest :
             val sender = createUser(2L, "Sender")
             val receiver = createUser(receiverId, "Receiver")
 
-            val letter1 = createLetter(sender, receiver, "편지1")
-            val letter2 = createLetter(sender, receiver, "편지2")
+            val letter1 = createLetter(1L, sender, receiver, "편지1")
+            val letter2 = createLetter(1L, sender, receiver, "편지2")
             val letters = listOf(letter1, letter2)
 
             val response1 = createLetterResponse(1L, 2L, "Sender", "편지1")
@@ -233,11 +236,13 @@ private fun createUser(
         .build()
 
 private fun createLetter(
+    id: Long,
     sender: User,
     receiver: User,
     message: String,
 ): BirthdayLetter =
     BirthdayLetter(
+        id = id,
         sender = sender,
         receiver = receiver,
         message = message,

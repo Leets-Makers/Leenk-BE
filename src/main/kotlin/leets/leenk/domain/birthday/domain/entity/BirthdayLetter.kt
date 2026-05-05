@@ -27,4 +27,7 @@ class BirthdayLetter(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "receiver_id", nullable = false, updatable = false)
     val receiver: User,
-) : BaseEntity()
+) : BaseEntity() {
+    val requireId: Long
+        get() = checkNotNull(id) { "영속화되지 않은 BirthdayLetter 엔티티입니다" }
+}

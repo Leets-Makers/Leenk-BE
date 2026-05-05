@@ -2,7 +2,7 @@ package leets.leenk.domain.notification.infrastructure
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.*
-import leets.leenk.domain.notification.domain.entity.NotificationEntity
+import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.notification.domain.entity.NotificationPayload
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
 import leets.leenk.domain.user.domain.entity.User
@@ -33,7 +33,7 @@ class NotificationPublisherTest :
                     val userId = 1L
                     val fcmToken = "test-fcm-token"
                     val notification =
-                        NotificationEntity(
+                        Notification(
                             id = "test-id",
                             userId = userId,
                             notificationType = NotificationType.NEW_FEED,
@@ -76,7 +76,7 @@ class NotificationPublisherTest :
                     // given
                     val userId = 1L
                     val notification =
-                        NotificationEntity(
+                        Notification(
                             id = "test-id",
                             userId = userId,
                             notificationType = NotificationType.NEW_FEED,

@@ -10,20 +10,20 @@ import leets.leenk.domain.feed.domain.event.FeedDomainEventFixture
 import leets.leenk.domain.notification.application.dto.NotificationRequest
 import leets.leenk.domain.notification.application.port.NotificationPort
 import leets.leenk.domain.notification.domain.entity.enums.NotificationType
-import leets.leenk.domain.notification.domain.service.NotificationEntityGetService
+import leets.leenk.domain.notification.domain.service.NotificationGetService
 import leets.leenk.domain.user.domain.service.usersetting.UserSettingGetService
 
 class FeedNotificationEventListenerTest :
     DescribeSpec({
 
         val notificationPort = mockk<NotificationPort>(relaxed = true)
-        val notificationEntityGetService = mockk<NotificationEntityGetService>()
+        val notificationGetService = mockk<NotificationGetService>()
         val userSettingGetService = mockk<UserSettingGetService>()
 
         val listener =
             FeedNotificationEventListener(
                 notificationPort,
-                notificationEntityGetService,
+                notificationGetService,
                 userSettingGetService,
             )
 
@@ -93,7 +93,7 @@ class FeedNotificationEventListenerTest :
             context("첫 번째 반응이고 중복이 아닌 경우") {
                 it("FEED_FIRST_REACTION 알림을 sendOrUpdate로 발송해야 한다") {
                     every {
-                        notificationEntityGetService.checkFirstReactionDuplicated(
+                        notificationGetService.checkFirstReactionDuplicated(
                             feedAuthorId = 1L,
                             feedId = 100L,
                             reactorId = 2L,
@@ -113,7 +113,7 @@ class FeedNotificationEventListenerTest :
             context("첫 번째 반응이 중복인 경우") {
                 it("FEED_FIRST_REACTION 알림을 발송하지 않아야 한다") {
                     every {
-                        notificationEntityGetService.checkFirstReactionDuplicated(
+                        notificationGetService.checkFirstReactionDuplicated(
                             feedAuthorId = 1L,
                             feedId = 100L,
                             reactorId = 2L,
@@ -129,7 +129,7 @@ class FeedNotificationEventListenerTest :
             context("마일스톤을 달성한 경우") {
                 it("FEED_REACTION_COUNT 알림을 sendOrUpdateWithMultiplePush로 발송해야 한다") {
                     every {
-                        notificationEntityGetService.checkFirstReactionDuplicated(any(), any(), any())
+                        notificationGetService.checkFirstReactionDuplicated(any(), any(), any())
                     } returns true
 
                     listener.onFeedReacted(
@@ -148,7 +148,7 @@ class FeedNotificationEventListenerTest :
             context("마일스톤을 달성하지 못한 경우") {
                 it("FEED_REACTION_COUNT 알림을 발송하지 않아야 한다") {
                     every {
-                        notificationEntityGetService.checkFirstReactionDuplicated(any(), any(), any())
+                        notificationGetService.checkFirstReactionDuplicated(any(), any(), any())
                     } returns true
 
                     listener.onFeedReacted(
@@ -162,7 +162,7 @@ class FeedNotificationEventListenerTest :
             context("마일스톤 경계값 테스트") {
                 it("previousCount=4, currentCount=5 이면 마일스톤 [5] 하나만 달성해야 한다") {
                     every {
-                        notificationEntityGetService.checkFirstReactionDuplicated(any(), any(), any())
+                        notificationGetService.checkFirstReactionDuplicated(any(), any(), any())
                     } returns true
 
                     listener.onFeedReacted(
@@ -178,7 +178,7 @@ class FeedNotificationEventListenerTest :
 
                 it("previousCount=5, currentCount=5 이면 마일스톤이 없어야 한다") {
                     every {
-                        notificationEntityGetService.checkFirstReactionDuplicated(any(), any(), any())
+                        notificationGetService.checkFirstReactionDuplicated(any(), any(), any())
                     } returns true
 
                     listener.onFeedReacted(

@@ -26,7 +26,7 @@ class BirthdayLetterMapper(
 
     fun toMyBirthdayLettersResponse(birthdayLetter: BirthdayLetter): MyBirthdayLettersResponse =
         MyBirthdayLettersResponse(
-            letterId = birthdayLetter.id!!,
+            letterId = birthdayLetter.requireId,
             author = userProfileMapper.toProfile(birthdayLetter.sender),
             message = birthdayLetter.message,
             createdAt = birthdayLetter.createDate,
