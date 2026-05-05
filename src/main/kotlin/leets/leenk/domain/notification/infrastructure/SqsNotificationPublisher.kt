@@ -4,6 +4,7 @@ import leets.leenk.domain.notification.application.port.NotificationPublishPort
 import leets.leenk.domain.notification.domain.entity.Notification
 import leets.leenk.domain.user.domain.service.user.UserGetService
 import leets.leenk.global.sqs.application.dto.SqsMessageEvent
+import kotlinx.coroutines.CancellationException
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
@@ -44,6 +45,8 @@ class SqsNotificationPublisher(
                 )
             eventPublisher.publishEvent(sqsEvent)
             log.info("알림 발행 성공: userId={}, type={}", userId, notification.notificationType)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             log.error("알림 발행 실패: userId={}, notificationId={}", userId, notification.id, e)
         }
