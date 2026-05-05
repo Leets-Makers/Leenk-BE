@@ -31,7 +31,7 @@ interface NotificationRepository : MongoRepository<Notification, String> {
     fun findActiveById(id: String): Notification?
 
     @Query(
-        "{ 'userId': ?0, 'notificationType': ?1, 'content.targetId': ?2, 'content.metadata.details': { '\$elemMatch': { 'userId': ?3 } } }",
+        "{ 'userId': ?0, 'notificationType': ?1, 'content.targetId': ?2, 'content.metadata.details': { '\$elemMatch': { 'userId': ?3 } }, 'deleteDate': null }",
     )
     fun findByFeedIdAndUserIdInFirstReactions(
         feedAuthorId: Long,
