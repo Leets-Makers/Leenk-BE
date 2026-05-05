@@ -15,6 +15,7 @@ interface NotificationRepository : MongoRepository<Notification, String> {
         targetId: Long,
     ): Notification?
 
+    @Query("{ 'userId': ?0, 'deleteDate': null }")
     fun findAllByUserId(userId: Long): List<Notification>
 
     @Query("{ 'userId': ?0, 'deleteDate': null }")
