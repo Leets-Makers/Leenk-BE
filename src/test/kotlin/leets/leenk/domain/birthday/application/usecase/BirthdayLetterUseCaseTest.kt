@@ -95,8 +95,11 @@ class BirthdayLetterUseCaseTest :
                 }
 
                 Then("편지와 알림이 저장되지 않아야 한다") {
+                    shouldThrow<NotBirthdayTodayException> {
+                        birthdayLetterUseCase.writeBirthdayLetter(senderId, receiverId, request)
+                    }
                     verify(exactly = 0) { birthdayLetterSaveService.save(any()) }
-                    verify(exactly = 0) { eventPublisher.publishEvent(any<BirthdayDomainEvent.LetterSent>()) }
+                    verify(exactly = 0) { eventPublisher.publishEvent(any()) }
                 }
             }
         }
